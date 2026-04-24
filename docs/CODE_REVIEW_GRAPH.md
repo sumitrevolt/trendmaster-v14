@@ -13,38 +13,34 @@ grep/glob.
 
 Two mechanisms:
 
-1. **Auto-update on edit (git only).** `.claude/settings.json` has a
+1. **Auto-update on edit.** `.claude/settings.json` has a
    `PostToolUse` hook that runs `tools\crg_hook.cmd` after every
    `Edit`, `Write`, or `Bash` tool use in Claude Code. The wrapper
-   checks for `.git/` and only runs `code-review-graph update
-   --skip-flows` if git is present — `update` uses `git diff` under
-   the hood and errors without a repo. **This project has no `.git`
-   today, so the hook currently exits 0 silently** (no spam, no
-   updates). The moment you `git init`, incremental updates activate
-   automatically with zero config changes.
+   checks for `.git/` and runs `code-review-graph update --skip-flows`
+   if git is present (skips silently if absent — `update` uses
+   `git diff` and errors without a repo). Incremental updates take
+   ~2 s on this project.
 
 2. **Manual full rebuild.** Run `rebuild_graph.cmd` after a
    significant refactor or before working with flow-dependent queries.
    That script runs `code-review-graph build` with full postprocess
-   and prints `status`. Takes ~8 s. Until this repo has git, this is
-   the *only* way to refresh the graph.
+   (including Leiden community detection via igraph) and prints
+   `status`. Takes ~9 s.
 
 Check current state any time with `graph_status.cmd` (or
 `python tools/graph_status.py`).
 
-### Recommended: `git init`
+### Git state
 
-This project is a production trading system with 11+ numbered
-iteration rounds recorded in auto-memory, yet has no git history.
-Running `git init` would:
+Initialized on 2026-04-24 with user `Sumit <sumitrevolt23@gmail.com>`,
+default branch `main`. Initial commit: `2c3060d` (TrendMaster v14
+post-Round-11 snapshot, 507 files). Followed by a cleanup commit
+`ac6275e` (swept 12 transient `*.out` / zero-byte files from
+`outputs/`).
 
-- Activate incremental graph updates after every Claude Code tool use
-  (sub-second instead of 8 s full rebuild).
-- Enable `code-review-graph detect-changes` for PR-style impact analysis.
-- Give you actual version control over the live trading code.
-
-The existing `.gitignore` is already well-tuned for this. If you do
-initialize, no code-review-graph config changes are needed.
+The existing `.gitignore` is well-tuned — ignores `.venv/`,
+`__pycache__/`, `*.log`, `*.out`, `*.pid`, agent memory/state JSON,
+and the `.code-review-graph/` data directory.
 
 ## Ignore rules: `.code-review-graphignore`
 
@@ -102,10 +98,11 @@ Other modes: `full` (all nodes, heavy), `file` (file-level only).
 Other formats: `graphml` (Gephi/Cytoscape), `cypher` (Neo4j),
 `obsidian`, `svg`.
 
-For a richer wiki with per-community member lists and cross-community
-dependency tables, install `python-igraph` (`pip install python-igraph`).
-Without igraph, community detection falls back to directory-based
-grouping and wiki pages show empty member sections.
+Community detection uses the Leiden algorithm via
+`python-igraph` (v1.0.0, installed 2026-04-24). Without it, the tool
+falls back to directory-based grouping — wiki pages show empty member
+sections and communities drop from ~56 meaningful clusters to ~5
+directory buckets.
 
 ## Troubleshooting
 
