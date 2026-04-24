@@ -1,0 +1,1007 @@
+{
+  "version": "4.0",
+  "created_by": "Claude AI (Opus) \u2014 Billionaire Trading Mind + Deep Web Research",
+  "last_updated": "2026-03-20",
+  "description": "Master trading knowledge base \u2014 DEEP RESEARCH March 20, 2026. Updated key levels, ICT killzones, ML optimization, institutional flow",
+  "METALS": {
+    "gold_xauusd": {
+      "key_levels_2026": {
+        "current_price_approx": 4717,
+        "all_time_high": 5595,
+        "52_week_low": 2957,
+        "major_resistance": [
+          4822,
+          4882,
+          4938,
+          4996,
+          5053,
+          5108,
+          5154,
+          5208,
+          5267,
+          5321,
+          5427,
+          5595
+        ],
+        "major_support": [
+          4761,
+          4702,
+          4646,
+          4577,
+          4510,
+          4441,
+          4374,
+          4400
+        ],
+        "psychological": [
+          5000,
+          4800,
+          4500,
+          4400,
+          4000
+        ],
+        "institutional_demand_zones": [
+          "4800-4850 (weekly OB)",
+          "4700-4720 (monthly OB)",
+          "4500-4550 (strong monthly demand)",
+          "4400 (2026 bull market starting line)"
+        ],
+        "institutional_supply_zones": [
+          "4882-4938 (current resistance cluster)",
+          "5100-5150 (daily OB)",
+          "5200-5230 (weekly OB)",
+          "5500-5595 (ATH zone)"
+        ],
+        "fvg_zones": [
+          "4700-4760 (H4 FVG)",
+          "4880-4940 (Daily FVG)"
+        ],
+        "pullback_buy_zone": "4900-5000 (ascending channel support + SMA50 confluence)",
+        "weekly_pivot_zone": "4700-4822",
+        "note": "Gold at $4717 on March 20 2026. Key pullback zone $4900-5000. $4400 is 2026 bull market lifeline. Fed held at 3.50-3.75% on March 18."
+      },
+      "fundamentals": {
+        "primary_driver": "US real yields (inverse correlation) + geopolitical risk (tariffs + trade war)",
+        "secondary_drivers": [
+          "Fed rate decisions (3.50-3.75% \u2014 held March 18)",
+          "DXY strength",
+          "Central bank buying (record levels)",
+          "Trump tariff impact on inflation"
+        ],
+        "correlation_dxy": -0.85,
+        "correlation_us10y": -0.7,
+        "fed_rate": "3.50-3.75% \u2014 held March 18. Markets watching for potential cuts later 2026",
+        "seasonal_pattern": "Gold tends to rally Jan-Feb (CNY demand) and Sep-Oct (Indian festival buying)",
+        "central_bank_buying": "Record levels since 2022 \u2014 China, India, Poland, Turkey major buyers",
+        "price_targets_2026": "Analysts: $6000-6500 mid-year, potential $7000 by year end if bull run continues"
+      },
+      "smc_analysis": {
+        "institutional_zones": {
+          "demand_zones": [
+            "4700-4720 (monthly OB \u2014 strongest)",
+            "4400-4450 (generational buy zone)",
+            "4500-4550 (strong monthly demand)"
+          ],
+          "supply_zones": [
+            "4880-4940 (current supply)",
+            "5100-5150 (daily OB)",
+            "5500-5595 (ATH supply)"
+          ],
+          "fvg_zones": [
+            "4700-4760 (H4 FVG unfilled)",
+            "4880-4940 (Daily FVG)"
+          ]
+        },
+        "liquidity_pools": {
+          "buy_side": [
+            "Above 4882",
+            "Above 5000 psychological",
+            "Above 5595 ATH"
+          ],
+          "sell_side": [
+            "Below 4700",
+            "Below 4400 (2026 lifeline)"
+          ]
+        }
+      },
+      "trading_rules": [
+        "Gold at $4717 \u2014 pullback buy zone is $4900-5000 (SMA50 + channel support confluence)",
+        "Gold respects round numbers (4400, 4500, 4700, 4800, 5000) \u2014 expect reactions",
+        "London session (7-10 UTC) = highest gold volume \u2014 BEST time for entries",
+        "NY session gold move often reverses the London move (AMD cycle)",
+        "When DXY breaks below key support, gold rallies aggressively",
+        "News events: NFP, CPI, FOMC are the biggest gold movers \u2014 Fed just held on March 18",
+        "ATR(14) on H1 is 15-30 for gold at $4700+ levels \u2014 use 1.2x ATR for SL",
+        "Gold trends strongly \u2014 when EMA21 > EMA50 > EMA200, stay bullish",
+        "Divergence between gold and silver = potential reversal signal",
+        "$4400 is the lifeline for 2026 bulls \u2014 a break below signals major trend change",
+        "Institutional order blocks at $4700-4720 are the strongest monthly demand zone",
+        "DO NOT BUY gold near $4880-4940 supply zone \u2014 wait for pullback or breakout confirmation"
+      ]
+    },
+    "silver_xagusd": {
+      "key_levels_2026": {
+        "current_price_approx": 72.87,
+        "all_time_high": 121.64,
+        "major_resistance": [
+          79.4,
+          85.98,
+          89.39,
+          93.81,
+          96.59,
+          103.67,
+          110.62,
+          121.87
+        ],
+        "major_support": [
+          73.97,
+          70.18,
+          64.23,
+          58.67,
+          53.24,
+          47.3
+        ],
+        "psychological": [
+          75.0,
+          80.0,
+          85.0,
+          90.0,
+          100.0
+        ],
+        "gold_silver_ratio": "~65 (historically silver slightly undervalued)",
+        "note": "Silver at $72.87 on March 20. Expected to reverse up at $73.97 support. Bullish above $85.98."
+      },
+      "trading_rules": [
+        "Silver at $72.87 \u2014 near $73.97 support level, potential bounce zone",
+        "Base scenario: long above $85.98 resistance breakout, targets $89-134",
+        "Silver is EXTREMELY volatile \u2014 wider SL needed (1.5-2.0x ATR minimum)",
+        "Gold/Silver ratio below 60 = silver overvalued, above 70 = silver undervalued",
+        "Silver follows gold but with amplified moves (beta ~1.5-2.0x)",
+        "Industrial demand component makes silver sensitive to economic data",
+        "Spreads on silver are wider \u2014 avoid trading during Asian session",
+        "Silver can drop 10%+ in 2 days \u2014 tight risk management essential",
+        "Analyst target for 2026: $95-106, some predict $151 if industrial demand surges"
+      ]
+    }
+  },
+  "FOREX": {
+    "eurusd": {
+      "key_levels_2026": {
+        "current_price_approx": 1.1543,
+        "major_resistance": [
+          1.1555,
+          1.166,
+          1.18,
+          1.19,
+          1.22,
+          1.25
+        ],
+        "major_support": [
+          1.148,
+          1.14,
+          1.13,
+          1.12,
+          1.11,
+          1.1
+        ],
+        "psychological": [
+          1.15,
+          1.14,
+          1.13,
+          1.12,
+          1.1
+        ],
+        "200_hour_ma": 1.1543,
+        "swing_area": "1.1542-1.1555 (current battle zone)",
+        "institutional_demand": [
+          "1.1300-1.1320 (weekly OB)",
+          "1.1200-1.1220 (monthly OB)",
+          "1.1480 (critical support)"
+        ],
+        "institutional_supply": [
+          "1.1660 (resistance trendline)",
+          "1.1800-1.1900 (2018 trendline resistance)"
+        ],
+        "note": "EURUSD testing 200-hour MA at 1.1543. Swing area 1.1542-1.1555. Break above 1.18-1.19 opens 1.22-1.25."
+      },
+      "fundamentals": {
+        "primary_driver": "ECB vs Fed rate differential \u2014 EUR strengthening on weak dollar theme",
+        "secondary_drivers": [
+          "DXY trend (weakening)",
+          "Eurozone PMI data",
+          "US employment data",
+          "Risk sentiment"
+        ],
+        "ecb_stance": "Data-dependent, cautious easing cycle",
+        "fed_stance": "Fed held at 3.50-3.75% March 18. Markets watching for cuts later 2026",
+        "macro_theme": "Improved global growth + weaker USD = EUR bullish in 2026 (OANDA top pick)"
+      },
+      "smc_analysis": {
+        "institutional_zones": {
+          "demand_zones": [
+            "1.1480 (critical support)",
+            "1.1300-1.1320 (weekly OB)",
+            "1.1200-1.1220 (monthly OB)"
+          ],
+          "supply_zones": [
+            "1.1555-1.1660 (current resistance)",
+            "1.1800-1.1900 (2018 trendline)",
+            "1.2200 (2021 level)"
+          ]
+        }
+      },
+      "trading_rules": [
+        "EURUSD at 1.1543 \u2014 testing 200-hour MA exactly. Break above 1.1555 = bullish continuation",
+        "EURUSD is the most liquid pair \u2014 tightest spreads during London/NY overlap",
+        "Moves inverse to DXY \u2014 when dollar strengthens, EURUSD falls",
+        "Best trading hours: London (7-16 UTC) and NY overlap (12-16 UTC)",
+        "A confirmed close above 1.18-1.19 opens door to 1.22 and 1.25 (multi-year breakout)",
+        "1.1480 and 1.1660 are the CRITICAL support/resistance levels right now",
+        "ECB and Fed rate decisions are the biggest movers",
+        "ATR(14) on H1 typically 8-15 pips \u2014 use 1.0x ATR for tight SL",
+        "Strong correlation with GBPUSD (~0.85) \u2014 don't go long both simultaneously",
+        "2026 outlook: EUR is OANDA top pick for strengthening \u2014 bullish bias"
+      ]
+    },
+    "gbpusd": {
+      "key_levels_2026": {
+        "current_price_approx": 1.3354,
+        "major_resistance": [
+          1.3414,
+          1.35,
+          1.36,
+          1.37
+        ],
+        "major_support": [
+          1.3355,
+          1.3312,
+          1.32,
+          1.31,
+          1.3,
+          1.29
+        ],
+        "200_hour_ma": 1.3354,
+        "fibonacci_levels": {
+          "38.2": 1.3414,
+          "support_zone": "1.3355-1.3371",
+          "swing_low": 1.3312
+        },
+        "psychological": [
+          1.35,
+          1.34,
+          1.33,
+          1.32,
+          1.3
+        ],
+        "note": "GBPUSD range-bound around 200-hour MA 1.3354. KEY: 1.3500 held as resistance. Clean bullish daily structure."
+      },
+      "fundamentals": {
+        "primary_driver": "BOE rate decisions + UK economic data",
+        "secondary_drivers": [
+          "UK CPI/employment",
+          "Risk sentiment",
+          "Global trade outlook"
+        ],
+        "special_note": "Cable showing clean bullish daily structure. 1.3500 is the ceiling to break.",
+        "2026_outlook": "GBP maintaining strength, but range-bound near 1.33-1.35"
+      },
+      "smc_analysis": {
+        "institutional_zones": {
+          "demand_zones": [
+            "1.3312 (swing low)",
+            "1.3200-1.3220 (weekly OB)",
+            "1.3000 (psychological + monthly OB)"
+          ],
+          "supply_zones": [
+            "1.3500 (KEY resistance \u2014 held twice)",
+            "1.3600-1.3620 (daily OB)"
+          ]
+        },
+        "critical_warning": "1.3500 has held as resistance = DO NOT BUY at 1.3500. Wait for break and retest or buy at 1.33 support."
+      },
+      "trading_rules": [
+        "\u26d4 GBPUSD KEY RULE: 1.3500 is STRONG resistance \u2014 NEVER BUY near 1.3500 without confirmed breakout",
+        "GBPUSD at 1.3354 near 200-hour MA \u2014 ranging between 1.3312-1.3500",
+        "GBP is volatile \u2014 can swing 100+ pips on news",
+        "Best time: London session open (7-10 UTC) = GBP most active",
+        "BOE Super Thursday (rate + inflation report) = biggest GBP event",
+        "ATR(14) on H1 typically 10-20 pips \u2014 needs wider SL than EURUSD",
+        "Often leads EURUSD in breakouts \u2014 can be used as early signal",
+        "Support structure: 1.3414 Fib \u2192 1.3355-1.3371 zone \u2192 1.3312 swing low",
+        "BUY at demand zone 1.3312-1.3355 with tight SL below 1.3280",
+        "SELL at supply zone 1.3500 with tight SL above 1.3530",
+        "Clean bullish daily structure \u2014 bias is bullish above 1.3312"
+      ]
+    },
+    "usdjpy": {
+      "key_levels_2026": {
+        "current_price_approx": 159.02,
+        "200_hour_ma": 158.7,
+        "100_hour_ma": 159.19,
+        "major_resistance": [
+          159.19,
+          160.0,
+          161.0,
+          162.0,
+          163.0
+        ],
+        "major_support": [
+          158.7,
+          158.0,
+          157.0,
+          156.0,
+          155.0,
+          153.0,
+          140.0
+        ],
+        "boj_intervention_zone": "Above 160 \u2014 BOJ intervention risk VERY HIGH",
+        "note": "USDJPY at 159.02. Between 100-hr MA (159.19) and 200-hr MA (158.70). BOJ intervention above 160."
+      },
+      "fundamentals": {
+        "primary_driver": "US-Japan yield differential (carry trade)",
+        "secondary_drivers": [
+          "BOJ policy shifts",
+          "US Treasury yields",
+          "Risk sentiment"
+        ],
+        "special_note": "BOJ intervention risk above 160 \u2014 EXTREME. FX intervention anticipated if above 160.",
+        "2026_outlook": "JPY is OANDA top pick for strengthening \u2014 improved growth + potential BOJ action"
+      },
+      "trading_rules": [
+        "USDJPY at 159.02 \u2014 stuck between 100-hr MA (159.19) and 200-hr MA (158.70)",
+        "\u26d4 BOJ INTERVENTION ABOVE 160 IS IMMINENT \u2014 can cause 500-1000+ pip crash INSTANTLY",
+        "NEVER hold large longs above 158 \u2014 intervention risk makes R:R terrible for longs",
+        "Prefer SELL/SHORT above 159.50 with tight SL above 160.50",
+        "Below 158.70 (200-hr MA) = bearish bias for short-term",
+        "Tokyo session (0-7 UTC) is when JPY is most active",
+        "Risk-off events (VIX spike) = JPY strengthens (safe haven)",
+        "ATR is higher than EUR/GBP pairs \u2014 adjust SL accordingly (15-25 pips on H1)",
+        "Japanese holidays can cause low liquidity flash crashes",
+        "JPY is OANDA top pick for 2026 \u2014 expect JPY to strengthen (USDJPY to fall)"
+      ]
+    },
+    "other_pairs": {
+      "usdchf": {
+        "current_approx": 0.895,
+        "note": "Very low spread 1.4 pip on OctaFX. CHF safe haven \u2014 follows gold roughly"
+      },
+      "audusd": {
+        "current_approx": 0.658,
+        "note": "AUD top pick for 2026 (OANDA). Good during Asian+London. Commodity currency."
+      },
+      "usdcad": {
+        "current_approx": 1.365,
+        "note": "Moves with oil. NY session primary. CAD weakens if oil drops."
+      },
+      "nzdusd": {
+        "current_approx": 0.61,
+        "note": "Asian session pair. Low volatility. Tight SL works."
+      },
+      "gbpjpy": {
+        "current_approx": 189.5,
+        "note": "The Beast \u2014 most volatile forex pair. Huge ATR 20-40 pips. Use wide SL."
+      },
+      "eurjpy": {
+        "current_approx": 162.0,
+        "note": "1.9 pip spread on OctaFX. Good scalping pair."
+      },
+      "eurgbp": {
+        "current_approx": 0.858,
+        "note": "1.7 pip spread. Range trader. Good mean reversion."
+      }
+    },
+    "dxy_dollar_index": {
+      "analysis_framework": "DXY is the MASTER KEY \u2014 it affects ALL major pairs",
+      "2026_outlook": "USD WEAKENING trend \u2014 improved global growth boosts EUR, AUD, JPY. Dollar losing dominance.",
+      "rules": [
+        "DXY up = EURUSD down, GBPUSD down, Gold down, USDJPY up",
+        "DXY at key support + oversold RSI = expect dollar bounce = bearish EUR/GBP/Gold",
+        "DXY breaking below key level = bullish EUR/GBP/Gold breakout",
+        "Always check DXY before trading ANY major pair \u2014 it gives the directional bias",
+        "2026 theme: WEAKER DOLLAR \u2014 EUR, AUD, JPY are top picks to outperform"
+      ]
+    }
+  },
+  "CRYPTO": {
+    "btcusd": {
+      "key_levels_2026": {
+        "current_price_approx": 73882,
+        "all_time_high": 109000,
+        "feb_2026_bottom": 60000,
+        "major_resistance": [
+          75000,
+          78000,
+          80000,
+          85000,
+          90000,
+          100000,
+          105000,
+          110000,
+          120000
+        ],
+        "major_support": [
+          72000,
+          70000,
+          69000,
+          67000,
+          65000,
+          62000,
+          60000,
+          58000
+        ],
+        "psychological": [
+          75000,
+          70000,
+          65000,
+          60000
+        ],
+        "institutional_demand": [
+          "69000-72000 (2021 ATH flipped support \u2014 structural floor)",
+          "58000-62000 (200-week MA = generational buy zone)"
+        ],
+        "institutional_supply": [
+          "75000 (current resistance)",
+          "85000-88000 (found support twice before)",
+          "100000-105000 (mega resistance)"
+        ],
+        "note": "BTC at $73,882. Testing $75K resistance. Support twice at $85-88K before crash. $69-72K is structural floor."
+      },
+      "fundamentals": {
+        "primary_driver": "ETF flows + institutional adoption + macro environment",
+        "secondary_drivers": [
+          "Fed policy",
+          "Risk sentiment",
+          "Halving cycle (18 months post)",
+          "Regulatory news"
+        ],
+        "halving_cycle": "18 months post-halving 2024 \u2014 late-cycle historically, watch for distribution",
+        "etf_impact": "Large institutional money through ETFs now major price driver vs retail-driven past",
+        "macro_context": "Smart money indicators show institutions neither aggressively buying nor shorting \u2014 waiting mode",
+        "institutional_targets": "Mid-six-figure range by end 2026. Several houses pointing $150,000."
+      },
+      "smc_analysis": {
+        "institutional_zones": {
+          "demand_zones": [
+            "69000-72000 (2021 ATH = structural floor \u2014 MOST IMPORTANT)",
+            "58000-62000 (200-week MA generational buy)",
+            "60000 (Feb 2026 bottom)"
+          ],
+          "supply_zones": [
+            "75000-76000 (current KEY resistance)",
+            "85000-88000 (previous support now supply)",
+            "100000-105000 (mega psychological)"
+          ]
+        }
+      },
+      "trading_rules": [
+        "BTC at $73,882 \u2014 $75K is THE KEY resistance right now. Break above = $85K target",
+        "Bitcoin is 24/7 \u2014 but highest volume during US market hours (14-21 UTC)",
+        "Weekend moves are often traps \u2014 low liquidity causes fake breakouts",
+        "$69,000-72,000 is the structural floor (2021 ATH flipped support) \u2014 if lost, major bearish",
+        "$58,000-62,000 is the generational buy zone (200-week MA) \u2014 absolute floor for 2026",
+        "Institutions now play much bigger role via ETFs \u2014 more deliberate moves, less panic selling",
+        "BTC dominance rising = altcoins underperform, BTC outperforms",
+        "Fear & Greed index below 20 = buy opportunity, above 80 = sell signal",
+        "ATR on H1 can be 500-2000 USD \u2014 MUST use wider SL for crypto",
+        "SL should be minimum 1.5x ATR for crypto to account for volatility",
+        "Funding rates > 0.05% = overleveraged longs = potential crash",
+        "Institutional target for end-2026: $150,000 (moderate camp)"
+      ]
+    },
+    "ethusd": {
+      "key_levels_2026": {
+        "current_price_approx": 2320,
+        "aug_2025_peak": 5000,
+        "major_resistance": [
+          2500,
+          2800,
+          3000,
+          3500,
+          4000
+        ],
+        "major_support": [
+          2200,
+          2000,
+          1800,
+          1600
+        ],
+        "note": "ETH at $2320. Down 54% from Aug $5000 peak. ETH/BTC ratio extremely low = deeply undervalued."
+      },
+      "fundamentals": {
+        "primary_driver": "ETH follows BTC but with higher beta \u2014 currently UNDERPERFORMING BTC massively",
+        "secondary_drivers": [
+          "ETH/BTC ratio (extremely low)",
+          "Network activity",
+          "DeFi TVL declining"
+        ],
+        "special_note": "ETH down 54% from peak. Vitalik selling millions spooked market. But ratio = potential catch-up play."
+      },
+      "trading_rules": [
+        "ETH at $2320 \u2014 deeply undervalued vs BTC. ETH/BTC ratio at extreme lows",
+        "ETH/BTC ratio extremely low = potential massive catch-up rally if sentiment shifts",
+        "$2500 is KEY resistance \u2014 must break above for bullish continuation",
+        "ETH is more volatile than BTC \u2014 wider SL needed (2x ATR minimum)",
+        "ETH follows BTC direction 90% of the time \u2014 trade BTC analysis on ETH",
+        "Ethereum upgrades can cause massive volatility \u2014 check roadmap",
+        "Vitalik selling activity = bearish overhang, watch for when selling stops"
+      ]
+    }
+  },
+  "ICT_KILLZONES": {
+    "description": "ICT Kill Zone exact times \u2014 institutional trading windows with highest probability setups",
+    "asian_killzone": {
+      "time_est": "8:00 PM - 10:00 PM EST",
+      "time_utc": "01:00 - 03:00 UTC",
+      "characteristics": "Range development, consolidation. Mark the high/low for London breakout.",
+      "best_pairs": [
+        "USDJPY",
+        "AUDUSD",
+        "NZDUSD"
+      ],
+      "win_rate": "Lower \u2014 mainly for range identification, not entries"
+    },
+    "london_killzone": {
+      "time_est": "2:00 AM - 5:00 AM EST",
+      "time_utc": "07:00 - 10:00 UTC",
+      "characteristics": "MOST RELIABLE session. Establishes daily directional bias. Manipulation phase often happens here.",
+      "best_pairs": [
+        "EURUSD",
+        "GBPUSD",
+        "XAUUSD",
+        "EURGBP",
+        "EURJPY"
+      ],
+      "win_rate": "85% \u2014 highest reliability for directional bias",
+      "strategy": "Wait for Asian range sweep (manipulation) \u2192 enter on BOS in London direction"
+    },
+    "new_york_killzone": {
+      "time_est": "7:00 AM - 10:00 AM EST",
+      "time_utc": "12:00 - 15:00 UTC",
+      "characteristics": "Maximum volatility. London-NY overlap = highest liquidity. Distribution phase.",
+      "best_pairs": [
+        "ALL PAIRS",
+        "XAUUSD",
+        "BTCUSD"
+      ],
+      "win_rate": "Good \u2014 highest volume, 52 tick average movement",
+      "strategy": "If London trend established, NY confirms or reverses. Trade the distribution."
+    },
+    "london_close_killzone": {
+      "time_est": "10:00 AM - 12:00 PM EST",
+      "time_utc": "15:00 - 17:00 UTC",
+      "characteristics": "Reversal window. Price often reverses from London extreme.",
+      "best_pairs": [
+        "EURUSD",
+        "GBPUSD"
+      ],
+      "strategy": "Fade the London move if at key resistance/support"
+    },
+    "rules": [
+      "ONLY trade during killzones \u2014 avoid dead zones (3-7 PM EST = lowest volume)",
+      "London Killzone has 85% reliability for daily bias \u2014 this is your PRIMARY trading window",
+      "NY Killzone has highest volatility \u2014 good for trend continuation trades",
+      "Asian session = mark the range, don't trade aggressively",
+      "London open fake move (manipulation) = the BEST trade of the day if you wait for it",
+      "After NY close, reduce position sizes \u2014 liquidity drops significantly"
+    ]
+  },
+  "ML_OPTIMIZATION_RULES": {
+    "description": "Machine Learning optimization techniques for the AI trading bot",
+    "market_regime_detection": {
+      "trending": "ADX > 25, clear EMA stack \u2192 use trend-following strategies",
+      "ranging": "ADX < 20, BBW squeeze \u2192 use mean reversion strategies",
+      "volatile": "ATR > 1.5x normal, VIX elevated \u2192 reduce position sizes, widen SL",
+      "rule": "Classify market every cycle. Use specialized sub-strategy for each regime."
+    },
+    "feature_importance_ranking": [
+      "H4 trend direction (weight 25%)",
+      "H1/H4 trend alignment (weight 20%)",
+      "RSI overbought/oversold + divergence (weight 15%)",
+      "AMD phase detection (weight 12%)",
+      "EMA stack alignment (weight 10%)",
+      "MACD histogram direction (weight 8%)",
+      "Killzone timing (weight 5%)",
+      "News sentiment (weight 5%)"
+    ],
+    "win_rate_optimization": [
+      "AI confirmation reduces false signals \u2014 require \u22653 indicator confluence",
+      "Walk-forward optimization: retrain ML model every 50 trades on latest data",
+      "Feedback loop: record every trade outcome \u2192 feed back to Decision Tree \u2192 improve over time",
+      "Session-based filtering: only trade during London/NY killzones = instant 15% win rate boost",
+      "H4 alignment filter: only trade in H4 trend direction = eliminates 40% of losing trades",
+      "Minimum confidence gate 55% prevents weak signals from executing",
+      "Auto-disable symbols with <35% win rate after 10+ trades = cut losers early",
+      "Auto-boost symbols with >65% win rate = ride winners"
+    ],
+    "position_sizing_formula": {
+      "base_risk": "1% of account per trade",
+      "confidence_multiplier": "0.5x at 55% conf, 0.75x at 65%, 1.0x at 75%, 1.25x at 85%+",
+      "loss_streak_reducer": "After 2 losses: 0.75x, after 3: 0.5x, after 5: PAUSE 1 hour",
+      "atr_based_sl": "Gold: 1.2x ATR, Forex: 1.0-1.5x ATR, Silver: 1.5-2.0x ATR, Crypto: 2.0x ATR"
+    }
+  },
+  "UNIVERSAL_TRADING_WISDOM": {
+    "risk_management": [
+      "RULE 1: Never risk more than 1-2% of account per trade",
+      "RULE 2: R:R minimum 1.5:1 for scalping, 2:1 for swing. Scalping with 80% WR can use 1:1 RR",
+      "RULE 3: Cut losses fast, let winners run \u2014 NEVER move SL backwards",
+      "RULE 4: Max 3 correlated trades open simultaneously",
+      "RULE 5: After 3 consecutive losses, STOP trading for 2 hours minimum",
+      "RULE 6: Daily drawdown limit: 4% of account \u2014 stop if hit",
+      "RULE 7: Weekly drawdown limit: 8% \u2014 review strategy if hit",
+      "RULE 8: Position sizing > entry timing \u2014 getting size right matters more",
+      "RULE 9: ATR-based SL: 1.5x ATR is aggressive, 2.0-2.5x ATR is sweet spot for noise filtering",
+      "RULE 10: If daily P&L is +2% or more, consider reducing size \u2014 protect gains"
+    ],
+    "smart_money_concepts": [
+      "Institutional traders create liquidity by pushing price to stop loss clusters",
+      "The 'stop hunt' above/below key levels is WHERE institutions enter",
+      "After liquidity sweep + BOS (Break of Structure) = highest probability entry (70%+ WR)",
+      "Fair Value Gaps (FVGs) act as price magnets \u2014 expect gap fill before continuation",
+      "FVG fill probability: H1 = 70%, H4 = 85%, Daily = 90%",
+      "Order Blocks are the LAST opposite candle before an impulsive move",
+      "Change of Character (ChoCH) = first sign of reversal. BOS = confirmation",
+      "AMD cycle: Accumulation (Asian) \u2192 Manipulation (London open fake) \u2192 Distribution (real NY move)",
+      "Premium zone (above 50%) = SELL territory. Discount zone (below 50%) = BUY territory",
+      "High probability OBs MUST be in discount zone for BUY or premium zone for SELL",
+      "Market Structure Shift (MSS) = when a higher timeframe swing point is broken, confirming trend change"
+    ],
+    "session_strategy": {
+      "asian_0_7_utc": "Ranging/accumulation \u2014 mark the range high/low for London breakout",
+      "london_7_16_utc": "Manipulation + real move begins \u2014 85% reliability for daily bias \u2014 BEST entries",
+      "ny_12_21_utc": "Distribution phase \u2014 trend continuation or reversal. Peak volume.",
+      "overlap_12_16_utc": "PEAK liquidity \u2014 if London established trend, NY confirms or reverses",
+      "london_close_15_17_utc": "Reversal window \u2014 fade the London extreme if at key S/R"
+    },
+    "current_market_context_march_2026": {
+      "date": "March 20, 2026",
+      "fed_rate": "3.50-3.75% \u2014 held on March 18. No change expected near-term. Watching inflation from tariffs.",
+      "gold": "$4717 \u2014 in pullback from highs. Bullish above $4400. Pullback buy zone $4900-5000.",
+      "dollar": "USD WEAKENING theme for 2026. EUR, AUD, JPY expected to outperform. DXY declining.",
+      "gbpusd": "$1.3354 \u2014 range-bound 1.3312-1.3500. Bullish structure. 1.3500 KEY resistance.",
+      "eurusd": "$1.1543 \u2014 at 200-hour MA. Break above 1.1660 = bullish. OANDA top pick for 2026.",
+      "usdjpy": "$159.02 \u2014 BOJ intervention risk above 160. AVOID longs. JPY to strengthen in 2026.",
+      "btcusd": "$73,882 \u2014 testing $75K resistance. Structural floor $69-72K. Institutional target $150K end-2026.",
+      "ethusd": "$2,320 \u2014 deeply undervalued vs BTC. $2500 resistance. Catch-up rally potential.",
+      "silver": "$72.87 \u2014 near $73.97 support. Bullish above $85.98. Target $95-106 for 2026.",
+      "volatility": "ELEVATED across all markets \u2014 tariffs + Fed uncertainty + trade war",
+      "theme": "WEAK DOLLAR, STRONG GOLD, RANGE-BOUND FOREX, CRYPTO INSTITUTIONAL ACCUMULATION"
+    },
+    "news_trading": [
+      "NFP (Non-Farm Payrolls) \u2014 first Friday of month \u2014 USD pairs + Gold volatile for 2-4 hours",
+      "CPI (Consumer Price Index) \u2014 mid-month \u2014 affects Fed rate expectations",
+      "FOMC (Federal Reserve) \u2014 held March 18 at 3.50-3.75%. Next meeting important for cut signals.",
+      "ECB Rate Decision \u2014 affects EURUSD by 50-100+ pips",
+      "BOE Rate Decision \u2014 GBP 100+ pip moves possible",
+      "BOJ Policy \u2014 INTERVENTION above 160 USDJPY imminent \u2014 500+ pips possible",
+      "RULE: Never enter a trade 30 minutes BEFORE high-impact news",
+      "RULE: If already in profit before news, tighten SL to breakeven"
+    ],
+    "psychology": [
+      "FOMO = the #1 account killer. If you missed entry, WAIT for next setup.",
+      "Revenge trading after a loss = guaranteed to lose more. Take a break.",
+      "Overtrading = death by a thousand cuts. Quality > quantity.",
+      "Trust your system \u2014 if it has positive expectancy, don't override based on gut feeling",
+      "Professional traders are right only 55-65% of the time \u2014 R:R makes them profitable",
+      "The market will always be there tomorrow \u2014 patience is the ultimate edge"
+    ]
+  },
+  "TRADINGVIEW_INDICATORS": {
+    "version": "2.0",
+    "updated": "2026-03-29",
+    "description": "TradingView indicator integration \u2014 exact params from Sumit's TV chart. Team-weighted scoring system.",
+    "indicators": {
+      "MACD_Overlay": {
+        "params": "fast=10, slow=21, signal1=10, signal2=21",
+        "type": "Dual-MACD overlay plotted on price as EMA cloud",
+        "signals": [
+          "STRONG_BUY (cross + cloud bull + growth)",
+          "BUY (cross)",
+          "STRONG_SELL (cross + cloud bear)",
+          "SELL (cross)",
+          "BULLISH_MOMENTUM",
+          "BEARISH_MOMENTUM"
+        ],
+        "growth_metrics": [
+          "histogram expansion = revenue growing",
+          "cumulative histogram > 0 = positive growth zone",
+          "revenue_momentum EMA(10) of histogram"
+        ],
+        "team_weights": {
+          "METALS": 1.0,
+          "FOREX": 1.5,
+          "CRYPTO": 1.3
+        },
+        "best_for": "Trend confirmation and momentum detection. Forex pairs benefit most."
+      },
+      "SuperBollingerTrend": {
+        "params": "BB period=12, deviation=2.0, Exponential, Signal=ZigZag Median",
+        "type": "Bollinger Bands + SuperTrend composite with ZigZag Median signal line",
+        "signals": [
+          "STRONG_BULL (ST up + ZZ median up + EMA aligned + growth)",
+          "STRONG_BEAR",
+          "BULLISH",
+          "BEARISH",
+          "NEUTRAL"
+        ],
+        "special_signals": [
+          "BULL_FLIP (trend reversal up)",
+          "BEAR_FLIP (trend reversal down)",
+          "BB_SQUEEZE (breakout imminent)"
+        ],
+        "team_weights": {
+          "METALS": 1.5,
+          "FOREX": 1.0,
+          "CRYPTO": 1.0
+        },
+        "best_for": "Gold and Silver. BB-based trend detection + squeeze breakouts. Metals team gets 1.5x weight."
+      },
+      "Cash_Open_Levels": {
+        "params": "London Open 07:00 UTC, NY Open 12:00 UTC, Asian Open 00:00 UTC, Daily Open",
+        "type": "Session open price reference levels \u2014 institutional benchmarks",
+        "signals": [
+          "BULLISH (above majority of session opens)",
+          "BEARISH (below)",
+          "NEUTRAL"
+        ],
+        "team_weights": {
+          "METALS": 1.2,
+          "FOREX": 2.0,
+          "CRYPTO": 0.5
+        },
+        "best_for": "Forex pairs are session-driven. Cash Open 2x weight for FOREX team. Crypto is 24/7 so reduced."
+      },
+      "Liquidity_Heatmap": {
+        "params": "Multi-TF: 15m(15,7,7), 30m(30,7,7), 1h(60,7,6), 2h(120,7,6), 4h(240,6,6)",
+        "type": "Multi-timeframe liquidity zone detection with sweep alerts",
+        "detects": [
+          "volume clusters",
+          "equal highs/lows",
+          "round numbers",
+          "multi-TF confluence zones"
+        ],
+        "sweep_signals": [
+          "BUY_SWEEP (broke below liq, closed above = reversal UP)",
+          "SELL_SWEEP (broke above liq, closed below = reversal DOWN)"
+        ],
+        "team_weights": {
+          "METALS": 1.5,
+          "FOREX": 1.0,
+          "CRYPTO": 2.0
+        },
+        "best_for": "Crypto sweep-reversal plays. CRYPTO team gets 2x weight. Also strong for Gold institutional sweeps."
+      }
+    },
+    "scoring_system": {
+      "max_score": "\u00b16 total contribution to SignalEngine",
+      "breakdown": "MACD \u00b12 base, SBT \u00b12 base, CashOpen \u00b11 base, Liquidity \u00b11 base (all \u00d7 team weight)",
+      "confidence_adj": "Up to +15 confidence points (growth bonus + indicator strength)",
+      "growth_gate": "When MACD + SBT both show positive growth \u2192 team-specific confidence bonus (+2 to +4)"
+    },
+    "team_strategies": {
+      "METALS": {
+        "primary_indicator": "SuperBollingerTrend (1.5x weight)",
+        "secondary": "Liquidity Heatmap (1.5x weight)",
+        "strategy": "Gold responds to BB bands + institutional sweep levels. Wait for SBT direction + liquidity sweep for A+ entries. BB Squeeze on Gold = explosive 200+ pip move.",
+        "session_focus": "London 7-10 UTC for SBT signals, NY overlap for sweep confirmation"
+      },
+      "FOREX": {
+        "primary_indicator": "MACD Overlay (1.5x weight)",
+        "secondary": "Cash Open Levels (2x weight)",
+        "strategy": "Forex pairs trend-follow. MACD cross + above Cash Open = high probability continuation. Session opens are institutional reference \u2014 price returning to cash open = potential reversal zone.",
+        "session_focus": "London open for Cash Open setup, NY for MACD momentum confirmation"
+      },
+      "CRYPTO": {
+        "primary_indicator": "Liquidity Heatmap (2x weight)",
+        "secondary": "MACD Overlay (1.3x weight)",
+        "strategy": "Crypto is dominated by liquidity sweeps. Wait for BUY/SELL_SWEEP from TV Liquidity + MACD momentum alignment. Multi-TF confluence zones = highest probability reversal levels.",
+        "session_focus": "24/7 but US hours (12-21 UTC) produce biggest sweep-reversals due to institutional activity"
+      }
+    },
+    "growth_tracking_rules": [
+      "growth_positive = BOTH MACD + SBT show positive growth \u2192 system is compounding",
+      "growth_negative = contraction \u2192 reduce lot by 20%, protect capital",
+      "3 consecutive growth_negative \u2192 HALT and review with PatternMemory",
+      "Track TV-boosted vs non-TV trade win rates separately for optimization",
+      "Every 100 trades: generate TV performance report for AdminAgent review"
+    ]
+  },
+  "AGENT_TRAINING": {
+    "version": "4.0",
+    "trained_date": "2026-03-29",
+    "description": "Agent-specific training data \u2014 DEEP RESEARCH edition + TV Indicator Integration. All 9 agents + AdminAgent + TVIndicators",
+    "DataFetcher": {
+      "expertise": "Multi-timeframe data collection from MT5 \u2014 M5, M15, H1, H4 candles, spreads, tick data",
+      "training_rules": [
+        "Always fetch H1 AND H4 simultaneously \u2014 H4 gives context, H1 gives precision",
+        "Also fetch H4 support/resistance \u2014 CRITICAL for blocking trades at H4 tops/bottoms",
+        "Monitor spread in real-time \u2014 if spread > 2x normal, flag as HIGH SPREAD WARNING",
+        "For Gold: normal spread = 15-30 points. Above 50 = DO NOT TRADE",
+        "For EURUSD: normal spread = 5-15 points. Above 30 = caution",
+        "For BTCUSD: normal spread = 100-500 points. Above 1000 = thin liquidity",
+        "Check MT5 connection health every cycle \u2014 3 consecutive failures = trigger reconnect",
+        "TV DATA: Validate TV MACD cloud matches your MT5 trend data",
+        "TV DATA: TV Cash Open levels should match your session timing data",
+        "TV DATA: If TV indicators diverge from MT5 data \u2192 FLAG to MarketAnalyst"
+      ]
+    },
+    "MarketAnalyst": {
+      "expertise": "Technical analysis \u2014 RSI, MACD, BB, EMA, ADX, S/R, divergence, candle patterns",
+      "training_rules": [
+        "Multi-indicator confluence: need \u22653 indicators agreeing before strong signal",
+        "RSI divergence on H4 is MORE reliable than on H1 \u2014 always check both",
+        "MACD histogram direction matters more than MACD line crossover (earlier signal)",
+        "EMA stack: 21 > 50 > 200 = STRONG TREND. Don't counter-trade this.",
+        "ADX > 25 = trending market (use trend strategies). ADX < 20 = ranging (use mean reversion)",
+        "Bollinger Band squeeze = breakout imminent \u2014 prepare for explosion",
+        "H4 support/resistance is STRONGER than H1 \u2014 always give H4 levels priority",
+        "When price is between S/R levels (no man's land), reduce confidence by 20%",
+        "H4 RSI > 65 at resistance = DO NOT BUY. H4 RSI < 35 at support = DO NOT SELL",
+        "TV INTEGRATION: Use TV MACD Overlay (10,21) cloud as EMA confirmation layer",
+        "TV INTEGRATION: TV SBT BB Squeeze = your Bollinger squeeze detection confirmed",
+        "TV INTEGRATION: TV Liquidity zones = cross-validate with your S/R levels",
+        "TV INTEGRATION: METALS team \u2192 SBT gets 1.5x weight (Gold loves BB bands)"
+      ]
+    },
+    "SmartMoney": {
+      "expertise": "ICT Smart Money Concepts \u2014 Order Blocks, FVGs, BOS, CHoCH, liquidity sweeps, AMD cycle, killzones",
+      "training_rules": [
+        "AMD PHASE IDENTIFICATION IS #1 PRIORITY: Accumulation=Asian range, Manipulation=London fake, Distribution=NY real",
+        "ONLY enter during Distribution phase \u2014 entering during Manipulation = guaranteed loss",
+        "Liquidity sweep MUST happen before valid entry \u2014 no sweep = no institutional footprint",
+        "Order Block validation: must have displacement + must be in discount (BUY) or premium (SELL)",
+        "FVG fill probability: H1=70%, H4=85%, Daily=90% \u2014 trade accordingly",
+        "BOS on H4 > BOS on H1 \u2014 higher timeframe structure break is more reliable",
+        "Premium zone (above 50%) = SELL only. Discount zone (below 50%) = BUY only",
+        "Killzone priority: London (85% WR) > NY (high volume) > Asian (range marking only)",
+        "Market Structure Shift confirms trend change \u2014 wait for MSS before counter-trend entry",
+        "Trap detection: if price sweeps liquidity but FAILS to hold BOS = TRAP. Exit immediately.",
+        "TV INTEGRATION: TV Liquidity Heatmap shows multi-TF sweep zones \u2014 cross-validate with YOUR equal highs/lows",
+        "TV INTEGRATION: TV BUY_SWEEP/SELL_SWEEP auto-detection confirms YOUR sweep analysis",
+        "TV INTEGRATION: TV SBT direction flip = potential CHoCH \u2014 compare with your OB/FVG",
+        "TV INTEGRATION: CRYPTO \u2192 Liquidity Heatmap 2x weight (sweep-reversals dominate crypto)"
+      ]
+    },
+    "NewsAnalyst": {
+      "expertise": "Fundamental analysis \u2014 economic calendar, sentiment scoring, news impact, killzone timing",
+      "training_rules": [
+        "Score range: +3 (max bullish) to -3 (max bearish). 0 = neutral",
+        "HIGH IMPACT events (NFP, CPI, FOMC): flat all positions 30 min BEFORE",
+        "News sentiment CONFIRMS direction, does NOT create direction (technical leads)",
+        "After high-impact news: wait 15 minutes for volatility to settle",
+        "2026 context: Fed at 3.50-3.75%, tariff inflation risk, USD weakening trend",
+        "Geopolitical risk = Gold bullish, JPY bullish, USD mixed",
+        "Fed hawkish = USD bullish, Gold bearish. Fed dovish = USD bearish, Gold bullish",
+        "Multiple news same day = CAUTION \u2014 reduce all position sizes"
+      ]
+    },
+    "SignalGenerator": {
+      "expertise": "Confluence-based scoring from -20 to +20, combining all agent inputs",
+      "training_rules": [
+        "Score threshold: BUY \u2265 +6, SELL \u2264 -6. Between = HOLD",
+        "Minimum 2 confluence sources \u2014 single indicator signals are noise",
+        "Weight order: SmartMoney (30%) > Technical (25%) > Pattern (20%) > News (15%) > Session (10%)",
+        "Strong signals (\u00b112+) in H4 trend direction = highest win rate (70%+)",
+        "\u26d4 NEW RULE: If price is within 0.25% of H4 resistance AND signal is BUY \u2192 BLOCK",
+        "\u26d4 NEW RULE: If price is within 0.25% of H4 support AND signal is SELL \u2192 BLOCK",
+        "\u26d4 NEW RULE: H4 RSI > 65 + at resistance = SELL ONLY, no buys allowed",
+        "Session quality affects score: killzone = full score, dead zone = reduce by 3-5 points",
+        "Counter-trend signals need score \u00b110+ to overcome trend bias",
+        "TV BOOST: TV indicators add \u00b16 to score (team-weighted). Base score +8 + TV +4 = +12 STRONG BUY",
+        "TV BOOST: growth_positive = True \u2192 confidence bonus (+2 to +4 depending on team)",
+        "TV BOOST: BB Squeeze + Sweep + Cross = TRIFECTA \u2014 score should be +12+",
+        "TV BOOST: Always report: 'Base: +X, TV: +Y = Total: +Z'"
+      ]
+    },
+    "RiskManager": {
+      "expertise": "Position sizing, SL/TP calculation, R:R analysis, drawdown control, ATR-based stops",
+      "training_rules": [
+        "ATR-based SL: 1.5x ATR = aggressive scalping, 2.0-2.5x ATR = sweet spot for noise",
+        "SL by asset: Gold=1.2x ATR, Forex=1.0-1.5x ATR, Silver=1.5-2.0x ATR, Crypto=2.0x ATR",
+        "TP targets: TP1 = 2.5x ATR (take 50%), TP2 = 4x ATR (take 30%), TP3 = 6x ATR (runner)",
+        "Minimum R:R: scalping 1:1 with 80% WR, day trading 1:1.5, swing 1:2+",
+        "DYNAMIC sizing: 0.5x at 55% conf, 0.75x at 65%, 1.0x at 75%, 1.25x at 85%+",
+        "Anti-Martingale: REDUCE after 2 losses (0.75x), 3 losses (0.5x), 5 losses = PAUSE",
+        "Max risk: 1-2% per trade, 5% total portfolio exposure",
+        "If drawdown hits 3%: half size. If 4%: HALT all trading for the day",
+        "TV RISK: growth_positive \u2192 full lot. growth_negative \u2192 reduce 20%. 3x negative \u2192 HALT",
+        "TV RISK: TV Liquidity zones = SL/TP reference. Place SL BEYOND liquidity (not at it)",
+        "TV RISK: BB Squeeze active \u2192 reduce lot 50% until breakout direction confirmed"
+      ]
+    },
+    "PatternMemory": {
+      "expertise": "Historical pattern recognition, win rate tracking, regime classification",
+      "training_rules": [
+        "Track win rate per symbol per session per signal type \u2014 build statistical edge",
+        "Market regime classification: trending (ADX>25) vs ranging (ADX<20) vs volatile (ATR>1.5x)",
+        "If win rate for pattern < 40% over last 20 trades, reduce score by -3",
+        "If win rate for pattern > 65% over last 20 trades, boost score by +2",
+        "Time-of-day analysis: London killzone 7-10 UTC has 85% reliability \u2014 weight heavily",
+        "Correlation tracking: Gold+Silver diverge = reduce both confidence",
+        "After 3 consecutive losses: wait 1 extra cycle + reduce size by 50%",
+        "Auto-disable symbols with <35% WR after 10 trades. Auto-boost >65% WR.",
+        "TV TRACKING: Track TV-boosted vs non-TV trade win rates separately",
+        "TV TRACKING: Track which TV indicator contributes most to winning trades per team",
+        "TV TRACKING: Track growth_positive periods \u2192 correlate with next 5 trades WR",
+        "TV TRACKING: Every 100 trades \u2192 generate TV performance report for AdminAgent"
+      ]
+    },
+    "OperatorMind": {
+      "expertise": "7-lens institutional validation \u2014 final gatekeeper before execution",
+      "training_rules": [
+        "LENS 1 \u2014 Premium/Discount: BUY only in discount zone, SELL only in premium",
+        "LENS 2 \u2014 Multi-TF Alignment: H1 must align with H4 for APPROVE",
+        "LENS 3 \u2014 AMD Phase: only APPROVE during Distribution. REJECT during Manipulation",
+        "LENS 4 \u2014 Spread Check: spread > 2x normal = REJECT",
+        "LENS 5 \u2014 Trap Check: liquidity sweep WITHOUT BOS = TRAP \u2192 REJECT",
+        "LENS 6 \u2014 News Filter: high-impact news within 30 min = CAUTION/REJECT",
+        "LENS 7 \u2014 H4 RESISTANCE/SUPPORT CHECK: price at H4 S/R = DO NOT enter in wrong direction",
+        "APPROVE: all 7 pass. CAUTION: 5-6 pass. REJECT: \u22644 pass.",
+        "APPROVE + conf \u226570% = full size. CAUTION = half size + score \u226510. REJECT = NO ENTRY.",
+        "TV LENS 8: TV MACD cloud must align with trend bias (divergence = REJECT)",
+        "TV LENS 9: TV growth_positive = full size. growth_negative = reduce 20%",
+        "TV LENS 10: TV Liquidity sweep + signal direction = GOLDEN setup \u2192 boost APPROVE"
+      ]
+    },
+    "Coordinator": {
+      "expertise": "Pipeline orchestration, confidence gating, final report generation",
+      "training_rules": [
+        "Confidence gate: minimum 55% combined to forward to AdminAgent",
+        "Report: direction, score, confidence, SL, TP, R:R, session, OperatorMind verdict, H4 status",
+        "Cross-symbol coordination: 2+ same-team symbols agree = boost confidence",
+        "Pipeline timing: if agent >5 seconds, use cached result from previous cycle",
+        "TV SYNTHESIS: TVIndicators is Agent #10 in consensus. 8+ of 10 agree = EXECUTE NOW",
+        "TV SYNTHESIS: Include TV score in quality calculation: 15% weight for TV contribution",
+        "TV SYNTHESIS: Format: '$10 SCALP: BUY XAUUSD | Score: 12 (TV:+4) | Conf: 82% | Growth: POS'"
+      ]
+    },
+    "AdminAgent": {
+      "expertise": "Cross-team intelligence, execution, portfolio management",
+      "training_rules": [
+        "Cross-team correlation: Gold UP + EURUSD UP + BTC UP = risk-on. All sizes up.",
+        "Cross-team conflict: Gold UP + EURUSD DOWN = mixed. Reduce sizes.",
+        "Portfolio: max 2 trades per team, 6 total across all teams",
+        "Trailing: move SL to breakeven at 50%+ toward TP1",
+        "Partial close: at TP1 close 50%, at TP2 close 30%, trail remainder",
+        "End-of-session: close all forex 30 min before market close (except Crypto)",
+        "Weekend: reduce Crypto 50% by Friday 21:00 UTC",
+        "If 3 teams all HOLD = flat market \u2014 no new trades",
+        "TV OVERSIGHT: Monitor TV growth_positive across ALL teams \u2014 all positive = GROWTH MODE",
+        "TV OVERSIGHT: Track TV-boosted vs non-TV trades: 'TV-boosted: 86% WR vs Non-TV: 78%'",
+        "TV OVERSIGHT: Team TV weights (METALS: SBT 1.5x, FOREX: CashOpen 2x, CRYPTO: Liq 2x) \u2014 adjust if WR drops",
+        "TV OVERSIGHT: If ALL teams show growth_negative \u2192 MARKET REGIME CHANGE \u2192 reduce all sizes 50%"
+      ]
+    },
+    "TVIndicators": {
+      "expertise": "TradingView indicator analysis \u2014 MACD Overlay, SuperBollingerTrend, Cash Open, Liquidity Heatmap",
+      "training_rules": [
+        "Run all 4 indicators every cycle: MACD(10,21,10,21), SBT(12,2), CashOpen, LiquidityHeatmap",
+        "Apply team-specific weights: METALS\u2192SBT 1.5x, FOREX\u2192MACD 1.5x+CashOpen 2x, CRYPTO\u2192Liq 2x",
+        "Score output: \u00b16 max, always show breakdown by indicator",
+        "Growth tracking: growth_positive when BOTH MACD + SBT show positive growth",
+        "Sweep detection priority: BUY_SWEEP/SELL_SWEEP from Liquidity Heatmap = highest value signal",
+        "BB Squeeze from SBT = WARNING flag for all agents \u2014 explosive move pending",
+        "Emit analysis to dashboard WebSocket for real-time monitoring"
+      ]
+    }
+  },
+  "LOSS_PREVENTION_RULES": {
+    "description": "Rules specifically designed to prevent common losses \u2014 UPDATED with H4 resistance fix",
+    "rules": [
+      "\u26d4 NEVER BUY at H4 resistance when RSI > 60 \u2014 this is the #1 cause of GBPUSD losses",
+      "\u26d4 NEVER SELL at H4 support when RSI < 40 \u2014 same logic for shorts",
+      "NEVER chase a move that already moved 2x ATR \u2014 you missed it, wait for pullback",
+      "NEVER average down on a losing position \u2014 #1 account killer",
+      "If price gaps against you at market open, close IMMEDIATELY",
+      "After big news, wait 15 minutes for stabilization before new entry",
+      "If 2 consecutive SLs hit, reduce size 50% for next 3 trades",
+      "If daily P&L > +2%, consider stopping \u2014 protect gains",
+      "Never move SL FURTHER from entry \u2014 only closer (toward profit)",
+      "If trade hasn't moved your direction within 3 H1 candles, consider closing at cost",
+      "Weekend gaps: reduce exposure before Friday close",
+      "Correlation risk: EURUSD long + GBPUSD long = double USD weakness exposure",
+      "GBPUSD 1.3500 = STRONG resistance. NEVER buy there without confirmed breakout",
+      "USDJPY above 159 = BOJ intervention zone. AVOID longs."
+    ]
+  }
+}

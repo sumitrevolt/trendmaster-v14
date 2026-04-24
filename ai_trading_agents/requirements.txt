@@ -1,0 +1,24 @@
+# AI Trading Agents — Requirements
+# Install: pip install -r requirements.txt
+
+# Web server & real-time dashboard
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+websockets>=12.0
+
+# MetaTrader 5 (Windows only — MT5 must be installed and running)
+MetaTrader5>=5.0.45
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# HTTP clients (API calls + AI brain providers)
+aiohttp>=3.9.0
+httpx>=0.24.0
+
+# Machine Learning (required for Level 2 ML training in agent_training.py)
+scikit-learn>=1.3.0
+
+# Already in parent project (listed for completeness)
+python-dotenv>=1.0.0

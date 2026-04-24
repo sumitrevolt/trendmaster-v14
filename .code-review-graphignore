@@ -1,0 +1,14 @@
+# code-review-graph ignore patterns (gitignore-style).
+# Defaults already exclude .venv/, __pycache__/, .code-review-graph/,
+# *.db, *.lock, node_modules/, build/, dist/, etc. — see
+# code_review_graph.incremental.DEFAULT_IGNORE_PATTERNS.
+#
+# Project-specific additions:
+
+# Legacy Python not used by the live v14 stack — was ~39% of all
+# indexed nodes and polluted impact-radius / community results.
+archive/**
+
+# Transient pytest artifact directories created during test runs
+# (pattern: pytest-cache-files-<hash>/).
+pytest-cache-files-*/**

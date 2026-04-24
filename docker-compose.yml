@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  brain:
+    build: .
+    image: trendmaster:v14
+    container_name: trendmaster-brain
+    restart: unless-stopped
+    ports:
+      - "8000:8000"   # dashboard + /healthz
+    environment:
+      - TM_SIGNAL_FILE=/app/logs/trendmaster_signals.json
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config/.env:/app/config/.env:ro
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/healthz',timeout=3).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

@@ -1,0 +1,46 @@
+# Pre-commit hooks for TrendMaster v14.
+#
+# Install once:    pip install pre-commit && pre-commit install
+# Run manually:    pre-commit run --all-files
+#
+# These hooks must stay in sync with .github/workflows/ci.yml so a green
+# pre-commit run guarantees a green CI run. Anything added here should
+# also be added in CI (and vice-versa).
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=2000"]
+      - id: detect-private-key
+      # Hard guard against committing .env files. The CI job repeats this
+      # but a local pre-commit catches it before the bad commit even leaves
+      # Sumit's machine.
+      - id: forbidden-file
+        name: forbid .env files
+        entry: env files must never be committed (use .env.example instead)
+        language: fail
+        files: '(^|/)\.env$'
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.7
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # Run the project's pytest suite locally before the commit lands. This
+  # is intentionally quick — heavy backtests run in CI, not here.
+  - repo: local
+    hooks:
+      - id: pytest-quick
+        name: pytest (quick subset)
+        entry: pytest -q --no-cov tests/
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

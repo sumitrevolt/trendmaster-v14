@@ -1,0 +1,28 @@
+# Prometheus scrape config for TrendMaster v14.
+# Deploy alongside the brain + dashboard via docker-compose.monitoring.yml.
+
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+  scrape_timeout:      10s
+  external_labels:
+    cluster: trendmaster-v14
+    env:     live
+
+scrape_configs:
+  # The TrendMaster dashboard exposes /metrics when METRICS.enabled=True.
+  - job_name: 'trendmaster'
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+        labels:
+          service: brain
+
+  # Prometheus itself.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Basic alerting rules — wire an alertmanager if desired.
+rule_files: []

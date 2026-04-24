@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AI Trading Agents — Command Center</title>
+<style>
+/* ─────────────────────── RESET & BASE ─────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--surface3:#1e2d45;
+  --border:#1e2d45;--border2:#2a3f5f;
+  --gold:#FFD700;--blue:#00BFFF;--purple:#A855F7;--red:#EF4444;
+  --green:#10B981;--orange:#F97316;--cyan:#06B6D4;--pink:#EC4899;
+  --text:#E2E8F0;--muted:#64748B;--dim:#374151;
+  --font:'JetBrains Mono',Consolas,monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:12px;
+     height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ─────────────────────── SCROLLBAR ─────────────────────── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ─────────────────────── TOPBAR ─────────────────────── */
+#topbar{
+  background:linear-gradient(90deg,#0a1628,#0d1f3c,#0a1628);
+  border-bottom:1px solid var(--border2);
+  padding:0 16px;height:40px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;gap:12px;
+}
+#topbar .title{font-size:13px;font-weight:700;letter-spacing:1px;
+  background:linear-gradient(90deg,var(--gold),#FFF8DC,var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#conn-status{display:flex;align-items:center;gap:6px;font-size:11px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.dot.live{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+.dot.sim{background:var(--orange);box-shadow:0 0 6px var(--orange)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+#mode-badge{padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px}
+.mode-live{background:#0f3d2a;color:var(--green);border:1px solid #10B98140}
+.mode-sim{background:#3d2000;color:var(--orange);border:1px solid #F9731640}
+
+/* ─────────────────────── SOUND TOGGLE ─────────────────────── */
+#sound-btn{
+  cursor:pointer;padding:3px 10px;border-radius:3px;font-size:10px;
+  font-weight:700;letter-spacing:.5px;font-family:var(--font);
+  background:#0f2d1a;color:var(--green);border:1px solid #10B98140;
+  transition:all .2s;
+}
+#sound-btn.muted{background:#2d1a0f;color:var(--orange);border-color:#F9731640}
+#sound-btn:hover{opacity:.8}
+
+/* ─────────────────────── TRADE ALERT FLASH ─────────────────────── */
+#trade-alert-flash{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;
+  pointer-events:none;display:none;
+  animation:none;
+}
+@keyframes flash-buy{
+  0%  {background:rgba(16,185,129,.18);box-shadow:inset 0 0 80px rgba(16,185,129,.4)}
+  40% {background:rgba(16,185,129,.08)}
+  70% {background:rgba(16,185,129,.14)}
+  100%{background:transparent}
+}
+@keyframes flash-sell{
+  0%  {background:rgba(239,68,68,.18);box-shadow:inset 0 0 80px rgba(239,68,68,.4)}
+  40% {background:rgba(239,68,68,.08)}
+  70% {background:rgba(239,68,68,.14)}
+  100%{background:transparent}
+}
+#trade-alert-banner{
+  position:fixed;top:50px;left:50%;transform:translateX(-50%);
+  z-index:10000;display:none;pointer-events:none;
+  background:linear-gradient(135deg,#0a1628dd,#0d1f3cee);
+  border:2px solid var(--green);border-radius:8px;padding:14px 28px;
+  text-align:center;min-width:340px;
+  box-shadow:0 0 40px rgba(16,185,129,.5);
+}
+#trade-alert-banner.sell-banner{
+  border-color:var(--red);
+  box-shadow:0 0 40px rgba(239,68,68,.5);
+}
+#trade-alert-banner .ban-title{font-size:20px;font-weight:900;letter-spacing:2px;margin-bottom:4px}
+#trade-alert-banner .ban-sub{font-size:11px;color:var(--muted)}
+@keyframes slideDown{from{top:30px;opacity:0}to{top:50px;opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+
+/* ─────────────────────── TICKER ─────────────────────── */
+#ticker{
+  background:#0d1525;border-bottom:1px solid var(--border);
+  height:28px;overflow:hidden;display:flex;align-items:center;
+  flex-shrink:0;padding:0 12px;gap:24px;
+}
+.tick-item{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:11px}
+.tick-sym{color:var(--muted);font-weight:600}
+.tick-price{font-weight:700}
+.tick-up{color:var(--green)}
+.tick-dn{color:var(--red)}
+.tick-neutral{color:var(--text)}
+
+/* ─────────────────────── MAIN LAYOUT ─────────────────────── */
+#main{display:flex;flex:1;overflow:hidden;gap:0}
+
+/* ─────────────────────── LEFT PANEL (TEAMS) ─────────────────────── */
+#left{width:220px;flex-shrink:0;background:var(--surface);
+      border-right:1px solid var(--border2);overflow-y:auto;display:flex;flex-direction:column;gap:0}
+
+.team-card{border-bottom:1px solid var(--border2);padding:10px 12px}
+.team-header{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.team-title{font-size:11px;font-weight:700;letter-spacing:1px}
+.team-status-badge{margin-left:auto;font-size:9px;padding:2px 6px;border-radius:2px;font-weight:700;letter-spacing:.5px}
+.bias-BULLISH{background:#0f3d2a;color:var(--green);border:1px solid #10B98130}
+.bias-BEARISH{background:#3d0f0f;color:var(--red);border:1px solid #EF444430}
+.bias-NEUTRAL{background:#1a2235;color:var(--muted);border:1px solid #374151}
+.bias-STARTING{background:#1a2235;color:#60a5fa;border:1px solid #3b82f630}
+
+.team-instruments{display:flex;flex-direction:column;gap:4px}
+.instr-row{display:flex;align-items:center;justify-content:space-between;
+           padding:3px 6px;background:var(--surface2);border-radius:3px;border:1px solid var(--border)}
+.instr-sym{color:var(--muted);font-size:10px;font-weight:600}
+.instr-price{font-size:11px;font-weight:700}
+.instr-sig{font-size:9px;padding:1px 5px;border-radius:2px;font-weight:700;white-space:nowrap}
+.sig-BUY{background:#0f3d2a;color:var(--green)}
+.sig-SELL{background:#3d0f0f;color:var(--red)}
+.sig-HOLD{background:#2a2a1a;color:#EAB308}
+.sig-none{color:var(--muted)}
+
+#left-stats{margin-top:auto;padding:10px 12px;background:var(--surface2);border-top:1px solid var(--border2)}
+.stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.stat-lbl{color:var(--muted);font-size:10px}
+.stat-val{font-size:11px;font-weight:700}
+
+/* ─────────────────────── CENTER PANEL (FEED) ─────────────────────── */
+#center{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+#feed-header{
+  background:var(--surface);border-bottom:1px solid var(--border2);
+  padding:6px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0
+}
+#feed-header .feed-title{font-size:11px;font-weight:700;color:var(--muted)}
+.filter-btn{padding:3px 10px;border-radius:3px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);font-size:10px;font-weight:600;
+  cursor:pointer;font-family:var(--font);letter-spacing:.5px;transition:.15s all}
+.filter-btn:hover{border-color:var(--border2);color:var(--text)}
+.filter-btn.active{color:#0a0e1a;font-weight:700}
+.filter-ALL{background:var(--text);color:var(--bg)!important;border-color:var(--text)}
+.filter-METALS.active{background:var(--gold);border-color:var(--gold);color:#1a1200!important}
+.filter-FOREX.active{background:var(--blue);border-color:var(--blue);color:#001428!important}
+.filter-CRYPTO.active{background:var(--purple);border-color:var(--purple);color:#12001a!important}
+.filter-ADMIN.active{background:var(--pink);border-color:var(--pink);color:#1a0010!important}
+#msg-count{margin-left:auto;font-size:10px;color:var(--muted)}
+#clear-btn{padding:2px 8px;border-radius:3px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);font-size:10px;cursor:pointer;font-family:var(--font)}
+#clear-btn:hover{background:var(--surface2);color:var(--text)}
+
+#feed{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:3px}
+
+/* ── Message cards ── */
+.msg-card{
+  padding:6px 10px;border-radius:4px;border-left:3px solid;
+  background:var(--surface);display:flex;flex-direction:column;gap:2px;
+  transition:.1s opacity;animation:fadeIn .2s ease
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.msg-card.hidden{display:none}
+.msg-card:hover{background:var(--surface2)}
+.msg-meta{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.msg-time{color:var(--muted);font-size:10px;flex-shrink:0}
+.msg-team-badge{font-size:9px;padding:1px 5px;border-radius:2px;font-weight:700;flex-shrink:0}
+.msg-agent{font-size:10px;color:var(--muted);flex-shrink:0}
+.msg-type-badge{font-size:9px;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.msg-body{font-size:11px;line-height:1.5;word-break:break-word}
+
+/* Type badge colours */
+.type-data{background:#1a2235;color:#60a5fa}
+.type-analysis{background:#1a1f35;color:#818cf8}
+.type-smart_money{background:#1f1a35;color:#a78bfa}
+.type-signal{background:#0f2d1a;color:var(--green)}
+.type-risk{background:#2d1f0f;color:var(--orange)}
+.type-report{background:#0f2535;color:var(--cyan)}
+.type-admin{background:#2d0f20;color:var(--pink)}
+.type-alert{background:#3d0a0a;color:var(--red)}
+.type-warning{background:#2d1a0f;color:#fbbf24}
+.type-error{background:#3d0f0f;color:var(--red)}
+.type-liquidity{background:#0a1a18;color:#06D6A0}
+
+/* ─────────────────────── CHAT PANEL ─────────────────────── */
+#chat-toggle{
+  position:fixed;bottom:16px;right:16px;z-index:200;
+  width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);
+  background:linear-gradient(135deg,#1a2d0a,#0a1a28);
+  color:var(--gold);font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(255,215,0,.3);transition:all .2s;
+}
+#chat-toggle:hover{transform:scale(1.1);box-shadow:0 4px 30px rgba(255,215,0,.5)}
+#chat-toggle .badge{
+  position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;
+  font-size:9px;font-weight:900;min-width:18px;height:18px;border-radius:9px;
+  display:none;align-items:center;justify-content:center;padding:0 4px;
+}
+
+#chat-panel{
+  position:fixed;bottom:80px;right:16px;z-index:190;
+  width:420px;height:520px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  display:none;flex-direction:column;overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,.6);
+}
+#chat-panel.open{display:flex}
+
+#chat-panel-header{
+  background:linear-gradient(90deg,#0d1f3c,#0a1628);
+  padding:10px 14px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid var(--border2);flex-shrink:0;
+}
+#chat-panel-header .cp-title{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px}
+#chat-panel-header .cp-close{
+  margin-left:auto;cursor:pointer;color:var(--muted);font-size:16px;
+  background:none;border:none;font-family:var(--font);
+}
+#chat-panel-header .cp-close:hover{color:var(--text)}
+
+/* Team tabs */
+#chat-tabs{
+  display:flex;background:var(--bg);border-bottom:1px solid var(--border2);flex-shrink:0;
+}
+.chat-tab{
+  flex:1;text-align:center;padding:7px 4px;font-size:10px;font-weight:700;
+  color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+  font-family:var(--font);letter-spacing:.5px;transition:.15s;background:none;border-top:none;border-left:none;border-right:none;
+}
+.chat-tab:hover{color:var(--text);background:var(--surface2)}
+.chat-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:var(--surface)}
+.chat-tab-badge{
+  display:inline-block;background:var(--red);color:#fff;font-size:8px;
+  min-width:14px;height:14px;border-radius:7px;line-height:14px;
+  text-align:center;margin-left:3px;display:none;
+}
+
+/* Chat messages area */
+#chat-messages{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px}
+
+.chat-msg{padding:8px 10px;border-radius:6px;max-width:92%;animation:fadeIn .2s ease}
+.chat-msg.admin-out{
+  align-self:flex-end;
+  background:linear-gradient(135deg,#1a2d40,#0d1f3c);
+  border:1px solid var(--blue);border-radius:10px 10px 2px 10px;
+  color:var(--text);
+}
+.chat-msg.agent-in{
+  align-self:flex-start;
+  background:var(--surface2);
+  border:1px solid var(--border2);border-radius:10px 10px 10px 2px;
+  color:var(--text);
+}
+.chat-msg .cm-from{font-size:9px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.chat-msg .cm-body{font-size:11px;line-height:1.5;word-break:break-word;white-space:pre-line}
+.chat-msg .cm-time{font-size:9px;color:var(--muted);margin-top:3px;text-align:right}
+
+/* Chat input */
+#chat-input-area{
+  padding:8px;border-top:1px solid var(--border2);
+  display:flex;gap:6px;flex-shrink:0;background:var(--surface);
+}
+#chat-input{
+  flex:1;background:var(--surface2);border:1px solid var(--border2);
+  color:var(--text);font-family:var(--font);font-size:12px;
+  padding:8px 12px;border-radius:6px;outline:none;
+  transition:border-color .2s;
+}
+#chat-input:focus{border-color:var(--gold)}
+#chat-input::placeholder{color:var(--muted)}
+#chat-send{
+  background:linear-gradient(135deg,#1a3a1a,#0d2a0d);
+  border:1px solid var(--green);color:var(--green);
+  font-family:var(--font);font-size:11px;font-weight:700;
+  padding:8px 14px;border-radius:6px;cursor:pointer;
+  letter-spacing:.5px;transition:all .2s;white-space:nowrap;
+}
+#chat-send:hover{background:var(--green);color:var(--bg)}
+
+/* Chat reply highlight in main feed */
+.msg-card.chat-reply{
+  border-left-color:var(--gold)!important;
+  background:linear-gradient(90deg,#1a1800 0%,var(--surface) 30%);
+}
+.msg-card.admin-msg{
+  border-left-color:var(--pink)!important;
+  background:linear-gradient(90deg,#1a0018 0%,var(--surface) 30%);
+}
+
+/* ─────────────────────── RIGHT PANEL (ADMIN) ─────────────────────── */
+#right{width:240px;flex-shrink:0;background:var(--surface);
+       border-left:1px solid var(--border2);overflow-y:auto;display:flex;flex-direction:column}
+
+.panel-section{padding:10px 12px;border-bottom:1px solid var(--border2)}
+.panel-title{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+
+/* Market bias */
+#bias-display{
+  text-align:center;padding:8px;border-radius:4px;
+  font-size:13px;font-weight:700;letter-spacing:.5px;
+  border:1px solid var(--border2);background:var(--surface2)
+}
+
+/* Signal counts */
+.signal-counts{display:flex;gap:6px;margin-top:6px}
+.sig-count{flex:1;text-align:center;padding:5px;border-radius:3px;border:1px solid var(--border)}
+.sig-count .num{font-size:18px;font-weight:700;line-height:1}
+.sig-count .lbl{font-size:9px;color:var(--muted);margin-top:1px}
+.sc-buy{background:#0a2018;border-color:#10B98130}
+.sc-buy .num{color:var(--green)}
+.sc-sell{background:#200a0a;border-color:#EF444430}
+.sc-sell .num{color:var(--red)}
+.sc-hold{background:#1a1a0a;border-color:#EAB30830}
+.sc-hold .num{color:#EAB308}
+
+/* Signal board */
+#signal-board{display:flex;flex-direction:column;gap:3px}
+.sig-row{display:flex;align-items:center;gap:6px;padding:4px 6px;
+  background:var(--surface2);border-radius:3px;border:1px solid var(--border)}
+.sig-row-sym{font-size:10px;font-weight:700;color:var(--text);min-width:64px}
+.sig-row-team{font-size:9px;color:var(--muted)}
+.sig-row-sig{margin-left:auto;font-size:9px;padding:1px 6px;border-radius:2px;font-weight:700}
+.sig-row-conf{font-size:9px;color:var(--muted)}
+
+/* Alerts */
+#alerts-list{display:flex;flex-direction:column;gap:4px}
+.alert-item{padding:5px 7px;background:#1a0808;border-radius:3px;
+  border:1px solid #EF444430;font-size:10px;line-height:1.4;color:#fca5a5}
+.alert-time{font-size:9px;color:var(--muted);margin-bottom:1px}
+
+/* Correlation */
+#corr-text{font-size:10px;line-height:1.5;color:#94a3b8;padding:4px;
+  background:var(--surface2);border-radius:3px;border:1px solid var(--border)}
+
+/* Team bias mini */
+.team-bias-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.tbr-name{font-size:10px;display:flex;align-items:center;gap:4px}
+.tbr-badge{font-size:9px;padding:1px 6px;border-radius:2px;font-weight:700}
+
+/* ─────────────────────── LIQUIDITY PANEL ─────────────────────── */
+#liquidity-panel{max-height:280px;overflow-y:auto}
+.liq-zone-card{
+  padding:4px 6px;border-radius:3px;border:1px solid var(--border);
+  background:var(--surface2);display:flex;align-items:center;gap:4px;
+  font-size:10px;
+}
+.liq-zone-card.buy-side{border-left:3px solid var(--green)}
+.liq-zone-card.sell-side{border-left:3px solid var(--red)}
+.liq-zone-level{font-weight:700;min-width:70px}
+.liq-zone-tf{font-size:8px;padding:1px 4px;border-radius:2px;font-weight:700}
+.liq-tf-h1{background:#1a2235;color:#60a5fa}
+.liq-tf-h4{background:#1f1a35;color:#a78bfa}
+.liq-zone-str{margin-left:auto;font-size:9px;color:var(--muted)}
+.liq-zone-swept{color:var(--green);font-weight:700;font-size:9px}
+.liq-zone-eq{color:var(--gold);font-size:8px;font-weight:700}
+.liq-sweep-item{
+  padding:3px 6px;border-radius:3px;font-size:9px;
+  background:#0a1a18;border:1px solid #06D6A030;color:#06D6A0;
+  line-height:1.4;
+}
+.liq-sweep-item.blocked{background:#1a0a0a;border-color:#EF444430;color:#fca5a5}
+.liq-55-badge{
+  display:inline-block;padding:1px 5px;border-radius:2px;font-size:8px;
+  font-weight:700;letter-spacing:0.5px;
+}
+.liq-55-pass{background:#0f3d2a;color:var(--green);border:1px solid #10B98140}
+.liq-55-fail{background:#3d0f0f;color:var(--red);border:1px solid #EF444440}
+
+/* Connection overlay */
+#overlay{position:fixed;inset:0;background:#0a0e1aee;z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.spinner{width:36px;height:36px;border:3px solid var(--border2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#overlay p{color:var(--muted);font-size:12px}
+
+/* ─────────────────────── AI BRAIN PANEL ─────────────────────── */
+#brain-btn{
+  cursor:pointer;padding:3px 10px;border-radius:3px;font-size:10px;
+  font-weight:700;letter-spacing:.5px;font-family:var(--font);
+  background:linear-gradient(135deg,#1a1035,#0d1a2d);color:var(--purple);
+  border:1px solid #A855F740;transition:all .2s;
+}
+#brain-btn:hover{background:#2d1a50;box-shadow:0 0 10px rgba(168,85,247,.3)}
+#brain-btn.active{background:var(--purple);color:#fff;box-shadow:0 0 14px rgba(168,85,247,.5)}
+
+#brain-panel{
+  position:fixed;inset:0;z-index:150;display:none;flex-direction:column;
+  background:var(--bg);overflow:hidden;
+}
+#brain-panel.open{display:flex}
+
+#brain-topbar{
+  background:linear-gradient(90deg,#0d1525,#162040,#0d1525);
+  border-bottom:1px solid var(--border2);padding:8px 16px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+#brain-topbar h2{font-size:14px;font-weight:800;
+  background:linear-gradient(90deg,var(--purple),var(--cyan),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+#brain-close{
+  background:none;border:1px solid var(--border2);color:var(--muted);
+  padding:4px 12px;border-radius:4px;cursor:pointer;font-family:var(--font);
+  font-size:11px;transition:.2s;
+}
+#brain-close:hover{color:var(--text);border-color:var(--text)}
+
+.brain-tabs{display:flex;gap:2px;padding:6px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.brain-tab{padding:6px 14px;border-radius:5px 5px 0 0;cursor:pointer;font-size:11px;font-weight:600;
+  color:var(--muted);transition:.2s;border:1px solid transparent;border-bottom:none;font-family:var(--font);background:none}
+.brain-tab:hover{color:var(--text);background:var(--surface2)}
+.brain-tab.active{color:var(--purple);background:var(--surface2);border-color:var(--border2);border-bottom:2px solid var(--purple)}
+
+.brain-content{flex:1;overflow-y:auto;padding:16px;display:none}
+.brain-content.active{display:block}
+
+/* Brain cards */
+.bc{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.bc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.bc.bc-purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.bc.bc-blue::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.bc.bc-green::before{background:linear-gradient(90deg,var(--green),transparent)}
+.bc.bc-gold::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.bc.bc-cyan::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+.bc.bc-red::before{background:linear-gradient(90deg,var(--red),transparent)}
+.bc-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.bc-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bc-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.bc-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:900px){.bc-grid2,.bc-grid3,.bc-grid4{grid-template-columns:1fr}}
+
+/* ─────────────────────── AI BRAIN MINI PANEL (RIGHT SIDEBAR) ─────────────────────── */
+#ai-brain-mini{border-bottom:1px solid var(--border2);padding:10px 12px}
+#ai-brain-mini .abm-title{font-size:10px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.abm-providers{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.abm-prov{text-align:center;padding:4px 2px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);position:relative}
+.abm-prov.prov-active{border-color:#10B98140}
+.abm-prov.prov-down{border-color:#EF444440;opacity:.5}
+.abm-prov-icon{font-size:12px}
+.abm-prov-name{font-size:7px;font-weight:700;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abm-prov-dot{width:5px;height:5px;border-radius:50%;position:absolute;top:2px;right:2px}
+.abm-prov-dot.dot-on{background:var(--green);box-shadow:0 0 4px var(--green)}
+.abm-prov-dot.dot-off{background:var(--red);box-shadow:0 0 4px var(--red)}
+.abm-prov-dot.dot-none{background:var(--muted)}
+.abm-routing{margin-top:6px;display:flex;flex-wrap:wrap;gap:3px}
+.abm-route{font-size:8px;padding:2px 5px;border-radius:3px;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.abm-route strong{color:var(--cyan)}
+#abm-ml-status{margin-top:6px;padding:5px 8px;border-radius:4px;background:var(--surface);border:1px solid var(--border);font-size:9px}
+
+/* ─────────────────────── AI COORDINATION FEED (RIGHT SIDEBAR) ─────────────────────── */
+#ai-coord-section{border-bottom:1px solid var(--border2);padding:10px 12px;max-height:260px;display:flex;flex-direction:column}
+#ai-coord-section .coord-title{font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+#coord-feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.coord-item{padding:4px 6px;border-radius:4px;border-left:2px solid;font-size:9px;line-height:1.4;background:var(--surface2);animation:fadeIn .3s ease}
+.coord-item .ci-header{display:flex;align-items:center;gap:4px;margin-bottom:1px}
+.coord-item .ci-time{color:var(--muted);font-size:8px}
+.coord-item .ci-type{font-size:8px;padding:1px 4px;border-radius:2px;font-weight:700}
+.ci-type-ml{background:#1a1035;color:var(--purple)}
+.ci-type-ai{background:#0f2535;color:var(--cyan)}
+.ci-type-inst{background:#2a1a10;color:var(--gold)}
+.ci-type-coord{background:#0f2d1a;color:var(--green)}
+.ci-type-gate{background:#2d1a0f;color:var(--orange)}
+.coord-item .ci-body{color:var(--text);font-size:9px}
+.coord-item.ci-ml{border-left-color:var(--purple)}
+.coord-item.ci-ai{border-left-color:var(--cyan)}
+.coord-item.ci-inst{border-left-color:var(--gold)}
+.coord-item.ci-coord{border-left-color:var(--green)}
+.coord-item.ci-gate{border-left-color:var(--orange)}
+
+/* Brain metrics */
+.bm{text-align:center;padding:10px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)}
+.bm-val{font-size:22px;font-weight:800;line-height:1.2}
+.bm-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-transform:uppercase}
+
+/* Brain flow nodes */
+.bf-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;padding:10px}
+.bf-node{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;text-align:center;min-width:80px}
+.bf-node .bfn-icon{font-size:16px}
+.bf-node .bfn-title{font-size:9px;font-weight:700;margin-top:2px}
+.bf-node .bfn-sub{font-size:8px;color:var(--muted)}
+.bf-arrow{color:var(--cyan);font-weight:700;font-size:14px}
+
+/* Brain pair cards */
+.bp-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;transition:.2s}
+.bp-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.bp-card.bp-active{border-color:var(--green);box-shadow:0 0 8px rgba(16,185,129,.1)}
+.bp-card.bp-wait{opacity:.5}
+.bp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.bp-name{font-size:12px;font-weight:800;letter-spacing:.5px}
+.bp-badge{padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700}
+.bp-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px}
+.bp-s{font-size:9px;color:var(--muted)}.bp-sv{font-size:11px;font-weight:700}
+.bp-bar{height:4px;background:var(--dim);border-radius:2px;overflow:hidden;margin-top:4px}
+.bp-fill{height:100%;border-radius:2px}
+
+/* Brain timeline */
+.btl{position:relative;padding-left:20px}
+.btl::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--border2)}
+.btl-item{position:relative;margin-bottom:12px;padding-left:10px}
+.btl-item::before{content:'';position:absolute;left:-18px;top:5px;width:8px;height:8px;border-radius:50%;border:2px solid var(--cyan);background:var(--bg)}
+.btl-item.btl-on::before{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.btl-t{font-size:9px;color:var(--muted)}.btl-h{font-size:11px;font-weight:700;margin-top:1px}.btl-d{font-size:10px;color:var(--muted);margin-top:1px}
+
+/* Brain store items */
+.bs-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);margin-bottom:6px}
+.bs-icon{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.bs-info{flex:1}.bs-name{font-weight:700;font-size:11px}.bs-desc{font-size:9px;color:var(--muted);margin-top:1px}
+
+/* Agent reward table */
+.ar-table{width:100%;border-collapse:collapse}
+.ar-table th{font-size:9px;color:var(--muted);text-transform:uppercase;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border2)}
+.ar-table td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:11px}
+.ar-table tr:hover{background:var(--surface2)}
+
+/* Brain learning bar chart */
+.blc{display:flex;align-items:flex-end;gap:3px;height:100px;padding-top:8px}
+.blc-bar{flex:1;border-radius:2px 2px 0 0;position:relative;transition:height .5s;min-width:6px;cursor:pointer}
+.blc-bar:hover{opacity:.8}
+.blc-lbl{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:7px;color:var(--muted);white-space:nowrap}
+.blc-val{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- CONNECTING OVERLAY -->
+<div id="overlay">
+  <div class="spinner"></div>
+  <p>Connecting to Agent System...</p>
+</div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <span class="title">🤖 AI TRADING AGENTS — COMMAND CENTER</span>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div id="conn-status">
+      <div class="dot" id="conn-dot"></div>
+      <span id="conn-label">Disconnected</span>
+    </div>
+    <span id="mode-badge" class="mode-sim">SIMULATION</span>
+    <button id="brain-btn" onclick="toggleBrain()" title="AI Brain Intelligence Dashboard">🧠 AI BRAIN</button>
+    <button id="analytics-btn" onclick="toggleAnalytics()" title="Trading Performance Analytics" style="cursor:pointer;padding:3px 10px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.5px;font-family:var(--font);background:linear-gradient(135deg,#0d2a1a,#0d1a2d);color:var(--green);border:1px solid #10B98144">📊 ANALYTICS</button>
+    <button id="sound-btn" onclick="toggleSound()" title="Toggle alert sound">🔊 SOUND ON</button>
+    <span style="color:var(--muted);font-size:10px" id="started-at"></span>
+  </div>
+</div>
+
+<!-- ANALYTICS PANEL OVERLAY -->
+<div id="analytics-panel" style="position:fixed;inset:0;z-index:150;display:none;flex-direction:column;background:rgba(10,14,26,0.97);backdrop-filter:blur(12px);overflow-y:auto;padding:20px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h2 style="color:var(--green);font-size:16px">📊 Trading Performance Analytics</h2>
+    <button onclick="toggleAnalytics()" style="background:#EF444433;color:var(--red);border:1px solid var(--red);border-radius:4px;padding:4px 12px;cursor:pointer;font-family:var(--font)">✕ CLOSE</button>
+  </div>
+  <div id="analytics-content" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+    <div style="color:var(--muted);text-align:center;padding:40px">Loading analytics data...</div>
+  </div>
+</div>
+
+<!-- TRADE ALERT FLASH OVERLAY -->
+<div id="trade-alert-flash"></div>
+<div id="trade-alert-banner">
+  <div class="ban-title" id="ban-title">🚨 BUY SIGNAL</div>
+  <div class="ban-sub"  id="ban-sub">Loading...</div>
+</div>
+
+<!-- PRICE TICKER -->
+<div id="ticker">
+  <span style="font-size:10px;color:var(--muted);font-weight:700;flex-shrink:0">LIVE PRICES</span>
+  <div id="ticker-items" style="display:flex;gap:20px;overflow:hidden"></div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- LEFT: TEAM STATUS -->
+  <div id="left">
+
+    <!-- METALS -->
+    <div class="team-card" id="card-METALS">
+      <div class="team-header">
+        <span>🥇</span>
+        <span class="team-title" style="color:var(--gold)">METALS TEAM</span>
+        <span class="team-status-badge bias-STARTING" id="badge-METALS">STARTING</span>
+      </div>
+      <div class="team-instruments" id="instr-METALS"></div>
+    </div>
+
+    <!-- FOREX -->
+    <div class="team-card" id="card-FOREX">
+      <div class="team-header">
+        <span>💱</span>
+        <span class="team-title" style="color:var(--blue)">FOREX TEAM</span>
+        <span class="team-status-badge bias-STARTING" id="badge-FOREX">STARTING</span>
+      </div>
+      <div class="team-instruments" id="instr-FOREX"></div>
+    </div>
+
+    <!-- CRYPTO -->
+    <div class="team-card" id="card-CRYPTO">
+      <div class="team-header">
+        <span>🪙</span>
+        <span class="team-title" style="color:var(--purple)">CRYPTO TEAM</span>
+        <span class="team-status-badge bias-STARTING" id="badge-CRYPTO">STARTING</span>
+      </div>
+      <div class="team-instruments" id="instr-CRYPTO"></div>
+    </div>
+
+    <!-- STATS -->
+    <div id="left-stats">
+      <div class="stat-row"><span class="stat-lbl">Total Instruments</span><span class="stat-val" id="stat-total">—</span></div>
+      <div class="stat-row"><span class="stat-lbl">Active Signals</span><span class="stat-val" id="stat-signals">—</span></div>
+      <div class="stat-row"><span class="stat-lbl">Messages</span><span class="stat-val" id="stat-msgs">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">Clients</span><span class="stat-val" id="stat-clients">1</span></div>
+    </div>
+  </div>
+
+  <!-- CENTER: AGENT FEED -->
+  <div id="center">
+    <div id="feed-header">
+      <span class="feed-title">📡 LIVE AGENT COMMUNICATIONS</span>
+      <button class="filter-btn filter-ALL active" onclick="setFilter('ALL')">ALL</button>
+      <button class="filter-btn filter-METALS" onclick="setFilter('METALS')">🥇 METALS</button>
+      <button class="filter-btn filter-FOREX"  onclick="setFilter('FOREX')">💱 FOREX</button>
+      <button class="filter-btn filter-CRYPTO" onclick="setFilter('CRYPTO')">🪙 CRYPTO</button>
+      <button class="filter-btn filter-ADMIN"  onclick="setFilter('ADMIN')">👁️ ADMIN</button>
+      <span id="msg-count" style="color:var(--muted)">0 msgs</span>
+      <button id="clear-btn" onclick="clearFeed()">Clear</button>
+      <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);cursor:pointer">
+        <input type="checkbox" id="auto-scroll" checked style="cursor:pointer"> Auto-scroll
+      </label>
+    </div>
+    <div id="feed"></div>
+  </div>
+
+  <!-- RIGHT: ADMIN PANEL -->
+  <div id="right">
+
+    <!-- Overall bias -->
+    <div class="panel-section">
+      <div class="panel-title">👁️ Market Bias</div>
+      <div id="bias-display">—</div>
+      <div class="signal-counts">
+        <div class="sig-count sc-buy"><div class="num" id="sc-buy">0</div><div class="lbl">BUY</div></div>
+        <div class="sig-count sc-sell"><div class="num" id="sc-sell">0</div><div class="lbl">SELL</div></div>
+        <div class="sig-count sc-hold"><div class="num" id="sc-hold">0</div><div class="lbl">HOLD</div></div>
+      </div>
+    </div>
+
+    <!-- Team bias breakdown -->
+    <div class="panel-section">
+      <div class="panel-title">⚡ Team Bias</div>
+      <div id="team-bias-breakdown">
+        <div class="team-bias-row"><span class="tbr-name">🥇 METALS</span><span class="tbr-badge bias-STARTING" id="bias-METALS">—</span></div>
+        <div class="team-bias-row"><span class="tbr-name">💱 FOREX</span><span class="tbr-badge bias-STARTING" id="bias-FOREX">—</span></div>
+        <div class="team-bias-row"><span class="tbr-name">🪙 CRYPTO</span><span class="tbr-badge bias-STARTING" id="bias-CRYPTO">—</span></div>
+      </div>
+    </div>
+
+    <!-- Signal board -->
+    <div class="panel-section" style="flex:1">
+      <div class="panel-title">⚡ Signal Board</div>
+      <div id="signal-board"></div>
+    </div>
+
+    <!-- ═══ LIQUIDITY PANEL (55/45 Rule) ═══ -->
+    <div class="panel-section" id="liquidity-panel">
+      <div class="panel-title">💧 Liquidity Zones (55/45 Rule)</div>
+      <div id="liq-summary" style="font-size:10px;color:var(--muted);margin-bottom:6px">Scanning H1+H4 zones...</div>
+      <div id="liq-zones-list" style="display:flex;flex-direction:column;gap:3px"></div>
+      <div id="liq-sweeps" style="margin-top:6px">
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">Recent Sweeps</div>
+        <div id="liq-sweep-list" style="display:flex;flex-direction:column;gap:2px">
+          <div style="color:var(--dim);font-size:9px">No sweeps yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="panel-section">
+      <div class="panel-title">🚨 High-Confidence Alerts</div>
+      <div id="alerts-list"><div style="color:var(--muted);font-size:10px">Awaiting signals...</div></div>
+    </div>
+
+    <!-- Correlation -->
+    <div class="panel-section">
+      <div class="panel-title">🔗 Cross-Market</div>
+      <div id="corr-text">Awaiting multi-team data...</div>
+    </div>
+
+    <!-- ═══ AI BRAIN STATUS (INLINE) ═══ -->
+    <div id="ai-brain-mini">
+      <div class="abm-title">🧠 AI Brain — 7 Providers <span id="abm-active-count" style="font-size:9px;color:var(--green)"></span></div>
+      <div class="abm-providers" id="abm-providers-grid">
+        <div style="color:var(--muted);font-size:9px;grid-column:span 4;text-align:center">Loading providers...</div>
+      </div>
+      <div class="abm-routing" id="abm-routing-bar"></div>
+      <div id="abm-ml-status">🤖 ML: Loading...</div>
+    </div>
+
+    <!-- ═══ AI COORDINATION LIVE FEED ═══ -->
+    <div id="ai-coord-section">
+      <div class="coord-title">🤝 AI Coordination <span id="coord-count" style="font-size:8px;color:var(--muted);margin-left:auto">0 events</span></div>
+      <div id="coord-feed">
+        <div style="color:var(--muted);font-size:9px;text-align:center;padding:12px">Waiting for agent coordination events...</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /main -->
+
+<!-- ═══════ FLOATING CHAT PANEL ═══════ -->
+<button id="chat-toggle" onclick="toggleChatPanel()" title="Chat with AI Agents">
+  💬
+  <span class="badge" id="chat-badge">0</span>
+</button>
+
+<div id="chat-panel">
+  <div id="chat-panel-header">
+    <span class="cp-title">💬 ADMIN ↔ AI AGENTS CHAT</span>
+    <button class="cp-close" onclick="toggleChatPanel()">✕</button>
+  </div>
+  <div id="chat-tabs">
+    <button class="chat-tab active" data-team="ALL" onclick="switchChatTeam('ALL')">🌐 ALL</button>
+    <button class="chat-tab" data-team="METALS" onclick="switchChatTeam('METALS')">🥇 METALS</button>
+    <button class="chat-tab" data-team="FOREX" onclick="switchChatTeam('FOREX')">💱 FOREX</button>
+    <button class="chat-tab" data-team="CRYPTO" onclick="switchChatTeam('CRYPTO')">🪙 CRYPTO</button>
+  </div>
+  <div id="chat-messages"></div>
+  <div id="chat-input-area">
+    <input type="text" id="chat-input"
+           placeholder="Type message... (instruction/question/command)"
+           autocomplete="off" spellcheck="false">
+    <button id="chat-send" onclick="sendChat()">SEND ➤</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let ws = null;
+let msgCount = 0;
+let activeFilter = 'ALL';
+let allSignals = {};          // {sym: {signal,strength,confidence,team,team_icon}}
+let recentAlerts = [];
+const MAX_MSGS = 500;
+
+// Team config from server init
+const TEAM_COLORS = {
+  METALS: '#FFD700', FOREX: '#00BFFF', CRYPTO: '#A855F7', ADMIN: '#EC4899'
+};
+const TEAM_ICONS = {
+  METALS:'🥇', FOREX:'💱', CRYPTO:'🪙', ADMIN:'👁️'
+};
+
+// ══════════════════════════════════════════════════════════
+// WEBSOCKET
+// ══════════════════════════════════════════════════════════
+function connect() {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws`);
+
+  ws.onopen = () => {
+    document.getElementById('overlay').style.display = 'none';
+    setConn(true);
+  };
+
+  ws.onclose = () => {
+    setConn(false);
+    document.getElementById('overlay').style.display = 'flex';
+    setTimeout(connect, 3000);
+  };
+
+  ws.onerror = () => ws.close();
+
+  ws.onmessage = (e) => {
+    try {
+      const data = JSON.parse(e.data);
+      if (data.type === 'init')  handleInit(data.payload);
+      if (data.type === 'msg')   handleMsg(data.payload);
+      if (data.type === 'state') handleState(data.payload);
+    } catch(err) { console.error(err); }
+  };
+}
+
+// ══════════════════════════════════════════════════════════
+// HANDLERS
+// ══════════════════════════════════════════════════════════
+function handleInit(p) {
+  if (p.state) handleState(p.state);
+}
+
+function handleMsg(msg) {
+  msgCount++;
+  document.getElementById('stat-msgs').textContent = msgCount;
+  document.getElementById('msg-count').textContent = msgCount + ' msgs';
+
+  // ── Route chat replies to the chat panel ───────────────────────
+  if (msg.data?.chat_reply === true || msg.data?.chat === true) {
+    if (msg.data?.chat_reply) addChatReply(msg);
+    // admin's own message already added locally in sendChat(), skip duplicate
+  }
+
+  // ── High-confidence alert detection ──────────────────────────────
+  if (msg.type === 'alert') {
+    addAlert(msg);
+    // Admin-generated alerts are always high-confidence → full sound
+    if (soundOn) {
+      const sig = msg.data?.signal;
+      if (sig && (sig.signal === 'BUY' || sig.signal === 'SELL')) {
+        triggerTradeAlert(msg);
+      }
+    }
+  }
+
+  if (msg.type === 'signal' && msg.data && msg.data.signal) {
+    const s = msg.data.signal;
+    if (s.confidence >= 75) addAlert(msg);
+    // 🔊 Fire trade alert sound + banner
+    triggerTradeAlert(msg);
+  }
+
+  // Subtle tick for BULLISH news
+  if (msg.type === 'news' && msg.data?.news?.sentiment === 'BULLISH' && soundOn) {
+    playAlertTick();
+  }
+
+  // ── Route coordination events to the AI Coordination feed ────────
+  const coordType = isCoordEvent(msg);
+  if (coordType) {
+    addCoordEvent(msg, coordType);
+  }
+
+  renderMessage(msg);
+}
+
+function handleState(p) {
+  if (!p) return;
+
+  // Mode badge
+  if (p.mode) {
+    const badge = document.getElementById('mode-badge');
+    badge.textContent = p.mode;
+    badge.className = 'mode-badge ' + (p.mode === 'LIVE MT5' ? 'mode-live' : 'mode-sim');
+    const dot = document.getElementById('conn-dot');
+    dot.className = 'dot ' + (p.mode === 'LIVE MT5' ? 'live' : 'sim');
+  }
+
+  // Teams
+  if (p.teams) {
+    let totalInstr = 0, totalSignals = 0;
+    let allSigCounts = {BUY:0,SELL:0,HOLD:0};
+
+    Object.entries(p.teams).forEach(([tname, tdata]) => {
+      // Badge
+      const badge = document.getElementById('badge-' + tname);
+      const biasBadge = document.getElementById('bias-' + tname);
+      if (badge) {
+        badge.textContent = tdata.bias || tdata.status || 'STARTING';
+        badge.className = 'team-status-badge bias-' + (tdata.bias || 'NEUTRAL');
+      }
+      if (biasBadge) {
+        biasBadge.textContent = tdata.bias || '—';
+        biasBadge.className = 'tbr-badge bias-' + (tdata.bias || 'NEUTRAL');
+      }
+
+      // Instruments
+      const instrEl = document.getElementById('instr-' + tname);
+      if (instrEl && (tdata.prices || tdata.signals)) {
+        instrEl.innerHTML = '';
+        const syms = new Set([
+          ...Object.keys(tdata.prices || {}),
+          ...Object.keys(tdata.signals || {})
+        ]);
+        totalInstr += syms.size;
+        syms.forEach(sym => {
+          const price = tdata.prices?.[sym];
+          const sig   = tdata.signals?.[sym];
+          if (sig) {
+            allSignals[sym] = {...sig, team: tname, team_icon: TEAM_ICONS[tname]};
+            if (sig.signal === 'BUY')  allSigCounts.BUY++;
+            else if (sig.signal === 'SELL') allSigCounts.SELL++;
+            else allSigCounts.HOLD++;
+            totalSignals++;
+          }
+          const row = document.createElement('div');
+          row.className = 'instr-row';
+          const priceVal = price?.price ?? '—';
+          const sigClass = sig ? 'sig-' + sig.signal : 'sig-none';
+          const sigText  = sig ? sig.signal : '—';
+          const conf     = sig ? ` ${sig.confidence}%` : '';
+          row.innerHTML = `
+            <span class="instr-sym">${sym}</span>
+            <span class="instr-price tick-${sig?.signal==='BUY'?'up':sig?.signal==='SELL'?'dn':'neutral'}">${typeof priceVal==='number'?priceVal.toLocaleString(undefined,{maximumFractionDigits:5}):priceVal}</span>
+            <span class="instr-sig ${sigClass}">${sigText}${conf}</span>
+          `;
+          instrEl.appendChild(row);
+        });
+      }
+    });
+
+    document.getElementById('stat-total').textContent = totalInstr;
+    document.getElementById('stat-signals').textContent = totalSignals;
+    document.getElementById('sc-buy').textContent  = allSigCounts.BUY;
+    document.getElementById('sc-sell').textContent = allSigCounts.SELL;
+    document.getElementById('sc-hold').textContent = allSigCounts.HOLD;
+
+    // Signal board
+    renderSignalBoard();
+
+    // Liquidity Panel
+    updateLiquidityPanel(p.teams);
+
+    // Ticker
+    renderTicker(p.teams);
+  }
+
+  // Admin
+  if (p.admin) {
+    const biasEl = document.getElementById('bias-display');
+    if (biasEl) {
+      const bias = p.admin.market_bias || '—';
+      biasEl.textContent = bias;
+      biasEl.style.color = bias.includes('BULL') ? 'var(--green)' :
+                           bias.includes('BEAR') ? 'var(--red)'   : 'var(--text)';
+      biasEl.style.borderColor = bias.includes('BULL') ? '#10B98140' :
+                                  bias.includes('BEAR') ? '#EF444440' : 'var(--border2)';
+    }
+    if (p.admin.correlation) {
+      document.getElementById('corr-text').textContent = p.admin.correlation;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER MESSAGE
+// ══════════════════════════════════════════════════════════
+function renderMessage(msg) {
+  const feed = document.getElementById('feed');
+  const card = document.createElement('div');
+  card.className = 'msg-card';
+  card.dataset.team = msg.team;
+  card.style.borderLeftColor = msg.team_color || TEAM_COLORS[msg.team] || '#4B5563';
+
+  if (activeFilter !== 'ALL' && msg.team !== activeFilter) {
+    card.classList.add('hidden');
+  }
+
+  const teamColor = TEAM_COLORS[msg.team] || '#4B5563';
+
+  // Highlight chat replies and admin messages
+  const isChatReply = msg.data?.chat_reply === true;
+  const isAdminMsg  = msg.data?.chat === true;
+  if (isChatReply) card.classList.add('chat-reply');
+  if (isAdminMsg)  card.classList.add('admin-msg');
+
+  card.innerHTML = `
+    <div class="msg-meta">
+      <span class="msg-time">${escHtml(msg.timestamp||'')}</span>
+      <span class="msg-team-badge" style="background:${teamColor}22;color:${teamColor};border:1px solid ${teamColor}44">${escHtml(msg.team_icon||'')} ${escHtml(msg.team||'')}</span>
+      <span class="msg-agent">${escHtml(msg.agent_icon||'🤖')} ${escHtml(msg.agent||'')}</span>
+      <span class="msg-type-badge type-${escHtml(msg.type||'')}">${escHtml((msg.type||'').toUpperCase())}</span>
+      ${isChatReply ? '<span style="font-size:9px;color:var(--gold);font-weight:700">💬 REPLY</span>' : ''}
+      ${isAdminMsg  ? '<span style="font-size:9px;color:var(--pink);font-weight:700">👤 YOU</span>' : ''}
+    </div>
+    <div class="msg-body">${escHtml(msg.content)}</div>
+  `;
+
+  feed.appendChild(card);
+
+  // Prune old messages
+  while (feed.children.length > MAX_MSGS) {
+    feed.removeChild(feed.firstChild);
+  }
+
+  // Auto-scroll
+  if (document.getElementById('auto-scroll').checked) {
+    feed.scrollTop = feed.scrollHeight;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// SIGNAL BOARD
+// ══════════════════════════════════════════════════════════
+function renderSignalBoard() {
+  const board = document.getElementById('signal-board');
+  board.innerHTML = '';
+  const entries = Object.entries(allSignals).sort((a,b) => (b[1].confidence||0) - (a[1].confidence||0));
+  entries.forEach(([sym, s]) => {
+    const row = document.createElement('div');
+    row.className = 'sig-row';
+    const sigClass = 'sig-' + s.signal;
+    const teamColor = TEAM_COLORS[s.team] || '#4B5563';
+    row.innerHTML = `
+      <span class="sig-row-sym">${sym}</span>
+      <span class="sig-row-team" style="color:${teamColor}">${s.team_icon||''}</span>
+      <span class="sig-row-conf">${s.confidence||0}%</span>
+      <span class="sig-row-sig ${sigClass}">${s.signal}</span>
+    `;
+    board.appendChild(row);
+  });
+  if (!entries.length) {
+    board.innerHTML = '<div style="color:var(--muted);font-size:10px">Awaiting signals...</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// LIQUIDITY PANEL (55/45 Rule)
+// ══════════════════════════════════════════════════════════
+function updateLiquidityPanel(teams) {
+  const zonesList = document.getElementById('liq-zones-list');
+  const sweepList = document.getElementById('liq-sweep-list');
+  const summary = document.getElementById('liq-summary');
+  if (!zonesList || !sweepList || !summary) return;
+
+  let allZones = [];
+  let allSweeps = [];
+  let totalZones = 0;
+  let activeSweeps = 0;
+  let passCount = 0;
+  let blockCount = 0;
+
+  Object.entries(teams).forEach(([tname, tdata]) => {
+    const liq = tdata.liquidity || {};
+    Object.entries(liq).forEach(([sym, ldata]) => {
+      totalZones += (ldata.h1_buy_zones || 0) + (ldata.h1_sell_zones || 0) +
+                    (ldata.h4_buy_zones || 0) + (ldata.h4_sell_zones || 0);
+      activeSweeps += ldata.active_sweeps || 0;
+      if (ldata.sweep_55_passed) passCount++;
+      if (ldata.fake_blocked) blockCount++;
+
+      // Nearest zones for display
+      if (ldata.nearest_buy_side) {
+        allZones.push({...ldata.nearest_buy_side, symbol: sym, team: tname, side: 'buy_side'});
+      }
+      if (ldata.nearest_sell_side) {
+        allZones.push({...ldata.nearest_sell_side, symbol: sym, team: tname, side: 'sell_side'});
+      }
+
+      // Sweep events
+      if (ldata.active_sweeps > 0) {
+        allSweeps.push({
+          symbol: sym,
+          team: tname,
+          signal: ldata.signal || 'NEUTRAL',
+          passed: ldata.sweep_55_passed || false,
+          blocked: ldata.fake_blocked || false,
+          confidence: ldata.confidence || 0,
+          filters: `${ldata.filters_passed || 0}/${ldata.total_filters || 6}`,
+          profit_target: ldata.profit_target || 0,
+        });
+      }
+    });
+  });
+
+  // Summary
+  summary.innerHTML = `Zones: <b>${totalZones}</b> | Sweeps: <b>${activeSweeps}</b> | ` +
+    `<span style="color:var(--green)">✅${passCount}</span> ` +
+    `<span style="color:var(--red)">🚫${blockCount}</span>`;
+
+  // Zones list (show nearest zones per symbol)
+  zonesList.innerHTML = '';
+  const sortedZones = allZones.sort((a,b) => (b.strength||0) - (a.strength||0)).slice(0, 8);
+  sortedZones.forEach(z => {
+    const card = document.createElement('div');
+    card.className = `liq-zone-card ${z.side === 'buy_side' ? 'buy-side' : 'sell-side'}`;
+    const tfClass = z.timeframe === 'H4' ? 'liq-tf-h4' : 'liq-tf-h1';
+    const eqBadge = z.is_equal_hl ? '<span class="liq-zone-eq">EQ</span>' : '';
+    const sweptBadge = z.swept ?
+      `<span class="liq-zone-swept">${z.sweep_pct?.toFixed(0)||0}%</span>` : '';
+    card.innerHTML = `
+      <span class="liq-zone-level">${z.symbol}</span>
+      <span class="liq-zone-tf ${tfClass}">${z.timeframe||'H1'}</span>
+      <span style="font-size:10px;font-weight:700">${typeof z.level==='number'?z.level.toFixed(5):z.level}</span>
+      ${eqBadge} ${sweptBadge}
+      <span class="liq-zone-str">str:${z.strength||0}</span>
+    `;
+    zonesList.appendChild(card);
+  });
+  if (!sortedZones.length) {
+    zonesList.innerHTML = '<div style="color:var(--dim);font-size:9px">No zones detected yet</div>';
+  }
+
+  // Sweep list
+  sweepList.innerHTML = '';
+  if (allSweeps.length === 0) {
+    sweepList.innerHTML = '<div style="color:var(--dim);font-size:9px">No sweeps yet</div>';
+  } else {
+    allSweeps.forEach(s => {
+      const item = document.createElement('div');
+      item.className = `liq-sweep-item ${s.blocked ? 'blocked' : ''}`;
+      const badge55 = s.passed ?
+        '<span class="liq-55-badge liq-55-pass">55% ✅</span>' :
+        '<span class="liq-55-badge liq-55-fail">55% ❌</span>';
+      const sigColor = s.signal === 'BUY' ? 'var(--green)' :
+                       s.signal === 'SELL' ? 'var(--red)' : 'var(--muted)';
+      item.innerHTML = `
+        <b>${s.symbol}</b>
+        <span style="color:${sigColor};font-weight:700">${s.signal}</span>
+        ${badge55}
+        <span style="color:var(--muted)">F:${s.filters}</span>
+        ${s.profit_target ? `<span style="color:var(--cyan)">TP:${s.profit_target.toFixed(2)}</span>` : ''}
+        ${s.blocked ? '<span style="color:var(--red)">🚫 FAKE</span>' : ''}
+      `;
+      sweepList.appendChild(item);
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ALERTS
+// ══════════════════════════════════════════════════════════
+function addAlert(msg) {
+  recentAlerts.unshift({
+    time: msg.timestamp,
+    text: msg.content.slice(0, 120)
+  });
+  if (recentAlerts.length > 6) recentAlerts.pop();
+  renderAlerts();
+}
+
+function renderAlerts() {
+  const el = document.getElementById('alerts-list');
+  if (!recentAlerts.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:10px">No alerts yet</div>';
+    return;
+  }
+  el.innerHTML = recentAlerts.map(a =>
+    `<div class="alert-item"><div class="alert-time">${a.time}</div>${escHtml(a.text)}</div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// TICKER
+// ══════════════════════════════════════════════════════════
+function renderTicker(teams) {
+  const el = document.getElementById('ticker-items');
+  let items = '';
+  Object.entries(teams).forEach(([tname, tdata]) => {
+    const color = TEAM_COLORS[tname];
+    Object.entries(tdata.prices || {}).forEach(([sym, pdata]) => {
+      const p = pdata.price;
+      const sig = tdata.signals?.[sym]?.signal;
+      const cls = sig === 'BUY' ? 'tick-up' : sig === 'SELL' ? 'tick-dn' : 'tick-neutral';
+      const icon = sig === 'BUY' ? '▲' : sig === 'SELL' ? '▼' : '●';
+      const pFmt = typeof p === 'number' ? p.toLocaleString(undefined,{maximumFractionDigits:5}) : '—';
+      items += `<span class="tick-item"><span class="tick-sym" style="color:${color}">${sym}</span><span class="tick-price ${cls}">${pFmt} ${icon}</span></span>`;
+    });
+  });
+  if (items) el.innerHTML = items;
+}
+
+// ══════════════════════════════════════════════════════════
+// FILTER
+// ══════════════════════════════════════════════════════════
+function setFilter(team) {
+  activeFilter = team;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active');
+    // remove ALL specific class for others
+    b.classList.remove('filter-ALL');
+  });
+  // Reapply base classes
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    const t = b.textContent.replace(/[^A-Z]/g,'').trim();
+    b.classList.add('filter-' + (t || 'ALL'));
+  });
+  event.target.classList.add('active');
+
+  document.querySelectorAll('.msg-card').forEach(card => {
+    card.classList.toggle('hidden', team !== 'ALL' && card.dataset.team !== team);
+  });
+
+  if (document.getElementById('auto-scroll').checked) {
+    const feed = document.getElementById('feed');
+    feed.scrollTop = feed.scrollHeight;
+  }
+}
+
+function clearFeed() {
+  document.getElementById('feed').innerHTML = '';
+  msgCount = 0;
+  document.getElementById('stat-msgs').textContent = '0';
+  document.getElementById('msg-count').textContent = '0 msgs';
+}
+
+// ══════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════
+function setConn(ok) {
+  const dot   = document.getElementById('conn-dot');
+  const label = document.getElementById('conn-label');
+  dot.className   = ok ? 'dot live' : 'dot';
+  label.textContent = ok ? 'Connected' : 'Reconnecting...';
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// Keyboard shortcut: Ctrl+L = clear
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'l') { e.preventDefault(); clearFeed(); }
+});
+
+// ══════════════════════════════════════════════════════════
+// SOUND ALERT ENGINE  (Web Audio API — no files needed)
+// ══════════════════════════════════════════════════════════
+let audioCtx   = null;
+let soundOn    = true;
+let alertQueue = [];     // prevent overlapping alerts
+let alertBusy  = false;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  // resume if suspended (browser policy)
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = soundOn ? '🔊 SOUND ON' : '🔇 SOUND OFF';
+  btn.classList.toggle('muted', !soundOn);
+}
+
+/**
+ * playTone — single oscillator burst
+ * @param {number} freq     Frequency in Hz
+ * @param {number} startT   AudioContext time to start
+ * @param {number} dur      Duration in seconds
+ * @param {number} gain     Volume 0–1
+ * @param {string} type     OscillatorType: 'sine'|'square'|'sawtooth'
+ */
+function playTone(freq, startT, dur, gain=0.7, type='square') {
+  const ctx  = getAudioCtx();
+  const osc  = ctx.createOscillator();
+  const vol  = ctx.createGain();
+  osc.type   = type;
+  osc.frequency.setValueAtTime(freq, startT);
+  vol.gain.setValueAtTime(0, startT);
+  vol.gain.linearRampToValueAtTime(gain, startT + 0.01);
+  vol.gain.exponentialRampToValueAtTime(0.001, startT + dur);
+  osc.connect(vol);
+  vol.connect(ctx.destination);
+  osc.start(startT);
+  osc.stop(startT + dur + 0.02);
+}
+
+/**
+ * playBuyAlert — ascending 4-tone fanfare (loud & punchy)
+ * Sounds: 440 → 550 → 660 → 880 Hz (A → C# → E → A octave)
+ */
+function playBuyAlert() {
+  const ctx = getAudioCtx();
+  const t   = ctx.currentTime + 0.05;
+  const seq = [440, 554, 659, 880];
+  seq.forEach((f, i) => {
+    playTone(f,     t + i * 0.13, 0.18, 0.85, 'square');
+    playTone(f * 2, t + i * 0.13, 0.10, 0.25, 'sine');   // harmonic
+  });
+  // Final long sustain chord
+  playTone(880, t + 0.60, 0.55, 0.70, 'sine');
+  playTone(660, t + 0.60, 0.55, 0.45, 'sine');
+}
+
+/**
+ * playBuyModerateAlert — 2-tone gentle ping for MODERATE BUY
+ */
+function playBuyModerateAlert() {
+  const ctx = getAudioCtx();
+  const t   = ctx.currentTime + 0.05;
+  playTone(660, t,        0.15, 0.65, 'sine');
+  playTone(880, t + 0.18, 0.20, 0.60, 'sine');
+}
+
+/**
+ * playAlertTick — subtle 1-tone tick for news BULLISH
+ */
+function playAlertTick() {
+  const ctx = getAudioCtx();
+  playTone(1200, ctx.currentTime + 0.05, 0.07, 0.35, 'sine');
+}
+
+/**
+ * playSellAlert — descending 4-tone warning siren
+ * Sounds: 880 → 660 → 550 → 440 Hz
+ */
+function playSellAlert() {
+  const ctx = getAudioCtx();
+  const t   = ctx.currentTime + 0.05;
+  const seq = [880, 659, 554, 440];
+  seq.forEach((f, i) => {
+    playTone(f,     t + i * 0.13, 0.18, 0.85, 'sawtooth');
+    playTone(f / 2, t + i * 0.13, 0.10, 0.20, 'sine');
+  });
+  // Low warning buzz sustain
+  playTone(220, t + 0.60, 0.55, 0.60, 'sawtooth');
+}
+
+/**
+ * playSellModerateAlert — 2-tone descending warn for MODERATE SELL
+ */
+function playSellModerateAlert() {
+  const ctx = getAudioCtx();
+  const t   = ctx.currentTime + 0.05;
+  playTone(660, t,        0.15, 0.65, 'sawtooth');
+  playTone(440, t + 0.18, 0.20, 0.60, 'sawtooth');
+}
+
+/**
+ * showTradeAlertBanner — full-screen flash + pop-up banner for 3 seconds
+ */
+function showTradeAlertBanner(signal, strength, symbol, confidence, reasons) {
+  const flash  = document.getElementById('trade-alert-flash');
+  const banner = document.getElementById('trade-alert-banner');
+  const title  = document.getElementById('ban-title');
+  const sub    = document.getElementById('ban-sub');
+
+  const isBuy = signal === 'BUY';
+  const icon  = isBuy ? '🚨' : '⛔';
+  const col   = isBuy ? 'var(--green)' : 'var(--red)';
+
+  title.style.color  = col;
+  title.textContent  = `${icon} ${strength} ${signal} — ${symbol}`;
+  sub.textContent    = `Confidence: ${confidence}% | ${(reasons||[]).slice(0,3).join(' + ')}`;
+
+  // Flash overlay
+  flash.style.display    = 'block';
+  flash.style.animation  = 'none';
+  void flash.offsetWidth; // reflow
+  flash.style.animation  = `${isBuy ? 'flash-buy' : 'flash-sell'} 1.2s ease-out forwards`;
+
+  // Banner slide in
+  banner.className       = isBuy ? '' : 'sell-banner';
+  banner.style.display   = 'block';
+  banner.style.animation = 'slideDown .3s ease-out forwards';
+
+  clearTimeout(banner._hideTimer);
+  banner._hideTimer = setTimeout(() => {
+    banner.style.animation = 'fadeOut .5s forwards';
+    setTimeout(() => {
+      banner.style.display = 'none';
+      flash.style.display  = 'none';
+    }, 500);
+  }, 3500);
+}
+
+/**
+ * triggerTradeAlert — decide which sound + banner to show
+ */
+function triggerTradeAlert(msg) {
+  if (!soundOn) return;
+
+  const sig = msg.data?.signal;
+  if (!sig) return;
+
+  const signal     = sig.signal;
+  const strength   = sig.strength;
+  const confidence = sig.confidence || 0;
+  const symbol     = msg.data?.symbol || msg.team || '';
+  const reasons    = sig.reasons || [];
+
+  // Strong signals (score >= 6 or conf >= 70) → full fanfare + banner
+  if (signal === 'BUY' && strength === 'STRONG') {
+    showTradeAlertBanner('BUY', 'STRONG', symbol, confidence, reasons);
+    playBuyAlert();
+  } else if (signal === 'SELL' && strength === 'STRONG') {
+    showTradeAlertBanner('SELL', 'STRONG', symbol, confidence, reasons);
+    playSellAlert();
+  }
+  // Moderate signals (conf >= 55) → softer 2-tone ping
+  else if (signal === 'BUY' && confidence >= 55) {
+    showTradeAlertBanner('BUY', 'MODERATE', symbol, confidence, reasons);
+    playBuyModerateAlert();
+  } else if (signal === 'SELL' && confidence >= 55) {
+    showTradeAlertBanner('SELL', 'MODERATE', symbol, confidence, reasons);
+    playSellModerateAlert();
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ADMIN CHAT SYSTEM (per-team threads)
+// ══════════════════════════════════════════════════════════
+let chatOpen = false;
+let activeChatTeam = 'ALL';
+let chatHistory = { ALL: [], METALS: [], FOREX: [], CRYPTO: [] };
+let chatUnread  = { ALL: 0, METALS: 0, FOREX: 0, CRYPTO: 0 };
+
+function toggleChatPanel() {
+  chatOpen = !chatOpen;
+  document.getElementById('chat-panel').classList.toggle('open', chatOpen);
+  if (chatOpen) {
+    chatUnread[activeChatTeam] = 0;
+    updateChatBadges();
+    document.getElementById('chat-input').focus();
+    scrollChatBottom();
+  }
+}
+
+function switchChatTeam(team) {
+  activeChatTeam = team;
+  document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.chat-tab[data-team="${team}"]`).classList.add('active');
+  chatUnread[team] = 0;
+  updateChatBadges();
+  renderChatMessages();
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text  = input.value.trim();
+  if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+  const target = activeChatTeam;
+  const now    = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+  // Add to local chat history
+  const myMsg = { from: 'You (Admin)', body: text, time: now, type: 'admin', team: target };
+  chatHistory.ALL.push(myMsg);
+  if (target !== 'ALL') chatHistory[target].push(myMsg);
+
+  // Send via WebSocket
+  ws.send(JSON.stringify({ type: 'admin_chat', text: text, target: target }));
+
+  input.value = '';
+  renderChatMessages();
+  scrollChatBottom();
+}
+
+function addChatReply(msg) {
+  const team = msg.team || 'ALL';
+  const now  = msg.timestamp || new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  const agentName = (msg.agent_icon || '🤖') + ' ' + (msg.agent || 'Agent');
+
+  const reply = {
+    from: agentName,
+    body: msg.content,
+    time: now,
+    type: 'agent',
+    team: team
+  };
+
+  // Add to ALL + specific team
+  chatHistory.ALL.push(reply);
+  if (team !== 'ALL' && team !== 'ADMIN' && chatHistory[team]) {
+    chatHistory[team].push(reply);
+  }
+
+  // If panel closed or different team tab → increment unread
+  if (!chatOpen || (activeChatTeam !== 'ALL' && activeChatTeam !== team)) {
+    chatUnread.ALL++;
+    if (chatHistory[team]) chatUnread[team]++;
+  }
+
+  updateChatBadges();
+  if (chatOpen) {
+    renderChatMessages();
+    scrollChatBottom();
+  }
+}
+
+function renderChatMessages() {
+  const container = document.getElementById('chat-messages');
+  const msgs = chatHistory[activeChatTeam] || [];
+
+  if (!msgs.length) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+        <div style="font-size:28px;margin-bottom:10px">💬</div>
+        <div style="font-size:11px;line-height:1.6">
+          <b>Chat with your AI Agents</b><br><br>
+          <span style="color:var(--gold)">📌 Instruction:</span> "XAUUSD pe sirf BUY karo"<br>
+          <span style="color:var(--cyan)">❓ Question:</span> "status batao" / "kyu BUY kiya?"<br>
+          <span style="color:var(--orange)">⚡ Command:</span> "clear instructions"<br><br>
+          Team tab choose karo aur message type karo!
+        </div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = msgs.map(m => {
+    const isAdmin = m.type === 'admin';
+    const cls = isAdmin ? 'admin-out' : 'agent-in';
+    const fromColor = isAdmin ? 'var(--blue)' : 'var(--green)';
+    return `
+      <div class="chat-msg ${cls}">
+        <div class="cm-from" style="color:${fromColor}">${escHtml(m.from)}</div>
+        <div class="cm-body">${escHtml(m.body)}</div>
+        <div class="cm-time">${m.time}</div>
+      </div>`;
+  }).join('');
+}
+
+function scrollChatBottom() {
+  const el = document.getElementById('chat-messages');
+  setTimeout(() => { el.scrollTop = el.scrollHeight; }, 50);
+}
+
+function updateChatBadges() {
+  // Main toggle badge
+  const totalUnread = chatUnread.ALL;
+  const badge = document.getElementById('chat-badge');
+  if (totalUnread > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // Per-tab badges
+  document.querySelectorAll('.chat-tab').forEach(tab => {
+    const team = tab.dataset.team;
+    const count = chatUnread[team] || 0;
+    let tabBadge = tab.querySelector('.chat-tab-badge');
+    if (!tabBadge) {
+      tabBadge = document.createElement('span');
+      tabBadge.className = 'chat-tab-badge';
+      tab.appendChild(tabBadge);
+    }
+    if (count > 0 && team !== activeChatTeam) {
+      tabBadge.style.display = 'inline-block';
+      tabBadge.textContent = count;
+    } else {
+      tabBadge.style.display = 'none';
+    }
+  });
+}
+
+// Enter key sends message
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// 🧠 AI BRAIN INTELLIGENCE PANEL
+// ══════════════════════════════════════════════════════════
+let brainOpen = false;
+let brainPredictions = {}, brainMemory = {}, brainLearnings = [], brainTraining = {}, brainInstitutional = {};
+
+function toggleBrain() {
+  brainOpen = !brainOpen;
+  const panel = document.getElementById('brain-panel');
+  const btn = document.getElementById('brain-btn');
+  if (brainOpen) {
+    panel.classList.add('open');
+    btn.classList.add('active');
+    loadBrainData();
+  } else {
+    panel.classList.remove('open');
+    btn.classList.remove('active');
+  }
+}
+
+// Tab switching
+function brainTabClick(tabName) {
+  document.querySelectorAll('.brain-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.brain-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.brain-tab[data-bt="${tabName}"]`).classList.add('active');
+  document.getElementById('bt-' + tabName).classList.add('active');
+}
+
+// Pair filter
+function brainPairFilter(filter) {
+  document.querySelectorAll('.brain-pf-btn').forEach(b => {b.style.background='transparent';b.classList.remove('active')});
+  event.target.classList.add('active');
+  event.target.style.background = filter === 'all' ? 'var(--purple)' : 'var(--surface2)';
+  document.querySelectorAll('.bp-card').forEach(card => {
+    card.style.display = (filter === 'all' || card.dataset.team === filter) ? '' : 'none';
+  });
+}
+
+const BRAIN_PAIRS = {
+  METALS: {symbols:['XAUUSD','XAGUSD'], color:'#FFD700', icon:'🥇'},
+  FOREX: {symbols:['EURUSD','GBPUSD','USDJPY','USDCHF','AUDUSD','USDCAD','NZDUSD','GBPJPY','EURJPY','EURGBP'], color:'#00BFFF', icon:'💱'},
+  CRYPTO: {symbols:['BTCUSD','ETHUSD'], color:'#A855F7', icon:'🪙'}
+};
+
+async function loadBrainData() {
+  try { brainPredictions = await (await fetch('/api/prediction_memory')).json(); } catch(e){ brainPredictions = {}; }
+  try { brainMemory = await (await fetch('/api/agent_memory')).json(); } catch(e){ brainMemory = {}; }
+  try { brainLearnings = await (await fetch('/api/agent_learnings')).json(); } catch(e){ brainLearnings = []; }
+  try { brainTraining = await (await fetch('/api/agent_training_data')).json(); } catch(e){ brainTraining = {}; }
+  try { brainInstitutional = await (await fetch('/api/institutional_positions')).json(); } catch(e){ brainInstitutional = {}; }
+  renderBrain();
+}
+
+function renderBrain() {
+  renderBrainOverview();
+  renderBrainPairs();
+  renderBrainLearnings();
+  renderBrainStorage();
+  renderBrainAccuracy();
+}
+
+function renderBrainOverview() {
+  let totalP=0, activeP=0, totalPred=0;
+  Object.values(BRAIN_PAIRS).forEach(t => totalP += t.symbols.length);
+  const allSrc = [brainPredictions, brainMemory];
+  const seen = {};
+  allSrc.forEach(src => {
+    Object.entries(src).forEach(([sym, d]) => {
+      const preds = d?.predictions || [];
+      totalPred += preds.length;
+      if(preds.length > 0 && !seen[sym]) { activeP++; seen[sym]=true; }
+    });
+  });
+  document.getElementById('bm-total').textContent = totalP;
+  document.getElementById('bm-active').textContent = activeP;
+  document.getElementById('bm-preds').textContent = totalPred.toLocaleString();
+  document.getElementById('bm-lessons').textContent = Array.isArray(brainLearnings) ? brainLearnings.length : 0;
+
+  // Training data stats
+  const tradeCount = brainTraining?.trades?.length || 0;
+  const resolved = (brainTraining?.trades || []).filter(t => t.outcome);
+  const wins = resolved.filter(t => t.outcome === 'WIN').length;
+  const winRate = resolved.length > 0 ? Math.round(wins / resolved.length * 100) : 0;
+  document.getElementById('bm-trades').textContent = tradeCount;
+  document.getElementById('bm-winrate').textContent = resolved.length > 0 ? winRate + '%' : '--';
+  document.getElementById('bm-winrate').style.color = winRate >= 50 ? 'var(--green)' : winRate > 0 ? 'var(--red)' : 'var(--muted)';
+  document.getElementById('bm-resolved').textContent = resolved.length;
+  document.getElementById('bm-pnl').textContent = '$' + (brainTraining?.total_pnl || 0).toFixed(2);
+  document.getElementById('bm-pnl').style.color = (brainTraining?.total_pnl || 0) >= 0 ? 'var(--green)' : 'var(--red)';
+}
+
+function renderBrainAccuracy() {
+  const container = document.getElementById('brain-accuracy-chart');
+  const allSymbols = {};
+  [brainPredictions, brainMemory].forEach(src => {
+    Object.entries(src).forEach(([sym, d]) => {
+      if(!allSymbols[sym]) allSymbols[sym] = {total:0, correct:0};
+      (d?.predictions || []).forEach(p => { if(p.evaluated) { allSymbols[sym].total++; if(p.correct) allSymbols[sym].correct++; }});
+    });
+  });
+  // Also from training data
+  const symStats = brainTraining?.symbol_stats || {};
+  Object.entries(symStats).forEach(([sym, s]) => {
+    if(!allSymbols[sym]) allSymbols[sym] = {total:0, correct:0};
+    allSymbols[sym].total += (s.wins||0) + (s.losses||0);
+    allSymbols[sym].correct += (s.wins||0);
+  });
+
+  let html = '';
+  Object.entries(allSymbols).forEach(([sym, stats]) => {
+    if(stats.total === 0) return;
+    const acc = Math.round((stats.correct / stats.total) * 100);
+    const color = acc >= 60 ? 'var(--green)' : acc >= 45 ? 'var(--orange)' : 'var(--red)';
+    const h = Math.max(8, acc * 0.9);
+    html += `<div class="blc-bar" style="height:${h}px;background:${color}" title="${sym}: ${acc}% (${stats.correct}/${stats.total})">
+      <div class="blc-val" style="color:${color}">${acc}%</div>
+      <div class="blc-lbl">${sym.replace('USD','')}</div>
+    </div>`;
+  });
+  if(!html) html = '<div style="color:var(--muted);font-size:10px;display:flex;align-items:center;justify-content:center;height:100%">Agents still collecting data — accuracy will appear after trades</div>';
+  container.innerHTML = html;
+}
+
+function renderBrainPairs() {
+  const container = document.getElementById('brain-pairs-grid');
+  let html = '';
+  Object.entries(BRAIN_PAIRS).forEach(([team, info]) => {
+    info.symbols.forEach(sym => {
+      const pm = brainPredictions[sym]?.predictions || [];
+      const am = brainMemory[sym]?.predictions || [];
+      const all = [...pm, ...am];
+      const ev = all.filter(p => p.evaluated);
+      const cor = ev.filter(p => p.correct);
+      const acc = ev.length > 0 ? Math.round(cor.length / ev.length * 100) : 0;
+      const isActive = all.length > 0;
+      const last = all[all.length - 1];
+      const sig = last?.signal || '--';
+      const conf = last?.confidence || 0;
+      // Symbol stats from training
+      const ss = brainTraining?.symbol_stats?.[sym];
+      const wr = ss ? ss.win_rate + '%' : '--';
+      const cls = isActive ? 'bp-active' : 'bp-wait';
+      html += `<div class="bp-card ${cls}" data-team="${team.toLowerCase()}">
+        <div class="bp-row">
+          <span class="bp-name" style="color:${info.color}">${escHtml(info.icon||'')} ${escHtml(sym)}</span>
+          <span class="bp-badge" style="background:${isActive?'#0f3d2a':'#1a1a1a'};color:${isActive?'var(--green)':'var(--muted)'}">${isActive?'ACTIVE':'WAITING'}</span>
+        </div>
+        <div class="bp-stats">
+          <div><span class="bp-s">Signal</span><br><span class="bp-sv" style="color:${sig==='BUY'?'var(--green)':sig==='SELL'?'var(--red)':'var(--muted)'}">${escHtml(sig)}</span></div>
+          <div><span class="bp-s">Confidence</span><br><span class="bp-sv">${conf}%</span></div>
+          <div><span class="bp-s">ML Win Rate</span><br><span class="bp-sv" style="color:${ss?(ss.win_rate>=50?'var(--green)':'var(--red)'):'var(--muted)'}">${wr}</span></div>
+          <div><span class="bp-s">Predictions</span><br><span class="bp-sv">${all.length}</span></div>
+        </div>
+        <div class="bp-bar"><div class="bp-fill" style="width:${acc}%;background:${acc>=50?'var(--green)':'var(--red)'}"></div></div>
+      </div>`;
+    });
+  });
+  container.innerHTML = html;
+}
+
+function renderBrainLearnings() {
+  const container = document.getElementById('brain-learnings-list');
+  if(!Array.isArray(brainLearnings) || brainLearnings.length === 0) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:10px;padding:8px">No learnings yet — agents will record insights as they trade</div>';
+    return;
+  }
+  const recent = [...brainLearnings].reverse().slice(0, 15);
+  let html = '';
+  recent.forEach(l => {
+    const tc = l.topic==='METALS'?'var(--gold)':l.topic==='FOREX'?'var(--blue)':l.topic==='CRYPTO'?'var(--purple)':'var(--muted)';
+    const si = l.source==='auto_training'?'🤖':l.source==='chat'?'💬':'📝';
+    const time = l.timestamp ? new Date(l.timestamp).toLocaleString() : '--';
+    const preview = (l.lesson||'').substring(0, 100) + ((l.lesson||'').length > 100 ? '...' : '');
+    html += `<div style="padding:6px 10px;background:var(--surface2);border-radius:5px;border-left:3px solid ${tc};margin-bottom:4px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+        <span style="font-size:10px"><span>${si}</span> <strong style="color:${tc}">${l.topic}</strong> <span style="font-size:8px;color:var(--muted);padding:1px 4px;background:var(--surface);border-radius:2px">${l.source}</span></span>
+        <span style="font-size:9px;color:var(--muted)">${time}</span>
+      </div>
+      <div style="font-size:10px;line-height:1.4">${preview}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderBrainStorage() {
+  const files = [
+    {name:'agent_training_data.json', data:brainTraining, color:'var(--green)', desc:'ML trade learning — win rates, patterns, thresholds'},
+    {name:'prediction_memory.json', data:brainPredictions, color:'var(--purple)', desc:'Prediction history per symbol'},
+    {name:'agent_memory.json', data:brainMemory, color:'var(--blue)', desc:'Agent chat memory & predictions'},
+    {name:'agent_learnings.json', data:brainLearnings, color:'var(--gold)', desc:'Lessons from training & research'},
+    {name:'institutional_positions.json', data:brainInstitutional, color:'var(--cyan)', desc:'COT data & institutional flow'},
+  ];
+  let maxSize = 0;
+  const sizes = files.map(f => {
+    const size = JSON.stringify(f.data).length;
+    if(size > maxSize) maxSize = size;
+    return {...f, size};
+  });
+  const container = document.getElementById('brain-storage-list');
+  let html = '';
+  sizes.forEach(f => {
+    const pct = maxSize > 0 ? (f.size / maxSize) * 100 : 0;
+    const sizeStr = f.size > 1048576 ? (f.size/1048576).toFixed(1)+' MB' : f.size > 1024 ? (f.size/1024).toFixed(0)+' KB' : f.size+' B';
+    const recs = Array.isArray(f.data) ? f.data.length : Object.keys(f.data).length;
+    html += `<div class="bs-item">
+      <div class="bs-icon" style="background:var(--surface);border:1px solid ${f.color}">💾</div>
+      <div class="bs-info">
+        <div class="bs-name">${f.name}</div>
+        <div class="bs-desc">${f.desc}</div>
+        <div style="margin-top:3px"><div class="bp-bar" style="width:100%"><div class="bp-fill" style="width:${pct}%;background:${f.color}"></div></div></div>
+      </div>
+      <div style="text-align:right;white-space:nowrap">
+        <div style="font-weight:700;font-size:11px;color:${f.color}">${sizeStr}</div>
+        <div style="font-size:9px;color:var(--muted)">${recs} keys</div>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// Auto-refresh brain data every 30s if open
+setInterval(() => { if(brainOpen) loadBrainData(); }, 30000);
+
+// ══════════════════════════════════════════════════════════
+// 🧠 AI BRAIN MINI-PANEL (RIGHT SIDEBAR — always visible)
+// ══════════════════════════════════════════════════════════
+const PROV_ICONS = {openrouter:'🔮',gemini:'💎',cerebras:'⚡',groq:'🚀',xai:'🌟',together:'🦙',cohere:'🧠'};
+const PROV_COLORS = {openrouter:'#A855F7',gemini:'#10B981',cerebras:'#06B6D4',groq:'#00BFFF',xai:'#EC4899',together:'#F97316',cohere:'#FFD700'};
+
+async function loadBrainMini() {
+  try {
+    const [aiRes, anaRes] = await Promise.all([
+      fetch('/api/ai_providers').then(r => r.json()).catch(() => null),
+      fetch('/api/analytics').then(r => r.json()).catch(() => null),
+    ]);
+
+    // ── Provider grid ──
+    if (aiRes && aiRes.providers) {
+      const grid = document.getElementById('abm-providers-grid');
+      let html = '';
+      Object.entries(aiRes.providers).forEach(([key, p]) => {
+        const active = p.status === 'ACTIVE';
+        const ico = PROV_ICONS[key] || '🤖';
+        const cls = active ? 'prov-active' : p.status === 'DOWN' ? 'prov-down' : '';
+        const dotCls = active ? 'dot-on' : p.status === 'DOWN' ? 'dot-off' : 'dot-none';
+        html += `<div class="abm-prov ${cls}" title="${p.name} — ${p.model}\n${p.status}${p.failures > 0 ? ' ('+p.failures+' fails)' : ''}${p.keys > 1 ? '\n'+p.keys+' API keys' : ''}">
+          <div class="abm-prov-dot ${dotCls}"></div>
+          <div class="abm-prov-icon">${ico}</div>
+          <div class="abm-prov-name" style="color:${PROV_COLORS[key] || 'var(--muted)'}">${key.toUpperCase()}</div>
+        </div>`;
+      });
+      grid.innerHTML = html;
+      document.getElementById('abm-active-count').textContent = `(${aiRes.total_active}/${aiRes.total_providers} active)`;
+
+      // ── Task routing bar ──
+      if (aiRes.task_routing) {
+        const bar = document.getElementById('abm-routing-bar');
+        const taskIcons = {decision:'🎯',validation:'✅',chat:'💬',research:'🔍',training:'🎓',news:'📰'};
+        let rHtml = '';
+        Object.entries(aiRes.task_routing).forEach(([task, chain]) => {
+          const ico = taskIcons[task] || '⚙️';
+          rHtml += `<span class="abm-route">${ico} ${task}: <strong>${chain[0]}</strong></span>`;
+        });
+        bar.innerHTML = rHtml;
+      }
+    }
+
+    // ── ML status ──
+    if (anaRes) {
+      const ml = anaRes.ml || {};
+      const mlEl = document.getElementById('abm-ml-status');
+      const mlActive = ml.active;
+      const mlAcc = ml.accuracy || 0;
+      const wr = anaRes.win_rate || 0;
+      const wrColor = wr >= 50 ? 'var(--green)' : wr > 0 ? 'var(--red)' : 'var(--muted)';
+      const mlColor = mlActive ? 'var(--green)' : 'var(--red)';
+      mlEl.innerHTML = `🤖 ML: <span style="color:${mlColor};font-weight:700">${mlActive ? 'ACTIVE' : 'INACTIVE'}</span> | Accuracy: <span style="font-weight:700">${mlAcc}%</span> | WR: <span style="color:${wrColor};font-weight:700">${wr}%</span> | Trades: ${anaRes.wins||0}W/${anaRes.losses||0}L`;
+    }
+  } catch(e) {
+    console.error('Brain mini load error:', e);
+  }
+}
+
+// Load immediately + refresh every 20s
+loadBrainMini();
+setInterval(loadBrainMini, 20000);
+
+// ══════════════════════════════════════════════════════════
+// 🤝 AI COORDINATION FEED (RIGHT SIDEBAR)
+// ══════════════════════════════════════════════════════════
+let coordEvents = [];
+const MAX_COORD = 50;
+let coordCount = 0;
+
+/**
+ * Detect if a message is a coordination event (ML, AI validation,
+ * institutional consensus, agent teamwork, quality gate decisions)
+ */
+function isCoordEvent(msg) {
+  const c = (msg.content || '').toLowerCase();
+  const t = msg.type || '';
+  const a = (msg.agent || '').toLowerCase();
+
+  // ML predictions / training
+  if (c.includes('ml:') || c.includes('ml predict') || c.includes('ml blocked') ||
+      c.includes('ml boost') || c.includes('training blacklist') || c.includes('training:')) return 'ml';
+
+  // AI validation
+  if (c.includes('ai validation') || c.includes('ai rejected') || c.includes('ai brain')) return 'ai';
+
+  // Institutional consensus / coordination
+  if (a.includes('institutional') || a.includes('institutionalcopy') ||
+      c.includes('institutional confirms') || c.includes('institutional consensus') ||
+      c.includes('copy confirms') || c.includes('big players')) return 'inst';
+
+  // Quality gate / operator decisions
+  if ((a.includes('operatormind') || a === 'operatormind') &&
+      (c.includes('operator verdict') || c.includes('candidate') || c.includes('trading halted') ||
+       c.includes('blocked') || c.includes('gate'))) return 'gate';
+
+  // Cross-team correlation
+  if (c.includes('correlation') || c.includes('cross-market') || c.includes('mtf aligned') ||
+      c.includes('mtf conflict')) return 'coord';
+
+  // Agent lessons / learning
+  if (c.includes('lesson [') || c.includes('running accuracy')) return 'ml';
+
+  return null;
+}
+
+function addCoordEvent(msg, coordType) {
+  const feed = document.getElementById('coord-feed');
+  if (coordCount === 0) feed.innerHTML = '';  // Clear "waiting" message
+
+  coordCount++;
+  document.getElementById('coord-count').textContent = coordCount + ' events';
+
+  const typeLabels = {
+    ml: ['ML/Training', 'ci-type-ml', 'ci-ml'],
+    ai: ['AI Brain', 'ci-type-ai', 'ci-ai'],
+    inst: ['Institutional', 'ci-type-inst', 'ci-inst'],
+    coord: ['Coordination', 'ci-type-coord', 'ci-coord'],
+    gate: ['Quality Gate', 'ci-type-gate', 'ci-gate'],
+  };
+  const [label, typeCls, itemCls] = typeLabels[coordType] || ['Event', 'ci-type-coord', 'ci-coord'];
+
+  const el = document.createElement('div');
+  el.className = `coord-item ${itemCls}`;
+
+  // Truncate content for compact display
+  let body = (msg.content || '').slice(0, 120);
+  if ((msg.content || '').length > 120) body += '...';
+
+  const teamIcon = TEAM_ICONS[msg.team] || '';
+  const time = msg.timestamp || '';
+
+  el.innerHTML = `
+    <div class="ci-header">
+      <span class="ci-time">${escHtml(time)}</span>
+      <span class="ci-type ${typeCls}">${label}</span>
+      <span style="font-size:8px;color:${TEAM_COLORS[msg.team]||'var(--muted)'}">${teamIcon} ${escHtml(msg.team||'')}</span>
+    </div>
+    <div class="ci-body">${escHtml(body)}</div>
+  `;
+
+  feed.appendChild(el);
+
+  // Prune old events
+  while (feed.children.length > MAX_COORD) {
+    feed.removeChild(feed.firstChild);
+  }
+
+  // Auto-scroll
+  feed.scrollTop = feed.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+connect();
+
+// Fix filter buttons — set proper class after DOM ready
+document.querySelectorAll('.filter-btn').forEach(b => {
+  b.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 📊 ANALYTICS PANEL
+// ═══════════════════════════════════════════════════════════════════
+let analyticsOpen = false;
+let analyticsTimer = null;
+
+function toggleAnalytics() {
+  const panel = document.getElementById('analytics-panel');
+  const btn = document.getElementById('analytics-btn');
+  analyticsOpen = !analyticsOpen;
+  if (analyticsOpen) {
+    panel.style.display = 'flex';
+    btn.style.background = 'var(--green)';
+    btn.style.color = '#fff';
+    loadAnalytics();
+    analyticsTimer = setInterval(loadAnalytics, 30000);
+  } else {
+    panel.style.display = 'none';
+    btn.style.background = '';
+    btn.style.color = 'var(--green)';
+    if (analyticsTimer) clearInterval(analyticsTimer);
+  }
+}
+
+async function loadAnalytics() {
+  try {
+    const res = await fetch('/api/analytics');
+    const d = await res.json();
+    const c = document.getElementById('analytics-content');
+
+    const pnlColor = d.total_pnl >= 0 ? 'var(--green)' : 'var(--red)';
+    const wrColor = d.win_rate >= 50 ? 'var(--green)' : d.win_rate > 0 ? 'var(--red)' : 'var(--muted)';
+
+    let html = '';
+
+    // Overview card
+    html += `<div style="background:var(--surface2);border-radius:8px;padding:16px;border:1px solid var(--border2)">
+      <h3 style="color:var(--gold);font-size:13px;margin-bottom:10px">💰 P&L Overview</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><span style="color:var(--muted);font-size:10px">Total P&L</span><br><span style="font-size:18px;font-weight:700;color:${pnlColor}">$${(d.total_pnl||0).toFixed(2)}</span></div>
+        <div><span style="color:var(--muted);font-size:10px">Win Rate</span><br><span style="font-size:18px;font-weight:700;color:${wrColor}">${d.win_rate||0}%</span></div>
+        <div><span style="color:var(--muted);font-size:10px">Wins / Losses</span><br><span style="color:var(--green)">${d.wins||0}W</span> / <span style="color:var(--red)">${d.losses||0}L</span></div>
+        <div><span style="color:var(--muted);font-size:10px">Profit Factor</span><br><span style="font-weight:700">${d.profit_factor||'--'}</span></div>
+        <div><span style="color:var(--muted);font-size:10px">Avg Win</span><br><span style="color:var(--green)">$${(d.avg_win||0).toFixed(2)}</span></div>
+        <div><span style="color:var(--muted);font-size:10px">Avg Loss</span><br><span style="color:var(--red)">$${(d.avg_loss||0).toFixed(2)}</span></div>
+      </div>
+    </div>`;
+
+    // Active trades
+    const at = d.active_trades || {};
+    html += `<div style="background:var(--surface2);border-radius:8px;padding:16px;border:1px solid var(--border2)">
+      <h3 style="color:var(--cyan);font-size:13px;margin-bottom:10px">📈 Active Trades (${at.count||0})</h3>`;
+    if (at.trades && at.trades.length > 0) {
+      at.trades.forEach(t => {
+        const ico = t.direction === 'BUY' ? '🟢' : '🔴';
+        html += `<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">${ico} ${escHtml(t.symbol||'')} ${escHtml(t.direction||'')} @ ${t.entry_price||'--'}</div>`;
+      });
+    } else {
+      html += `<div style="color:var(--muted)">No open trades</div>`;
+    }
+    html += `</div>`;
+
+    // ML Model status
+    const ml = d.ml || {};
+    html += `<div style="background:var(--surface2);border-radius:8px;padding:16px;border:1px solid var(--border2)">
+      <h3 style="color:var(--purple);font-size:13px;margin-bottom:10px">🤖 ML Model</h3>
+      <div style="margin-bottom:6px"><span style="color:var(--muted)">Status:</span> ${ml.active ? '<span style="color:var(--green)">ACTIVE</span>' : '<span style="color:var(--red)">INACTIVE</span>'}</div>
+      <div style="margin-bottom:6px"><span style="color:var(--muted)">Accuracy:</span> <span style="font-weight:700">${ml.accuracy||0}%</span></div>
+      <div style="margin-bottom:6px"><span style="color:var(--muted)">Loss Streak:</span> ${d.consecutive_losses||0} (${d.loss_multiplier||1}x size)</div>
+      <div style="margin-bottom:6px"><span style="color:var(--muted)">Halted:</span> ${d.trading_halted ? '<span style="color:var(--red)">YES</span>' : '<span style="color:var(--green)">NO</span>'}</div>`;
+    if (ml.top_features && ml.top_features.length > 0) {
+      html += `<div style="margin-top:8px;font-size:10px;color:var(--muted)">Top ML Features:</div>`;
+      ml.top_features.slice(0,3).forEach(f => {
+        html += `<div style="font-size:10px">📊 ${escHtml(f.name)}: ${f.importance}%</div>`;
+      });
+    }
+    html += `</div>`;
+
+    // Per-team performance
+    const teams = d.per_team || {};
+    html += `<div style="background:var(--surface2);border-radius:8px;padding:16px;border:1px solid var(--border2)">
+      <h3 style="color:var(--gold);font-size:13px;margin-bottom:10px">🏆 Team Performance</h3>`;
+    Object.entries(teams).forEach(([team, s]) => {
+      const tColor = team === 'METALS' ? 'var(--gold)' : team === 'FOREX' ? 'var(--blue)' : 'var(--purple)';
+      const tIco = team === 'METALS' ? '🥇' : team === 'FOREX' ? '💱' : '🪙';
+      const tWrColor = s.win_rate >= 50 ? 'var(--green)' : 'var(--red)';
+      html += `<div style="padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="color:${tColor};font-weight:700">${tIco} ${team}</span>
+        <span style="float:right;color:${tWrColor}">${s.win_rate}% WR</span>
+        <div style="font-size:10px;color:var(--muted)">${s.trades} trades | ${s.wins}W | P&L: $${(s.pnl||0).toFixed(2)}</div>
+      </div>`;
+    });
+    html += `</div>`;
+
+    // Per-symbol heatmap
+    const syms = d.per_symbol || {};
+    if (Object.keys(syms).length > 0) {
+      html += `<div style="background:var(--surface2);border-radius:8px;padding:16px;border:1px solid var(--border2);grid-column:span 2">
+        <h3 style="color:var(--cyan);font-size:13px;margin-bottom:10px">📋 Per-Symbol Breakdown</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">`;
+      Object.entries(syms).sort((a,b) => (b[1].win_rate||0) - (a[1].win_rate||0)).forEach(([sym, s]) => {
+        const wr = s.win_rate || 0;
+        const bg = wr >= 55 ? '#0f3d2a' : wr >= 45 ? '#2d2a0f' : '#3d0f0f';
+        const tc = wr >= 55 ? 'var(--green)' : wr >= 45 ? 'var(--orange)' : 'var(--red)';
+        html += `<div style="background:${bg};border-radius:4px;padding:8px;text-align:center">
+          <div style="font-weight:700;font-size:11px">${escHtml(sym)}</div>
+          <div style="font-size:16px;color:${tc};font-weight:700">${wr}%</div>
+          <div style="font-size:9px;color:var(--muted)">${s.wins||0}W/${s.losses||0}L | $${(s.total_pnl||0).toFixed(2)}</div>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+
+    // Recent trades
+    const recent = d.recent_trades || [];
+    if (recent.length > 0) {
+      html += `<div style="background:var(--surface2);border-radius:8px;padding:16px;border:1px solid var(--border2);grid-column:span 2">
+        <h3 style="color:var(--orange);font-size:13px;margin-bottom:10px">📜 Recent Trades (Last ${recent.length})</h3>
+        <div style="max-height:200px;overflow-y:auto">`;
+      recent.reverse().forEach(t => {
+        const ico = t.outcome === 'WIN' ? '✅' : '❌';
+        const dIco = t.direction === 'BUY' ? '🟢' : '🔴';
+        const pnlC = (t.pnl||0) >= 0 ? 'var(--green)' : 'var(--red)';
+        html += `<div style="padding:3px 0;border-bottom:1px solid var(--border);font-size:10px">
+          ${ico} ${dIco} <strong>${escHtml(t.symbol||'')}</strong> ${escHtml(t.direction||'')} | Score: ${t.score||0} | Conf: ${t.confidence||0}% | <span style="color:${pnlC};font-weight:700">$${(t.pnl||0).toFixed(2)}</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+
+    // AI Provider Status — real-time
+    try {
+      const aiRes = await fetch('/api/ai_providers');
+      const ai = await aiRes.json();
+      if (ai.providers && Object.keys(ai.providers).length > 0) {
+        html += `<div style="background:var(--surface2);border-radius:8px;padding:16px;border:1px solid var(--border2);grid-column:span 2">
+          <h3 style="color:var(--cyan);font-size:13px;margin-bottom:10px">🤖 AI Providers (${ai.total_active}/${ai.total_providers} Active) — Smart Task Routing</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">`;
+        const provIcons = {openrouter:'🔮',gemini:'💎',cerebras:'⚡',groq:'🚀',xai:'🌟',together:'🦙',cohere:'🧠'};
+        const provColors = {openrouter:'#A855F7',gemini:'#10B981',cerebras:'#06B6D4',groq:'#00BFFF',xai:'#EC4899',together:'#F97316',cohere:'#FFD700'};
+        Object.entries(ai.providers).forEach(([key, p]) => {
+          const stColor = p.status === 'ACTIVE' ? 'var(--green)' : p.status === 'DOWN' ? 'var(--red)' : 'var(--muted)';
+          const stBg = p.status === 'ACTIVE' ? '#0f3d2a' : p.status === 'DOWN' ? '#3d0f0f' : '#1a1a1a';
+          const ico = provIcons[key] || '🤖';
+          const bdr = provColors[key] || 'var(--border2)';
+          html += `<div style="background:${stBg};border-radius:6px;padding:10px;text-align:center;border-top:2px solid ${bdr}">
+            <div style="font-size:16px">${ico}</div>
+            <div style="font-weight:700;font-size:11px;color:${bdr}">${escHtml(p.name)}</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">${escHtml(p.model)}</div>
+            <div style="font-size:9px;margin-top:4px;color:${stColor};font-weight:700">${p.status} ${p.keys > 1 ? '('+p.keys+' keys)' : ''}</div>
+            ${p.failures > 0 ? '<div style="font-size:9px;color:var(--red)">'+p.failures+' fails</div>' : ''}
+          </div>`;
+        });
+        html += `</div>`;
+
+        // Task routing summary
+        if (ai.task_routing) {
+          html += `<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px">`;
+          const taskIcons = {decision:'🎯',validation:'✅',chat:'💬',research:'🔍',training:'🎓',news:'📰'};
+          Object.entries(ai.task_routing).forEach(([task, chain]) => {
+            const ico = taskIcons[task] || '⚙️';
+            html += `<span style="background:var(--surface);padding:4px 10px;border-radius:4px;border:1px solid var(--border2);font-size:10px">${ico} ${task}: <strong>${escHtml(chain[0])}</strong> → ${escHtml(chain[1])} → ${escHtml(chain[2])}</span>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
+      }
+    } catch(aiErr) {
+      // AI providers info not available — skip silently
+    }
+
+    c.innerHTML = html;
+  } catch(e) {
+    document.getElementById('analytics-content').innerHTML = `<div style="color:var(--red)">Error loading analytics: ${escHtml(String(e))}</div>`;
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     🧠 AI BRAIN INTELLIGENCE PANEL (Full-screen overlay)
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="brain-panel">
+  <div id="brain-topbar">
+    <h2>🧠 AI BRAIN INTELLIGENCE DASHBOARD</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span style="padding:3px 10px;border-radius:3px;font-size:10px;font-weight:700;background:#1a1035;color:var(--purple);border:1px solid #A855F740;animation:pulse 2s infinite">🔄 AGENTS LEARNING</span>
+      <button id="brain-close" onclick="toggleBrain()">✕ CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Brain Tabs -->
+  <div class="brain-tabs">
+    <div class="brain-tab active" data-bt="overview" onclick="brainTabClick('overview')">📊 Overview</div>
+    <div class="brain-tab" data-bt="pairs" onclick="brainTabClick('pairs')">💱 Pairs Status</div>
+    <div class="brain-tab" data-bt="brain" onclick="brainTabClick('brain')">🧠 AI Flow</div>
+    <div class="brain-tab" data-bt="agents" onclick="brainTabClick('agents')">🤖 Agent Learning</div>
+    <div class="brain-tab" data-bt="data" onclick="brainTabClick('data')">💾 Data & Storage</div>
+  </div>
+
+  <!-- ═══ TAB: OVERVIEW ═══ -->
+  <div class="brain-content active" id="bt-overview">
+    <div class="bc-grid4" style="margin-bottom:12px">
+      <div class="bm"><div class="bm-val" style="color:var(--gold)" id="bm-total">--</div><div class="bm-lbl">Total Pairs</div></div>
+      <div class="bm"><div class="bm-val" style="color:var(--green)" id="bm-active">--</div><div class="bm-lbl">Active Pairs</div></div>
+      <div class="bm"><div class="bm-val" style="color:var(--purple)" id="bm-preds">--</div><div class="bm-lbl">Predictions</div></div>
+      <div class="bm"><div class="bm-val" style="color:var(--cyan)" id="bm-lessons">--</div><div class="bm-lbl">Lessons Learned</div></div>
+    </div>
+    <div class="bc-grid4" style="margin-bottom:14px">
+      <div class="bm"><div class="bm-val" style="color:var(--blue)" id="bm-trades">--</div><div class="bm-lbl">ML Trades Recorded</div></div>
+      <div class="bm"><div class="bm-val" id="bm-winrate">--</div><div class="bm-lbl">ML Win Rate</div></div>
+      <div class="bm"><div class="bm-val" style="color:var(--orange)" id="bm-resolved">--</div><div class="bm-lbl">Resolved Trades</div></div>
+      <div class="bm"><div class="bm-val" id="bm-pnl">--</div><div class="bm-lbl">Total P&L</div></div>
+    </div>
+    <div class="bc-grid2">
+      <div class="bc bc-cyan">
+        <div class="bc-title">🧠 AI Brain Architecture</div>
+        <div style="font-size:11px;line-height:1.7">
+          <div style="margin-bottom:8px">Your system uses a <strong style="color:var(--cyan)">Multi-AI Brain</strong> with 3 intelligence layers:</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span style="background:#1a2535;padding:3px 8px;border-radius:4px;border:1px solid var(--blue);font-size:10px">🚀 Groq (Llama 3.3 70B) — Primary Analysis</span>
+            <span style="background:#1a2020;padding:3px 8px;border-radius:4px;border:1px solid var(--green);font-size:10px">💎 Google Gemini 2.5 Flash — Training & Web Research</span>
+            <span style="background:#2a1a10;padding:3px 8px;border-radius:4px;border:1px solid var(--gold);font-size:10px">📚 Claude Knowledge Base — Pre-Trained Wisdom</span>
+          </div>
+          <div style="margin-top:8px;padding:6px;background:var(--surface2);border-radius:4px;border-left:3px solid var(--purple);font-size:10px">
+            <strong style="color:var(--purple)">9 Agents/Team</strong> × 3 Teams + Admin = <strong style="color:var(--gold)">28 AI Agents</strong>
+          </div>
+        </div>
+      </div>
+      <div class="bc bc-gold">
+        <div class="bc-title">🎯 Prediction Accuracy by Symbol</div>
+        <div class="blc" id="brain-accuracy-chart" style="margin-bottom:18px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: PAIRS STATUS ═══ -->
+  <div class="brain-content" id="bt-pairs">
+    <div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:10px;color:var(--muted)">Filter:</span>
+      <button class="brain-pf-btn active" onclick="brainPairFilter('all')" style="padding:3px 10px;border-radius:3px;border:1px solid var(--border2);background:var(--purple);color:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">ALL</button>
+      <button class="brain-pf-btn" onclick="brainPairFilter('metals')" style="padding:3px 10px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">🥇 METALS</button>
+      <button class="brain-pf-btn" onclick="brainPairFilter('forex')" style="padding:3px 10px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--blue);font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">💱 FOREX</button>
+      <button class="brain-pf-btn" onclick="brainPairFilter('crypto')" style="padding:3px 10px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--purple);font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">🪙 CRYPTO</button>
+    </div>
+    <div class="bc-grid3" id="brain-pairs-grid"></div>
+  </div>
+
+  <!-- ═══ TAB: AI BRAIN FLOW ═══ -->
+  <div class="brain-content" id="bt-brain">
+    <div class="bc bc-cyan" style="margin-bottom:12px">
+      <div class="bc-title">🧠 Complete AI Brain Pipeline</div>
+      <div class="bf-row">
+        <div class="bf-node" style="border-color:var(--blue)"><div class="bfn-icon">📡</div><div class="bfn-title">MT5 Data</div><div class="bfn-sub">OHLCV Real-time</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--gold)"><div class="bfn-icon">📊</div><div class="bfn-title">MarketAnalyst</div><div class="bfn-sub">RSI,MACD,BB,ADX</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--purple)"><div class="bfn-icon">🏦</div><div class="bfn-title">SmartMoney</div><div class="bfn-sub">AMD,FVG,BOS</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--orange)"><div class="bfn-icon">📰</div><div class="bfn-title">NewsAnalyst</div><div class="bfn-sub">Sentiment</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--green)"><div class="bfn-icon">📶</div><div class="bfn-title">SignalGen</div><div class="bfn-sub">BUY/SELL/HOLD</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--red)"><div class="bfn-icon">🛡️</div><div class="bfn-title">RiskMgr</div><div class="bfn-sub">SL/TP/Size</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--cyan)"><div class="bfn-icon">🎯</div><div class="bfn-title">Coordinator</div><div class="bfn-sub">Execute</div></div>
+      </div>
+    </div>
+    <div class="bc-grid2">
+      <div class="bc bc-purple">
+        <div class="bc-title">⚡ Decision Process (9 Steps)</div>
+        <div class="btl">
+          <div class="btl-item btl-on"><div class="btl-t">Step 1</div><div class="btl-h">DataFetcher pulls OHLCV from MT5</div><div class="btl-d">M5, M15, H1, H4 — 200 bars each</div></div>
+          <div class="btl-item btl-on"><div class="btl-t">Step 2</div><div class="btl-h">MarketAnalyst runs 15+ indicators</div><div class="btl-d">RSI, MACD, BB, EMAs, ADX, S/R</div></div>
+          <div class="btl-item btl-on"><div class="btl-t">Step 3</div><div class="btl-h">SmartMoney detects institutional patterns</div><div class="btl-d">AMD, FVG, BOS, Liquidity Sweeps</div></div>
+          <div class="btl-item btl-on"><div class="btl-t">Step 4</div><div class="btl-h">NewsAnalyst scores sentiment</div><div class="btl-d">Yahoo RSS, geopolitical analysis</div></div>
+          <div class="btl-item btl-on"><div class="btl-t">Step 5</div><div class="btl-h">Groq AI generates analysis</div><div class="btl-d">Llama 3.3 70B → agent perspective</div></div>
+          <div class="btl-item btl-on"><div class="btl-t">Step 6</div><div class="btl-h">SignalGen creates BUY/SELL/HOLD</div><div class="btl-d">Score 0-100, news-adjusted</div></div>
+          <div class="btl-item btl-on"><div class="btl-t">Step 7</div><div class="btl-h">RiskManager calculates SL/TP</div><div class="btl-d">ATR stops, R:R, drawdown check</div></div>
+          <div class="btl-item"><div class="btl-t">Step 8</div><div class="btl-h">Admin cross-team validation</div><div class="btl-d">Correlation, high-conf gating</div></div>
+          <div class="btl-item"><div class="btl-t">Step 9</div><div class="btl-h">MT5 Execution</div><div class="btl-d">Market order → tracked</div></div>
+        </div>
+      </div>
+      <div class="bc bc-gold">
+        <div class="bc-title">🏛️ Institutional Intelligence</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:8px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--blue)">
+            <div style="font-weight:700;font-size:11px">🌊 Institutional Flow Agent</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">COT data — Managed Money + Commercial positions from CFTC reports</div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--green)">
+            <div style="font-weight:700;font-size:11px">🔍 Web Research Agent</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">Google Gemini 2.5 Flash searches internet for key levels & analysis</div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--purple)">
+            <div style="font-weight:700;font-size:11px">🌐 Cross-Market Agent</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">DXY, VIX, US10Y, Gold, Oil correlation & risk-on/off detection</div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--orange)">
+            <div style="font-weight:700;font-size:11px">📅 Economic Calendar Agent</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">FOMC, NFP, CPI — blocks trading 30min before/after</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: AGENT LEARNING ═══ -->
+  <div class="brain-content" id="bt-agents">
+    <div class="bc bc-green" style="margin-bottom:12px">
+      <div class="bc-title">🎓 Learning Pipeline — How Agents Get Smarter</div>
+      <div class="bf-row">
+        <div class="bf-node" style="border-color:var(--green)"><div class="bfn-icon">📈</div><div class="bfn-title">Trade Entry</div><div class="bfn-sub">Snapshot saved</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--blue)"><div class="bfn-icon">📸</div><div class="bfn-title">TradeSnapshot</div><div class="bfn-sub">16 fields captured</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--orange)"><div class="bfn-icon">✅❌</div><div class="bfn-title">Result</div><div class="bfn-sub">Win/Loss recorded</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--purple)"><div class="bfn-icon">📊</div><div class="bfn-title">Stats Learning</div><div class="bfn-sub">Win rate/combo</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--cyan)"><div class="bfn-icon">🤖</div><div class="bfn-title">ML Model</div><div class="bfn-sub">Decision Tree</div></div>
+        <div class="bf-arrow">→</div>
+        <div class="bf-node" style="border-color:var(--gold)"><div class="bfn-icon">⚙️</div><div class="bfn-title">Auto-Adjust</div><div class="bfn-sub">Thresholds</div></div>
+      </div>
+    </div>
+    <div class="bc-grid2">
+      <div class="bc bc-purple">
+        <div class="bc-title">📚 3 Levels of Learning</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:10px;background:var(--surface2);border-radius:6px;border:1px solid var(--green)">
+            <div style="display:flex;justify-content:space-between"><strong style="color:var(--green);font-size:11px">Level 1: Statistical</strong><span style="background:#0f3d2a;color:var(--green);padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700">ALWAYS ON</span></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:4px">Win rate per symbol, session, indicator combo. Adaptive thresholds. Market regime detection.</div>
+          </div>
+          <div style="padding:10px;background:var(--surface2);border-radius:6px;border:1px solid var(--blue)">
+            <div style="display:flex;justify-content:space-between"><strong style="color:var(--blue);font-size:11px">Level 2: ML Pattern Recognition</strong><span style="background:#0d2535;color:var(--blue);padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700">50+ TRADES</span></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:4px">Decision Tree predicts WIN/LOSS. Learns best feature combos. Auto-adjusts confidence.</div>
+          </div>
+          <div style="padding:10px;background:var(--surface2);border-radius:6px;border:1px solid var(--orange)">
+            <div style="display:flex;justify-content:space-between"><strong style="color:var(--orange);font-size:11px">Level 3: Auto-Management</strong><span style="background:#2d1a00;color:var(--orange);padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700">AUTONOMOUS</span></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:4px">Auto-disable &lt;35% pairs. Auto-boost &gt;65%. Blacklist bad hours.</div>
+          </div>
+        </div>
+        <div class="bc-title" style="margin-top:12px">🏆 Agent Reward System</div>
+        <table class="ar-table">
+          <thead><tr><th>Agent</th><th>Role</th><th style="color:var(--green)">Win</th><th style="color:var(--red)">Loss</th></tr></thead>
+          <tbody>
+            <tr><td>📡 DataFetcher</td><td style="color:var(--muted)">MT5 OHLCV</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>📊 MarketAnalyst</td><td style="color:var(--muted)">Indicators</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>🏦 SmartMoney</td><td style="color:var(--muted)">AMD+SMC</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>📰 NewsAnalyst</td><td style="color:var(--muted)">Sentiment</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>📶 SignalGen</td><td style="color:var(--muted)">Decisions</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>🛡️ RiskManager</td><td style="color:var(--muted)">SL/TP</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>🧠 PatternMemory</td><td style="color:var(--muted)">Setups</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>🎭 OperatorMind</td><td style="color:var(--muted)">Traps</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+            <tr><td>🎯 Coordinator</td><td style="color:var(--muted)">Final</td><td style="color:var(--green)">+10</td><td style="color:var(--red)">-8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bc bc-blue">
+        <div class="bc-title">📖 Recent Learnings</div>
+        <div id="brain-learnings-list" style="max-height:500px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: DATA & STORAGE ═══ -->
+  <div class="brain-content" id="bt-data">
+    <div class="bc-grid2">
+      <div class="bc bc-blue">
+        <div class="bc-title">📡 Data Collected Every 30 Seconds</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="padding:8px;background:var(--surface2);border-radius:5px;display:flex;gap:8px;align-items:start">
+            <span style="font-size:16px">📊</span>
+            <div><div style="font-weight:700;font-size:11px">Market Data</div><div style="font-size:10px;color:var(--muted)">OHLCV from MT5 — M5, M15, H1, H4 × 200 bars × 14 pairs</div></div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:5px;display:flex;gap:8px;align-items:start">
+            <span style="font-size:16px">📈</span>
+            <div><div style="font-weight:700;font-size:11px">Technical Indicators (15+)</div><div style="font-size:10px;color:var(--muted)">RSI, MACD, BB, EMAs(20/50/200), ADX, S/R, Volume</div></div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:5px;display:flex;gap:8px;align-items:start">
+            <span style="font-size:16px">🏦</span>
+            <div><div style="font-weight:700;font-size:11px">Smart Money Concepts</div><div style="font-size:10px;color:var(--muted)">AMD Phase, FVG, BOS, Liquidity Sweeps, Order Blocks</div></div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:5px;display:flex;gap:8px;align-items:start">
+            <span style="font-size:16px">📰</span>
+            <div><div style="font-weight:700;font-size:11px">News & Sentiment</div><div style="font-size:10px;color:var(--muted)">Yahoo RSS, economic calendar, geopolitical events</div></div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:5px;display:flex;gap:8px;align-items:start">
+            <span style="font-size:16px">🏛️</span>
+            <div><div style="font-weight:700;font-size:11px">Institutional Data</div><div style="font-size:10px;color:var(--muted)">COT reports, DXY/VIX/Bond correlations</div></div>
+          </div>
+          <div style="padding:8px;background:var(--surface2);border-radius:5px;display:flex;gap:8px;align-items:start">
+            <span style="font-size:16px">🌐</span>
+            <div><div style="font-weight:700;font-size:11px">Web Research (Every 30 min)</div><div style="font-size:10px;color:var(--muted)">Gemini 2.5 Flash searches for latest analysis & levels</div></div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding:6px 8px;background:var(--surface2);border-radius:4px;border-left:3px solid var(--green);font-size:10px">
+          <strong style="color:var(--green)">TradeSnapshot</strong> captures 16 fields at entry: symbol, direction, score, confidence, h1/h4 trend, RSI, ADX, MACD, BB, AMD phase, news, hour, institutional dir, killzone, volume
+        </div>
+      </div>
+      <div class="bc bc-gold">
+        <div class="bc-title">🗄️ Data Storage — All Files</div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:10px">All data stored locally in JSON — no cloud, no external DB</div>
+        <div id="brain-storage-list"></div>
+        <div style="margin-top:10px;padding:8px;background:var(--surface2);border-radius:5px;font-size:10px">
+          <div style="font-weight:700;margin-bottom:6px;color:var(--cyan)">🔄 Data Flow</div>
+          <div style="line-height:1.8">
+            <span style="color:var(--blue)">MT5</span> → <span style="color:var(--gold)">Agents Analyze</span> → <span style="color:var(--green)">Signal + Snapshot</span><br>
+            <span style="color:var(--green)">Signal</span> → <span style="color:var(--orange)">Execute on MT5</span> → <span style="color:var(--red)">Win/Loss</span><br>
+            <span style="color:var(--red)">Result</span> → <span style="color:var(--purple)">training_data.json</span> → <span style="color:var(--cyan)">ML Retrain</span><br>
+            <span style="color:var(--cyan)">Better Model</span> → <span style="color:var(--gold)">Updated Thresholds</span> ♻️
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

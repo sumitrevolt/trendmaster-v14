@@ -1,0 +1,148 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "title": "TrendMaster v14 — Live Ops",
+  "tags": ["trading", "trendmaster"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Brain uptime",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {"expr": "trendmaster_uptime_seconds", "legendFormat": "uptime (s)"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Brain restarts (total)",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {"expr": "trendmaster_brain_restarts_total"}
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Account equity (live)",
+      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {"expr": "trendmaster_account_equity"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Signal file retries (total)",
+      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {"expr": "trendmaster_signal_file_retries_total"}
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Tick latency p95 per symbol (s)",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (symbol, le) (rate(trendmaster_tick_latency_seconds_bucket[5m])))",
+          "legendFormat": "{{symbol}}"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Signals written / min (BUY vs SELL)",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {
+          "expr": "sum by (direction) (rate(trendmaster_signal_writes_total[1m])) * 60",
+          "legendFormat": "{{direction}}"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "bargauge",
+      "title": "Veto reasons (last 15 min)",
+      "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {
+          "expr": "topk(10, sum by (reason) (increase(trendmaster_veto_total[15m])))",
+          "legendFormat": "{{reason}}"
+        }
+      ],
+      "options": {"displayMode": "gradient", "orientation": "horizontal"}
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Open positions by team",
+      "gridPos": {"x": 12, "y": 12, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {
+          "expr": "trendmaster_open_positions",
+          "legendFormat": "{{team}}"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "MT5 reconnects / min",
+      "gridPos": {"x": 0, "y": 20, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {
+          "expr": "rate(trendmaster_mt5_reconnects_total[5m]) * 60",
+          "legendFormat": "reconnects/min"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Equity curve (live)",
+      "gridPos": {"x": 12, "y": 20, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "TrendMaster-Prometheus"},
+      "targets": [
+        {
+          "expr": "trendmaster_account_equity",
+          "legendFormat": "equity"
+        },
+        {
+          "expr": "trendmaster_account_balance",
+          "legendFormat": "balance"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    }
+  ]
+}

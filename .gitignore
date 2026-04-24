@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Environment & Credentials (NEVER commit these)
+config/.env
+ai_trading_agents/.env
+.env
+.env.*
+!.env.example
+
+# Runtime / logs (auto-generated, can be large)
+logs/
+!logs/.gitkeep
+*.log
+*.err
+*.out
+*.pid
+supervisor.log
+
+# State / memory files (per-run, not source)
+**/agent_memory.json
+**/agent_learnings*.json
+**/prediction_memory.json
+**/agent_internet_research.json
+**/agent_training_data.json
+**/brain_memory.json
+**/bot_state.json
+**/trendmaster_signals.json
+*.bak
+
+# Historical data & backtest output — too large for git
+data/*.csv
+!data/.gitkeep
+backtest_results.txt
+reports/*.csv
+reports/*.json
+
+# Models (registry artifacts)
+models/
+!models/.gitkeep
+
+# MetaTrader compiled binaries (source .mq5 is committed)
+*.ex5
+
+# Test scratch
+ai_trading_agents/agent_out.txt
+ai_trading_agents/agent_err.txt
+ai_trading_agents/test_out.txt
+ai_trading_agents/test_error.txt
+ai_trading_agents/test_output.txt
+tests/test_out.txt
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+mt5_dialog_state.png
+# Added by code-review-graph
+.code-review-graph/

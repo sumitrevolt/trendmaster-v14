@@ -1,0 +1,54 @@
+# One-command Prometheus + Grafana side-stack for TrendMaster v14.
+#
+# Run:   docker compose -f monitoring/docker-compose.monitoring.yml up -d
+# Stop:  docker compose -f monitoring/docker-compose.monitoring.yml down
+#
+# Grafana lives at http://localhost:3000 (default admin/admin, change it).
+# Prometheus at http://localhost:9090.
+#
+# Prereq: the brain's dashboard is listening on :8000 with
+# METRICS.enabled=True — see `docs/ENHANCEMENTS_2026-04-23.md`.
+version: "3.9"
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: tm-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    extra_hosts:
+      # Lets Prometheus scrape host.docker.internal on Linux — where the
+      # brain runs as a native Windows process, not a container.
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    container_name: tm-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      # Auto-provision the TrendMaster dashboard on first boot.
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana_provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana_provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana_dashboards:/var/lib/grafana/dashboards:ro
+
+volumes:
+  prometheus_data:
+  grafana_data:

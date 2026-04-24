@@ -1,0 +1,35 @@
+# AMD Trading Bot - Requirements
+# ================================
+# Install with: pip install -r requirements.txt
+
+# MetaTrader 5 Python Integration
+MetaTrader5>=5.0.45
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Technical Analysis (pure Python, no C dependencies)
+ta>=0.10.2
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Scheduling (optional, for advanced scheduling)
+schedule>=1.2.0
+
+# HTTP Requests (for API calls)
+requests>=2.31.0
+aiohttp>=3.9.0
+
+# Machine Learning (CPU-based — for agent training system)
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+lightgbm>=4.0.0
+
+# Logging
+colorlog>=6.7.0
+
+# Development / Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0

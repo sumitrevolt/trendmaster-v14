@@ -1,0 +1,162 @@
+// ============================================================================
+// SUPERTREND + TREND RIBBON — Growth Momentum Tracker
+// ============================================================================
+// AI Trading Agents System — TradingView Indicator
+// Matches: SuperTrend / Trend Ribbon bands from chart setup
+// Works on: All 7 traded pairs (Metals, Forex, Crypto teams)
+// Timeframes: H1, H4
+// ============================================================================
+
+//@version=5
+indicator("AI Agents — SuperTrend Ribbon", shorttitle="ST Ribbon", overlay=true, max_labels_count=300)
+
+// ── INPUTS ──────────────────────────────────────────────────────────────────
+grp_st = "SuperTrend Settings"
+atrPeriod   = input.int(14,   "ATR Period",      minval=1,  group=grp_st)
+factor1     = input.float(2.0, "Band 1 Factor",  minval=0.1, step=0.1, group=grp_st)
+factor2     = input.float(3.0, "Band 2 Factor",  minval=0.1, step=0.1, group=grp_st)
+factor3     = input.float(4.0, "Band 3 Factor",  minval=0.1, step=0.1, group=grp_st)
+
+grp_ema = "EMA Ribbon"
+ema9    = input.int(9,  "EMA Fast",  group=grp_ema)
+ema21   = input.int(21, "EMA Mid",   group=grp_ema)
+ema50   = input.int(50, "EMA Slow",  group=grp_ema)
+ema200  = input.int(200, "EMA Trend", group=grp_ema)
+
+grp_growth = "Agent Growth Metrics"
+showGrowthBars   = input.bool(true, "Color Bars by Growth Trend", group=grp_growth)
+growthPeriod     = input.int(14,    "Growth Calculation Period",  group=grp_growth, minval=5)
+agentConfidence  = input.int(55,    "Min Agent Confidence %",     group=grp_growth, minval=30, maxval=100)
+
+grp_session = "Session Filter"
+useSessionFilter = input.bool(true, "Enable Session Filter", group=grp_session)
+londonStart  = input.int(7,  "London Open (UTC)",  group=grp_session, minval=0, maxval=23)
+londonEnd    = input.int(16, "London Close (UTC)", group=grp_session, minval=0, maxval=23)
+nyStart      = input.int(12, "NY Open (UTC)",      group=grp_session, minval=0, maxval=23)
+nyEnd        = input.int(21, "NY Close (UTC)",     group=grp_session, minval=0, maxval=23)
+
+// ── TEAM AUTO-DETECTION ─────────────────────────────────────────────────────
+isMetals = str.contains(syminfo.ticker, "XAU") or str.contains(syminfo.ticker, "XAG")
+isCrypto = str.contains(syminfo.ticker, "BTC") or str.contains(syminfo.ticker, "ETH")
+isForex  = not isMetals and not isCrypto
+
+// Crypto = 24/7, Metals/Forex = session hours only
+utcHour = hour(time, "UTC")
+inLondon = utcHour >= londonStart and utcHour < londonEnd
+inNY     = utcHour >= nyStart and utcHour < nyEnd
+inSession = isCrypto ? true : (inLondon or inNY)
+sessionOK = useSessionFilter ? inSession : true
+
+// ── SUPERTREND CALCULATION (3 Bands) ────────────────────────────────────────
+[st1, dir1] = ta.supertrend(factor1, atrPeriod)
+[st2, dir2] = ta.supertrend(factor2, atrPeriod)
+[st3, dir3] = ta.supertrend(factor3, atrPeriod)
+
+// Trend consensus: -1 = all bearish, +3 = all bullish
+trendScore = (dir1 < 0 ? 1 : 0) + (dir2 < 0 ? 1 : 0) + (dir3 < 0 ? 1 : 0)
+
+// ── EMA RIBBON ──────────────────────────────────────────────────────────────
+e9   = ta.ema(close, ema9)
+e21  = ta.ema(close, ema21)
+e50  = ta.ema(close, ema50)
+e200 = ta.ema(close, ema200)
+
+// EMA alignment score (0-4)
+emaScore = (e9 > e21 ? 1 : 0) + (e21 > e50 ? 1 : 0) + (e50 > e200 ? 1 : 0) + (close > e9 ? 1 : 0)
+emaBearScore = (e9 < e21 ? 1 : 0) + (e21 < e50 ? 1 : 0) + (e50 < e200 ? 1 : 0) + (close < e9 ? 1 : 0)
+
+// ── GROWTH METRICS ──────────────────────────────────────────────────────────
+// Agent growth: sustained directional momentum
+momentum     = ta.mom(close, growthPeriod)
+momEMA       = ta.ema(momentum, 10)
+growthRate   = (close - close[growthPeriod]) / close[growthPeriod] * 100
+isPositiveGrowth = growthRate > 0 and momEMA > 0
+
+// Revenue proxy: trend strength × volume participation
+atrVal       = ta.atr(atrPeriod)
+volSMA       = ta.sma(volume, 20)
+volRatio     = volume / volSMA
+trendPower   = trendScore * volRatio
+
+// Simulated agent confidence (0-100)
+rawConfidence = (trendScore / 3.0 * 40) + (emaScore / 4.0 * 35) + (isPositiveGrowth ? 15 : 0) + (volRatio > 1.2 ? 10 : 0)
+confidence    = math.min(math.round(rawConfidence), 100)
+confOK        = confidence >= agentConfidence
+
+// ── COMBINED SIGNAL ─────────────────────────────────────────────────────────
+strongBull = trendScore >= 2 and emaScore >= 3 and isPositiveGrowth and sessionOK and confOK
+strongBear = trendScore <= 1 and emaBearScore >= 3 and not isPositiveGrowth and sessionOK and confOK
+
+// Trend flip detection
+bullFlip = trendScore >= 2 and trendScore[1] < 2
+bearFlip = trendScore <= 1 and trendScore[1] > 1
+
+// ── PLOTTING: SUPERTREND BANDS ──────────────────────────────────────────────
+st1Color = dir1 < 0 ? color.new(#00E676, 60) : color.new(#FF1744, 60)
+st2Color = dir2 < 0 ? color.new(#00E676, 75) : color.new(#FF1744, 75)
+st3Color = dir3 < 0 ? color.new(#00E676, 85) : color.new(#FF1744, 85)
+
+plot(st1, "SuperTrend 1", color=st1Color, linewidth=1, style=plot.style_linebr)
+plot(st2, "SuperTrend 2", color=st2Color, linewidth=1, style=plot.style_linebr)
+plot(st3, "SuperTrend 3", color=st3Color, linewidth=2, style=plot.style_linebr)
+
+// Fill between ST bands for ribbon effect
+p_st1 = plot(st1, display=display.none)
+p_st2 = plot(st2, display=display.none)
+p_st3 = plot(st3, display=display.none)
+fill(p_st1, p_st2, color=trendScore >= 2 ? color.new(color.green, 88) : color.new(color.red, 88), title="Inner Ribbon")
+fill(p_st2, p_st3, color=trendScore >= 2 ? color.new(color.green, 93) : color.new(color.red, 93), title="Outer Ribbon")
+
+// ── PLOTTING: EMA LINES ─────────────────────────────────────────────────────
+plot(e9,   "EMA 9",   color=color.new(color.blue, 20),   linewidth=2)
+plot(e21,  "EMA 21",  color=color.new(color.orange, 20), linewidth=2)
+plot(e50,  "EMA 50",  color=color.new(color.purple, 30), linewidth=1, style=plot.style_line)
+plot(e200, "EMA 200", color=color.new(color.white, 50),  linewidth=1, style=plot.style_line)
+
+// ── BAR COLORING ────────────────────────────────────────────────────────────
+barColor = showGrowthBars ? (strongBull ? #00E676 : strongBear ? #FF1744 : trendScore >= 2 ? color.new(#4CAF50, 40) : trendScore <= 1 ? color.new(#F44336, 40) : na) : na
+barcolor(barColor, title="Growth Trend Bars")
+
+// ── SIGNAL ARROWS ───────────────────────────────────────────────────────────
+plotshape(bullFlip and strongBull, title="Bull Flip", style=shape.triangleup,   location=location.belowbar, color=#00E676, size=size.normal, text="BULL")
+plotshape(bearFlip and strongBear, title="Bear Flip", style=shape.triangledown, location=location.abovebar, color=#FF1744, size=size.normal, text="BEAR")
+
+// ── SESSION BACKGROUND ──────────────────────────────────────────────────────
+bgcolor(useSessionFilter and not inSession and not isCrypto ? color.new(color.gray, 95) : na, title="Off-Session Dim")
+
+// ── INFO TABLE ──────────────────────────────────────────────────────────────
+var table tbl = table.new(position.bottom_right, 2, 8, bgcolor=color.new(#1E1E1E, 10), border_width=1, border_color=color.new(color.gray, 50))
+
+if barstate.islast
+    teamName = isMetals ? "METALS" : isForex ? "FOREX" : isCrypto ? "CRYPTO" : "UNKNOWN"
+    table.cell(tbl, 0, 0, "SuperTrend Ribbon", text_color=color.white, text_size=size.small, bgcolor=color.new(#9C27B0, 20))
+    table.cell(tbl, 1, 0, teamName, text_color=color.yellow, text_size=size.small)
+
+    table.cell(tbl, 0, 1, "Trend Score", text_color=color.gray, text_size=size.tiny)
+    table.cell(tbl, 1, 1, str.tostring(trendScore) + "/3", text_color=trendScore >= 2 ? color.green : color.red, text_size=size.tiny)
+
+    table.cell(tbl, 0, 2, "EMA Align", text_color=color.gray, text_size=size.tiny)
+    table.cell(tbl, 1, 2, str.tostring(emaScore) + "/4", text_color=emaScore >= 3 ? color.green : color.red, text_size=size.tiny)
+
+    table.cell(tbl, 0, 3, "Growth", text_color=color.gray, text_size=size.tiny)
+    table.cell(tbl, 1, 3, str.tostring(math.round(growthRate, 2)) + "%", text_color=isPositiveGrowth ? color.green : color.red, text_size=size.tiny)
+
+    table.cell(tbl, 0, 4, "Confidence", text_color=color.gray, text_size=size.tiny)
+    table.cell(tbl, 1, 4, str.tostring(confidence) + "%", text_color=confOK ? color.green : color.orange, text_size=size.tiny)
+
+    table.cell(tbl, 0, 5, "Volume Ratio", text_color=color.gray, text_size=size.tiny)
+    table.cell(tbl, 1, 5, str.tostring(math.round(volRatio, 2)) + "x", text_color=volRatio > 1.2 ? color.green : color.gray, text_size=size.tiny)
+
+    table.cell(tbl, 0, 6, "Session", text_color=color.gray, text_size=size.tiny)
+    table.cell(tbl, 1, 6, inSession ? "ACTIVE" : "OFF", text_color=inSession ? color.green : color.gray, text_size=size.tiny)
+
+    table.cell(tbl, 0, 7, "Verdict", text_color=color.gray, text_size=size.tiny)
+    verdict = strongBull ? "STRONG BULL" : strongBear ? "STRONG BEAR" : trendScore >= 2 ? "BULLISH" : trendScore <= 1 ? "BEARISH" : "NEUTRAL"
+    verdCol = strongBull ? color.green : strongBear ? color.red : trendScore >= 2 ? #69F0AE : trendScore <= 1 ? #FF8A80 : color.gray
+    table.cell(tbl, 1, 7, verdict, text_color=verdCol, text_size=size.tiny)
+
+// ── ALERTS ──────────────────────────────────────────────────────────────────
+alertcondition(bullFlip and strongBull, title="Bull Trend Flip",  message="AI Agents SuperTrend: BULLISH flip on {{ticker}} — Confidence: " + str.tostring(confidence) + "%")
+alertcondition(bearFlip and strongBear, title="Bear Trend Flip",  message="AI Agents SuperTrend: BEARISH flip on {{ticker}} — Confidence: " + str.tostring(confidence) + "%")
+alertcondition(strongBull,              title="Strong Bull Zone",  message="AI Agents: {{ticker}} in STRONG BULL growth zone")
+alertcondition(strongBear,              title="Strong Bear Zone",  message="AI Agents: {{ticker}} in STRONG BEAR zone")

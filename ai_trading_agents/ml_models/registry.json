@@ -1,0 +1,146 @@
+{
+  "generated_at": "2026-04-23T07:24:38.699735+00:00",
+  "source": "logs/brain_memory.json",
+  "feature_cols": [
+    "trend_aligned",
+    "liquidity_sweep",
+    "structure_shift",
+    "order_block",
+    "fvg",
+    "ema_aligned",
+    "candle_pattern",
+    "rsi_optimal",
+    "rsi_divergence",
+    "volume_spike",
+    "good_volatility",
+    "session_london",
+    "session_ny",
+    "session_overlap",
+    "session_asian"
+  ],
+  "min_trades_to_train": 50,
+  "teams": {
+    "METALS": {
+      "status": "trained",
+      "n_samples": 241,
+      "model_path": "ai_trading_agents/ml_models/lgbm_METALS.pkl",
+      "trained_at": "2026-04-23T07:24:38.508903+00:00",
+      "wins": 172,
+      "losses": 69,
+      "win_rate": 0.7136929460580913,
+      "train_metrics": {
+        "accuracy": 0.78125,
+        "precision": 0.8571428571428571,
+        "recall": 0.8181818181818182,
+        "f1": 0.8372093023255814,
+        "auc_roc": 0.852588383838384
+      },
+      "test_metrics": {
+        "accuracy": 0.7346938775510204,
+        "precision": 0.8857142857142857,
+        "recall": 0.775,
+        "f1": 0.8266666666666667,
+        "auc_roc": 0.7263888888888889
+      },
+      "hyperparams": {
+        "objective": "binary",
+        "class_weight": "balanced",
+        "n_estimators": 200,
+        "learning_rate": 0.05,
+        "num_leaves": 15,
+        "max_depth": 5,
+        "min_data_in_leaf": 10
+      },
+      "feature_importance_top5": [
+        {
+          "feature": "session_london",
+          "gain": 124.74460026909946
+        },
+        {
+          "feature": "session_ny",
+          "gain": 94.65179584297584
+        },
+        {
+          "feature": "good_volatility",
+          "gain": 87.1431541768834
+        },
+        {
+          "feature": "rsi_divergence",
+          "gain": 77.97996282251552
+        },
+        {
+          "feature": "fvg",
+          "gain": 77.05753696709871
+        }
+      ]
+    },
+    "FOREX": {
+      "status": "insufficient_data",
+      "n_samples": 0,
+      "model_path": null,
+      "note": "insufficient data - will train when N >= 50",
+      "recorded_at": "2026-04-23T07:24:38.509549+00:00"
+    },
+    "CRYPTO": {
+      "status": "trained",
+      "n_samples": 259,
+      "model_path": "ai_trading_agents/ml_models/lgbm_CRYPTO.pkl",
+      "trained_at": "2026-04-23T07:24:38.699224+00:00",
+      "wins": 257,
+      "losses": 2,
+      "win_rate": 0.9922779922779923,
+      "train_metrics": {
+        "accuracy": 0.9903381642512077,
+        "precision": 1.0,
+        "recall": 0.9902912621359223,
+        "f1": 0.9951219512195122,
+        "auc_roc": 0.9951456310679612
+      },
+      "test_metrics": {
+        "accuracy": 0.9423076923076923,
+        "precision": 0.98,
+        "recall": 0.9607843137254902,
+        "f1": 0.9702970297029703,
+        "auc_roc": 0.9607843137254902
+      },
+      "hyperparams": {
+        "objective": "binary",
+        "class_weight": "balanced",
+        "n_estimators": 200,
+        "learning_rate": 0.05,
+        "num_leaves": 15,
+        "max_depth": 5,
+        "min_data_in_leaf": 10
+      },
+      "feature_importance_top5": [
+        {
+          "feature": "volume_spike",
+          "gain": 973.1303296992066
+        },
+        {
+          "feature": "rsi_divergence",
+          "gain": 564.4435752032507
+        },
+        {
+          "feature": "session_ny",
+          "gain": 564.0031986534341
+        },
+        {
+          "feature": "good_volatility",
+          "gain": 555.5799516460634
+        },
+        {
+          "feature": "session_london",
+          "gain": 84.3398137338986
+        }
+      ]
+    },
+    "COMMODITIES": {
+      "status": "insufficient_data",
+      "n_samples": 0,
+      "model_path": null,
+      "note": "insufficient data - will train when N >= 50",
+      "recorded_at": "2026-04-23T07:24:38.699700+00:00"
+    }
+  }
+}

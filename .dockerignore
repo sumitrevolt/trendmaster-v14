@@ -1,0 +1,20 @@
+# Keep build context small + don't bake secrets into the image.
+.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+.github/
+logs/
+reports/
+archive/
+tests/test_out.txt
+*.mq5
+*.ex5
+config/.env
+.idea/
+.vscode/
+*.bak
+**/*.bak
