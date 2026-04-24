@@ -36,21 +36,47 @@ ROOT = Path(__file__).resolve().parent.parent
 # not happening.
 SKIP_FILES: set[str] = {
     # Windows-only tool scripts meant to be run directly, not imported.
-    # They do module-level work (SystemExit, KeyError, win32 lookups)
-    # that makes them un-importable as library modules. Safe to skip —
-    # they're invoked via .bat/.cmd not by the brain.
+    # They do module-level work (SystemExit, KeyError, win32 lookups,
+    # FileNotFoundError on MetaQuotes paths, etc.) that makes them
+    # un-importable as library modules. Safe to skip — all are invoked
+    # via .bat/.cmd, never by the brain.
+    "tools/chart_surgery.py",
     "tools/check_status.py",
+    "tools/cleanup_orphans.py",
     "tools/compile_ea.py",
     "tools/install_indicator.py",
-    "tools/trigger_training.py",
     "tools/live_brain_check.py",
+    "tools/reload_indicator.py",
+    "tools/trigger_training.py",
 }
 
 # Same set, for the top-level-MT5 guard (these files are deliberately
 # Windows-only and not imported on CI, so a top-level MT5 import is OK).
 MT5_TOPLEVEL_OK: set[str] = {
+    "tools/cleanup_orphans.py",
     "tools/live_brain_check.py",
 }
+
+# Optional heavy deps not installed in CI (Linux). When a module's
+# ImportError names one of these, we skip instead of failing — it's
+# correct that the module can't import without the dep; we're only
+# testing the *baseline* import surface here.
+OPTIONAL_MODULES: frozenset[str] = frozenset(
+    {
+        # Windows-only native modules
+        "MetaTrader5",
+        "win32api",
+        "win32com",
+        "pywintypes",
+        "pyautogui",
+        # Heavy ML deps intentionally left out of CI (big wheels; only
+        # needed for training jobs, not for runtime).
+        "lightgbm",
+        "xgboost",
+        "torch",
+        "tensorflow",
+    }
+)
 
 # Dirs whose modules must always be importable on CI (Linux).
 TARGET_DIRS = ["ai_trading_agents", "tools"]
@@ -95,10 +121,11 @@ def test_module_imports(module_name: str, path: Path) -> None:
         importlib.import_module(module_name)
     except ModuleNotFoundError as e:
         missing = getattr(e, "name", "") or ""
-        # Known Windows-only deps: CI (Linux) won't have them and we
-        # don't want to fail for that — just skip.
-        if missing in {"MetaTrader5", "win32api", "win32com", "pywintypes"}:
-            pytest.skip(f"{module_name} requires {missing} (Windows-only)")
+        # Split "a.b.c" → "a" so the allow-list matches top-level
+        # package names (e.g. MetaTrader5.foo → MetaTrader5).
+        top = missing.split(".", 1)[0] if missing else ""
+        if top in OPTIONAL_MODULES:
+            pytest.skip(f"{module_name} requires optional dep {missing!r}")
         raise
     except ImportError as e:
         # Late-import errors that aren't ModuleNotFoundError (rare).
@@ -125,9 +152,7 @@ def test_no_toplevel_mt5_import() -> None:
             continue
         for i, line in enumerate(text.splitlines(), start=1):
             stripped = line.lstrip()
-            if stripped.startswith("import MetaTrader5") or stripped.startswith(
-                "from MetaTrader5"
-            ):
+            if stripped.startswith("import MetaTrader5") or stripped.startswith("from MetaTrader5"):
                 # Check indent — top-level imports have indent == 0.
                 if len(line) - len(stripped) == 0:
                     offenders.append(f"  {path.relative_to(ROOT)}:{i}: {stripped}")
