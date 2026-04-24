@@ -28,6 +28,8 @@ EXPECTED_REFERENCES = [
     ("tools/backtest.py", "run_ea_parity_backtest", "skill: trading-ea-parity"),
     ("ai_trading_agents/telegram_notifier.py", "get_notifier", "tools/ea_parity_nightly.py"),
     ("tools/cpcv.py", "CPCVSplit", "tools/validate_crypto_ml.py"),
+    ("ai_trading_agents/ml_align.py", "align_feature_row", "trend_master_brain.infer_ml"),
+    ("ai_trading_agents/ml_align.py", "trained_feature_names", "trend_master_brain._load_model"),
 ]
 
 
