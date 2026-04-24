@@ -109,6 +109,12 @@ TEAM_SYMBOLS = {
 AUC_DROP_BAD = 0.15  # absolute AUC drop that flags overfit
 WR_DROP_BAD = 0.25  # 25 percentage points
 
+# Minority-class floor. Below this, binary CV is largely meaningless
+# (most folds will be single-class and AUC will be undefined). The
+# CRYPTO model hit this: 257W / 2L on 259 trades -> minority=0.8%, so
+# walk-forward AUC is computed over 1 of 5 folds and tells us nothing.
+MIN_MINORITY_CLASS_FRAC = 0.10  # 10%
+
 
 @dataclass
 class FoldResult:
@@ -338,10 +344,46 @@ def load_holdout_baseline(team: str, registry_path: Path) -> Dict[str, Any]:
     return flat
 
 
-def verdict(holdout: Dict[str, Any], walk: CVReport, cpcv: CVReport) -> Tuple[str, List[str]]:
+def verdict(
+    holdout: Dict[str, Any],
+    walk: CVReport,
+    cpcv: CVReport,
+    minority_frac: Optional[float] = None,
+) -> Tuple[str, List[str]]:
     reasons: List[str] = []
     holdout_auc = holdout.get("test_auc") or holdout.get("auc")
     holdout_wr = holdout.get("win_rate") or holdout.get("wr")
+
+    # Class-balance gate: if the training label is too imbalanced to
+    # meaningfully cross-validate, no amount of AUC comparison helps.
+    # (CRYPTO hit this: 257W / 2L -> minority = 0.8%. 4 of 5 walk-forward
+    # folds were single-class; the "OK" verdict was a false negative.)
+    if minority_frac is not None and minority_frac < MIN_MINORITY_CLASS_FRAC:
+        return "INSUFFICIENT_DATA - SEVERE CLASS IMBALANCE", [
+            f"minority class is only {minority_frac * 100:.1f}% of samples "
+            f"(threshold {MIN_MINORITY_CLASS_FRAC * 100:.0f}%); binary CV "
+            f"degenerates - most folds are single-class and AUC is undefined",
+            "remediation: collect more loss trades OR relabel target "
+            "(e.g., profit-bucket instead of win/loss) before trusting this model",
+        ]
+
+    # Degenerate-fold share check: even if overall minority fraction is
+    # above the floor, if >50% of CV folds ended up single-class the
+    # mean AUC is unreliable. Flag explicitly.
+    def _degenerate_share(r: CVReport) -> float:
+        if not r.folds:
+            return 0.0
+        bad = sum(1 for f in r.folds if "single-class" in (f.notes or ""))
+        return bad / len(r.folds)
+
+    walk_bad = _degenerate_share(walk)
+    cpcv_bad = _degenerate_share(cpcv)
+    if walk_bad > 0.5 or cpcv_bad > 0.5:
+        return "INCONCLUSIVE - DEGENERATE FOLDS", [
+            f"degenerate folds: walk-forward {walk_bad * 100:.0f}%, "
+            f"CPCV {cpcv_bad * 100:.0f}% single-class (CV unreliable)",
+            "remediation: same as SEVERE CLASS IMBALANCE above",
+        ]
 
     if holdout_auc is None:
         reasons.append("holdout AUC unavailable from registry - cannot compare")
@@ -370,14 +412,19 @@ def verdict(holdout: Dict[str, Any], walk: CVReport, cpcv: CVReport) -> Tuple[st
 
 
 def write_reports(
-    team: str, holdout: Dict[str, Any], walk: CVReport, cpcv: CVReport, out_dir: Path
+    team: str,
+    holdout: Dict[str, Any],
+    walk: CVReport,
+    cpcv: CVReport,
+    out_dir: Path,
+    minority_frac: Optional[float] = None,
 ) -> Tuple[Path, Path]:
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     out_dir.mkdir(parents=True, exist_ok=True)
     json_path = out_dir / f"ml_validation_{team}_{stamp}.json"
     md_path = out_dir / f"ml_validation_{team}_{stamp}.md"
 
-    v, reasons = verdict(holdout, walk, cpcv)
+    v, reasons = verdict(holdout, walk, cpcv, minority_frac=minority_frac)
 
     payload = {
         "team": team,
@@ -460,27 +507,46 @@ def _run_for_team(team: str, args) -> Tuple[int, str]:
         return 2, "ERROR"
 
     print(f"[info] team={team}  rows={len(df)}")
+
+    # No trades for this team means no model to validate. Skip cleanly
+    # instead of crashing the --team all loop on an empty dataframe.
+    if len(df) == 0:
+        print(f"[info] {team}: no trades in history, skipping validation")
+        return 0, "SKIPPED"
+
     if len(df) < 30:
         print(f"[WARN] {team}: only {len(df)} rows - metrics will be very noisy.")
 
-    X, y = extract_xy(df)
+    try:
+        X, y = extract_xy(df)
 
-    walk = (
-        walk_forward_cv(X, y, n_folds=args.folds)
-        if args.cv in ("walkforward", "both")
-        else CVReport("walk_forward", 0, None, None, None, None, error="skipped")
-    )
+        # Minority-class proportion: gates verdict when target is
+        # effectively single-class (e.g., CRYPTO's 2 losses in 259 trades).
+        minority_frac: Optional[float] = None
+        if len(y) > 0:
+            p = float(y.mean())
+            minority_frac = min(p, 1.0 - p)
+            print(f"[info] {team}: minority class fraction = {minority_frac * 100:.1f}%")
 
-    cpcv = (
-        cpcv_validate(X, y)
-        if args.cv in ("cpcv", "both")
-        else CVReport("cpcv", 0, None, None, None, None, error="skipped")
-    )
+        walk = (
+            walk_forward_cv(X, y, n_folds=args.folds)
+            if args.cv in ("walkforward", "both")
+            else CVReport("walk_forward", 0, None, None, None, None, error="skipped")
+        )
 
-    holdout = load_holdout_baseline(team, Path(args.registry))
+        cpcv = (
+            cpcv_validate(X, y)
+            if args.cv in ("cpcv", "both")
+            else CVReport("cpcv", 0, None, None, None, None, error="skipped")
+        )
 
-    md_path, json_path = write_reports(team, holdout, walk, cpcv, Path(args.out))
-    v, reasons = verdict(holdout, walk, cpcv)
+        holdout = load_holdout_baseline(team, Path(args.registry))
+        md_path, json_path = write_reports(team, holdout, walk, cpcv, Path(args.out), minority_frac=minority_frac)
+        v, reasons = verdict(holdout, walk, cpcv, minority_frac=minority_frac)
+    except Exception as e:
+        # Don't let one team's failure kill the loop when --team all.
+        print(f"[ERROR] {team}: validation crashed: {e}")
+        return 2, "ERROR"
 
     print(f"[done] {team}: verdict={v}")
     for r in reasons:
@@ -488,8 +554,13 @@ def _run_for_team(team: str, args) -> Tuple[int, str]:
     print(f"[done] wrote {md_path}")
     print(f"[done] wrote {json_path}")
 
-    short = "OK" if v == "OK" else ("INCONCLUSIVE" if v == "INCONCLUSIVE" else "OVERFIT")
-    return (0 if v == "OK" else 1), short
+    if v == "OK":
+        return 0, "OK"
+    if v.startswith("INSUFFICIENT"):
+        return 1, "INSUFFICIENT"
+    if v.startswith("INCONCLUSIVE"):
+        return 1, "INCONCLUSIVE"
+    return 1, "OVERFIT"
 
 
 def main() -> int:
