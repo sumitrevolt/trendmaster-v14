@@ -23,6 +23,7 @@ Usage
     state["restart_count"] = state.get("restart_count", 0) + 1
     store.save(state)
 """
+
 from __future__ import annotations
 
 import json
@@ -42,25 +43,25 @@ _DEFAULT_PATH = _ROOT / "logs" / "brain_state.json"
 
 
 _DEFAULTS: Dict[str, Any] = {
-    "schema_version":          2,
-    "restart_count":           0,
-    "last_started_at":         0,
-    "last_saved_at":           0,
-    "recent_results":          [],   # most recent last; ring-buffer-trimmed
-    "cooldown_until_ts":       0,
-    "last_signal_per_symbol":  {},   # {symbol: {direction, ts, confidence}}
-    "start_of_day_equity":     0.0,
-    "start_of_day_date":       "",   # "YYYY-MM-DD" UTC
-    "daily_pnl_close":         0.0,  # realized P&L for the running UTC day
-    "session_high_equity":     0.0,
-    "session_low_equity":      0.0,
+    "schema_version": 2,
+    "restart_count": 0,
+    "last_started_at": 0,
+    "last_saved_at": 0,
+    "recent_results": [],  # most recent last; ring-buffer-trimmed
+    "cooldown_until_ts": 0,
+    "last_signal_per_symbol": {},  # {symbol: {direction, ts, confidence}}
+    "start_of_day_equity": 0.0,
+    "start_of_day_date": "",  # "YYYY-MM-DD" UTC
+    "daily_pnl_close": 0.0,  # realized P&L for the running UTC day
+    "session_high_equity": 0.0,
+    "session_low_equity": 0.0,
     # Phase G additions ────────────────────────────────────────────────
-    "trading_paused":          False, # set True by /halt, False by /resume
-    "trading_paused_at":       0,
-    "trading_resumed_at":      0,
-    "last_processed_deal_ts":  0,    # bookmark for trade_tracker.poll()
-    "drawdown_lockout_until":  0,    # set by daily_loss_limit gate
-    "daily_drawdown_peak_eq":  0.0,  # peak equity within current UTC day
+    "trading_paused": False,  # set True by /halt, False by /resume
+    "trading_paused_at": 0,
+    "trading_resumed_at": 0,
+    "last_processed_deal_ts": 0,  # bookmark for trade_tracker.poll()
+    "drawdown_lockout_until": 0,  # set by daily_loss_limit gate
+    "daily_drawdown_peak_eq": 0.0,  # peak equity within current UTC day
 }
 
 # How many recent trade results we keep (loss_streak only needs the tail
@@ -113,9 +114,7 @@ class StateStore:
                 # Trim before persist.
                 if "recent_results" in state and isinstance(state["recent_results"], list):
                     state["recent_results"] = state["recent_results"][-_MAX_RESULTS:]
-                tmp_fd, tmp_name = tempfile.mkstemp(
-                    prefix=".brain_state_", suffix=".tmp",
-                    dir=str(self.path.parent))
+                tmp_fd, tmp_name = tempfile.mkstemp(prefix=".brain_state_", suffix=".tmp", dir=str(self.path.parent))
                 try:
                     with os.fdopen(tmp_fd, "w", encoding="utf-8") as f:
                         json.dump(state, f, separators=(",", ":"))
@@ -133,7 +132,7 @@ class StateStore:
                         except PermissionError as e:
                             last_err = e
                             # 50ms, 100ms, 200ms, 400ms, 800ms
-                            time.sleep(0.05 * (2 ** attempt))
+                            time.sleep(0.05 * (2**attempt))
                             continue
                     if last_err is not None:
                         raise last_err
@@ -155,13 +154,12 @@ class StateStore:
         results.append(float(r_multiple))
         state["recent_results"] = results[-_MAX_RESULTS:]
 
-    def update_signal(self, state: Dict[str, Any], symbol: str,
-                      direction: str, confidence: float) -> None:
+    def update_signal(self, state: Dict[str, Any], symbol: str, direction: str, confidence: float) -> None:
         sym_map = dict(state.get("last_signal_per_symbol", {}))
         sym_map[symbol] = {
-            "direction":  direction,
+            "direction": direction,
             "confidence": round(float(confidence), 4),
-            "ts":         int(time.time()),
+            "ts": int(time.time()),
         }
         state["last_signal_per_symbol"] = sym_map
 

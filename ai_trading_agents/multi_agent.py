@@ -26,6 +26,7 @@ check is unchanged.
 Each agent keeps its rule **simple** so the whole module fits on one
 screen and a user can audit exactly why a trade fired.
 """
+
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, List
@@ -46,8 +47,7 @@ def _rsi(s: pd.Series, n: int = 14) -> pd.Series:
     return 100 - 100 / (1 + rs)
 
 
-def _macd_hist(s: pd.Series,
-               fast: int = 12, slow: int = 26, sig: int = 9) -> pd.Series:
+def _macd_hist(s: pd.Series, fast: int = 12, slow: int = 26, sig: int = 9) -> pd.Series:
     line = _ema(s, fast) - _ema(s, slow)
     return line - _ema(line, sig)
 
@@ -55,15 +55,18 @@ def _macd_hist(s: pd.Series,
 def _adx(df: pd.DataFrame, n: int = 14) -> pd.Series:
     up = df["high"].diff()
     dn = -df["low"].diff()
-    plus  = np.where((up > dn) & (up > 0),  up, 0.0)
-    minus = np.where((dn > up) & (dn > 0),  dn, 0.0)
-    tr = pd.concat([
-        df["high"] - df["low"],
-        (df["high"] - df["close"].shift()).abs(),
-        (df["low"]  - df["close"].shift()).abs(),
-    ], axis=1).max(axis=1)
+    plus = np.where((up > dn) & (up > 0), up, 0.0)
+    minus = np.where((dn > up) & (dn > 0), dn, 0.0)
+    tr = pd.concat(
+        [
+            df["high"] - df["low"],
+            (df["high"] - df["close"].shift()).abs(),
+            (df["low"] - df["close"].shift()).abs(),
+        ],
+        axis=1,
+    ).max(axis=1)
     atr = tr.ewm(span=n, adjust=False).mean()
-    pdi = 100 * pd.Series(plus,  index=df.index).ewm(span=n, adjust=False).mean() / atr
+    pdi = 100 * pd.Series(plus, index=df.index).ewm(span=n, adjust=False).mean() / atr
     mdi = 100 * pd.Series(minus, index=df.index).ewm(span=n, adjust=False).mean() / atr
     dx = 100 * (pdi - mdi).abs() / (pdi + mdi).replace(0, np.nan)
     return dx.ewm(span=n, adjust=False).mean()
@@ -73,8 +76,8 @@ def _adx(df: pd.DataFrame, n: int = 14) -> pd.Series:
 @dataclass
 class AgentVote:
     name: str
-    vote: int            # +1 buy, -1 sell, 0 none
-    reason: str          # short human-readable why
+    vote: int  # +1 buy, -1 sell, 0 none
+    reason: str  # short human-readable why
 
     def as_dict(self) -> dict:
         return {"name": self.name, "vote": self.vote, "reason": self.reason}
@@ -137,8 +140,7 @@ def timing_agent_m30(df: pd.DataFrame) -> AgentVote:
 
 
 # ---------- bus ----------
-def vote_all(frames: Dict[str, pd.DataFrame],
-             min_votes: int = 3) -> tuple[int, List[AgentVote]]:
+def vote_all(frames: Dict[str, pd.DataFrame], min_votes: int = 3) -> tuple[int, List[AgentVote]]:
     """
     Run every agent, return (direction, detailed_votes).
 
@@ -146,18 +148,23 @@ def vote_all(frames: Dict[str, pd.DataFrame],
     AND at least min_votes agents vote in that direction.
     """
     votes = [
-        trend_agent_h4     (frames.get("H4",  pd.DataFrame())),
-        momentum_agent_h1  (frames.get("H1",  pd.DataFrame())),
-        timing_agent_m30   (frames.get("M30", pd.DataFrame())),
+        trend_agent_h4(frames.get("H4", pd.DataFrame())),
+        momentum_agent_h1(frames.get("H1", pd.DataFrame())),
+        timing_agent_m30(frames.get("M30", pd.DataFrame())),
     ]
-    buys   = sum(1 for v in votes if v.vote ==  1)
-    sells  = sum(1 for v in votes if v.vote == -1)
-    if buys  >= min_votes and sells == 0:  return +1, votes
-    if sells >= min_votes and buys  == 0:  return -1, votes
+    buys = sum(1 for v in votes if v.vote == 1)
+    sells = sum(1 for v in votes if v.vote == -1)
+    if buys >= min_votes and sells == 0:
+        return +1, votes
+    if sells >= min_votes and buys == 0:
+        return -1, votes
     return 0, votes
 
 
 __all__ = [
-    "AgentVote", "trend_agent_h4", "momentum_agent_h1",
-    "timing_agent_m30", "vote_all",
+    "AgentVote",
+    "trend_agent_h4",
+    "momentum_agent_h1",
+    "timing_agent_m30",
+    "vote_all",
 ]

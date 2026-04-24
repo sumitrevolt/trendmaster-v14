@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.panic (dry-run + MT5-missing paths)."""
+
 from __future__ import annotations
 
 from ai_trading_agents import panic
@@ -23,7 +24,7 @@ def test_flatten_result_human_for_dry_run():
     r = panic.FlattenResult(dry_run=True, attempted=2, closed=2)
     r.per_symbol = {
         "EURUSD": {"action": "close-sell", "lots": 0.01, "ok": True, "note": "dry-run"},
-        "XAUUSD": {"action": "close-buy",  "lots": 0.02, "ok": True, "note": "dry-run"},
+        "XAUUSD": {"action": "close-buy", "lots": 0.02, "ok": True, "note": "dry-run"},
     }
     text = r.human
     assert "would close 2" in text

@@ -45,6 +45,7 @@ Keep cardinality low. Per-symbol counters are fine (19 values), but
 don't add unbounded dimensions like `ts` or `order_id` — Prometheus
 explodes memory on cardinality > ~1000 per metric.
 """
+
 from __future__ import annotations
 
 import logging
@@ -66,8 +67,9 @@ try:
         generate_latest as _p_generate_latest,
         CONTENT_TYPE_LATEST as _P_CONTENT_TYPE,
     )
+
     _HAS_PROMETHEUS = True
-except Exception:   # pragma: no cover — tested via monkeypatch
+except Exception:  # pragma: no cover — tested via monkeypatch
     _HAS_PROMETHEUS = False
 
 
@@ -75,7 +77,18 @@ except Exception:   # pragma: no cover — tested via monkeypatch
 # In-memory fallback implementation
 # ======================================================================
 _DEFAULT_BUCKETS = (
-    0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0,
+    0.001,
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1.0,
+    2.5,
+    5.0,
+    10.0,
 )
 
 
@@ -148,33 +161,33 @@ class _Histogram:
 # ======================================================================
 @dataclass
 class MetricsRegistry:
-    counters:   Dict[str, _Counter]   = field(default_factory=dict)
-    gauges:     Dict[str, _Gauge]     = field(default_factory=dict)
+    counters: Dict[str, _Counter] = field(default_factory=dict)
+    gauges: Dict[str, _Gauge] = field(default_factory=dict)
     histograms: Dict[str, _Histogram] = field(default_factory=dict)
     started_at: float = field(default_factory=time.time)
-    _lock:      Lock  = field(default_factory=Lock)
+    _lock: Lock = field(default_factory=Lock)
 
-    def counter(self, name: str, help_: str = "",
-                labelnames: Iterable[str] = ()) -> _Counter:
+    def counter(self, name: str, help_: str = "", labelnames: Iterable[str] = ()) -> _Counter:
         with self._lock:
             if name not in self.counters:
                 self.counters[name] = _Counter(name, help_, tuple(labelnames))
             return self.counters[name]
 
-    def gauge(self, name: str, help_: str = "",
-              labelnames: Iterable[str] = ()) -> _Gauge:
+    def gauge(self, name: str, help_: str = "", labelnames: Iterable[str] = ()) -> _Gauge:
         with self._lock:
             if name not in self.gauges:
                 self.gauges[name] = _Gauge(name, help_, tuple(labelnames))
             return self.gauges[name]
 
-    def histogram(self, name: str, help_: str = "",
-                  labelnames: Iterable[str] = (),
-                  buckets: Optional[Iterable[float]] = None) -> _Histogram:
+    def histogram(
+        self, name: str, help_: str = "", labelnames: Iterable[str] = (), buckets: Optional[Iterable[float]] = None
+    ) -> _Histogram:
         with self._lock:
             if name not in self.histograms:
                 self.histograms[name] = _Histogram(
-                    name, help_, tuple(labelnames),
+                    name,
+                    help_,
+                    tuple(labelnames),
                     buckets=tuple(buckets or _DEFAULT_BUCKETS),
                 )
             return self.histograms[name]
@@ -216,11 +229,13 @@ class MetricsRegistry:
                 for b in h.buckets:
                     bucket_count = sum(1 for x in sorted_vals if x <= b)
                     bucket_labels = self._fmt_labels(
-                        h.labelnames + ("le",), lbl + (str(b),),
+                        h.labelnames + ("le",),
+                        lbl + (str(b),),
                     )
                     lines.append(f"{h.name}_bucket{bucket_labels} {bucket_count}")
                 inf_labels = self._fmt_labels(
-                    h.labelnames + ("le",), lbl + ("+Inf",),
+                    h.labelnames + ("le",),
+                    lbl + ("+Inf",),
                 )
                 lines.append(f"{h.name}_bucket{inf_labels} {count}")
                 summary_labels = self._fmt_labels(h.labelnames, lbl)
@@ -261,11 +276,13 @@ def render_text() -> str:
 # Pre-declared metric handles — import these from the brain.
 tick_latency = _REGISTRY.histogram(
     "trendmaster_tick_latency_seconds",
-    "Per-symbol tick_once duration.", labelnames=("symbol",),
+    "Per-symbol tick_once duration.",
+    labelnames=("symbol",),
 )
 signal_writes = _REGISTRY.counter(
     "trendmaster_signal_writes_total",
-    "Count of non-NONE signals written.", labelnames=("symbol", "direction"),
+    "Count of non-NONE signals written.",
+    labelnames=("symbol", "direction"),
 )
 veto_total = _REGISTRY.counter(
     "trendmaster_veto_total",
@@ -274,33 +291,47 @@ veto_total = _REGISTRY.counter(
 )
 mt5_reconnects = _REGISTRY.counter(
     "trendmaster_mt5_reconnects_total",
-    "MT5 re-init attempts triggered by copy_rates failure.", labelnames=(),
+    "MT5 re-init attempts triggered by copy_rates failure.",
+    labelnames=(),
 )
 brain_restarts = _REGISTRY.counter(
     "trendmaster_brain_restarts_total",
-    "Supervisor-driven brain restart count.", labelnames=(),
+    "Supervisor-driven brain restart count.",
+    labelnames=(),
 )
 signal_file_retries = _REGISTRY.counter(
     "trendmaster_signal_file_retries_total",
-    "Atomic-write retries triggered by WinError 5.", labelnames=(),
+    "Atomic-write retries triggered by WinError 5.",
+    labelnames=(),
 )
 account_equity = _REGISTRY.gauge(
     "trendmaster_account_equity",
-    "Live MT5 account.equity (account currency).", labelnames=(),
+    "Live MT5 account.equity (account currency).",
+    labelnames=(),
 )
 account_balance = _REGISTRY.gauge(
     "trendmaster_account_balance",
-    "Live MT5 account.balance (account currency).", labelnames=(),
+    "Live MT5 account.balance (account currency).",
+    labelnames=(),
 )
 open_positions = _REGISTRY.gauge(
     "trendmaster_open_positions",
-    "Currently open positions (broker side).", labelnames=("team",),
+    "Currently open positions (broker side).",
+    labelnames=("team",),
 )
 
 
 __all__ = [
-    "MetricsRegistry", "registry", "render_text",
-    "tick_latency", "signal_writes", "veto_total",
-    "mt5_reconnects", "brain_restarts", "signal_file_retries",
-    "account_equity", "account_balance", "open_positions",
+    "MetricsRegistry",
+    "registry",
+    "render_text",
+    "tick_latency",
+    "signal_writes",
+    "veto_total",
+    "mt5_reconnects",
+    "brain_restarts",
+    "signal_file_retries",
+    "account_equity",
+    "account_balance",
+    "open_positions",
 ]

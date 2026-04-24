@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.portfolio_risk (VaR / CVaR)."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -21,8 +22,7 @@ def test_insufficient_samples_returns_zeros():
 
 def test_historical_var_positive_for_losses():
     # Distribution with clear losses.
-    pnls = [-3.0, -2.5, -2.0, -1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5,
-            -4.0, 3.0, -1.5, 1.2, -0.5]
+    pnls = [-3.0, -2.5, -2.0, -1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, -4.0, 3.0, -1.5, 1.2, -0.5]
     r = historical_var(pnls, confidence=0.95)
     assert r.var > 0
     assert r.cvar >= r.var  # CVaR should always be >= VaR
@@ -79,8 +79,9 @@ def test_confidence_level_affects_var():
 
 
 def test_as_dict_roundtrip():
-    r = VaRResult(method="historical", confidence=0.95, var=1.0, cvar=2.0,
-                  n_samples=100, mean=0.1, std=1.0, skew=-0.2, kurt=0.5)
+    r = VaRResult(
+        method="historical", confidence=0.95, var=1.0, cvar=2.0, n_samples=100, mean=0.1, std=1.0, skew=-0.2, kurt=0.5
+    )
     d = r.as_dict()
     assert d["var"] == 1.0
     assert d["n_samples"] == 100

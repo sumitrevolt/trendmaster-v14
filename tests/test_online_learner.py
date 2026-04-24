@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.online_learner."""
+
 from __future__ import annotations
 
 import pytest
@@ -18,6 +19,7 @@ def test_learns_simple_pattern():
     # Train: a>0 ⇒ win, a<0 ⇒ loss. Use many iterations for convergence.
     rng_seed = 7
     import random
+
     rng = random.Random(rng_seed)
     for _ in range(1500):
         a = rng.uniform(-1, 1)

@@ -21,6 +21,7 @@ References
 - Lopez de Prado: "The Deflated Sharpe Ratio" — why single-number Sharpe
   overstates true edge in backtests.
 """
+
 from __future__ import annotations
 
 import logging
@@ -55,12 +56,10 @@ def _extract(entry) -> Optional[dict]:
     if isinstance(entry, dict):
         try:
             return {
-                "pnl":    float(entry.get("pnl", 0.0) or 0.0),
-                "ts":     int(entry.get("ts", 0) or 0),
+                "pnl": float(entry.get("pnl", 0.0) or 0.0),
+                "ts": int(entry.get("ts", 0) or 0),
                 "symbol": str(entry.get("symbol", "") or ""),
-                "r_mult": (float(entry["r_mult"])
-                           if "r_mult" in entry and entry["r_mult"] is not None
-                           else None),
+                "r_mult": (float(entry["r_mult"]) if "r_mult" in entry and entry["r_mult"] is not None else None),
             }
         except (TypeError, ValueError):
             return None
@@ -78,39 +77,39 @@ def _filter_window(trades: List[dict], days: int) -> List[dict]:
 # =====================================================================
 @dataclass
 class PerfMetrics:
-    n_trades:       int = 0
-    wins:           int = 0
-    losses:         int = 0
-    win_rate:       float = 0.0
-    total_pnl:      float = 0.0
-    avg_win:        float = 0.0
-    avg_loss:       float = 0.0
-    payoff_ratio:   float = 0.0
-    profit_factor:  float = 0.0
-    expectancy:     float = 0.0
-    max_drawdown:   float = 0.0
-    sharpe:         float = 0.0
-    sortino:        float = 0.0
-    calmar:         float = 0.0
-    reason:         str = ""
+    n_trades: int = 0
+    wins: int = 0
+    losses: int = 0
+    win_rate: float = 0.0
+    total_pnl: float = 0.0
+    avg_win: float = 0.0
+    avg_loss: float = 0.0
+    payoff_ratio: float = 0.0
+    profit_factor: float = 0.0
+    expectancy: float = 0.0
+    max_drawdown: float = 0.0
+    sharpe: float = 0.0
+    sortino: float = 0.0
+    calmar: float = 0.0
+    reason: str = ""
 
     def as_dict(self) -> dict:
         return {
-            "n_trades":      self.n_trades,
-            "wins":          self.wins,
-            "losses":        self.losses,
-            "win_rate":      round(self.win_rate, 4),
-            "total_pnl":     round(self.total_pnl, 2),
-            "avg_win":       round(self.avg_win, 4),
-            "avg_loss":      round(self.avg_loss, 4),
-            "payoff_ratio":  round(self.payoff_ratio, 4),
+            "n_trades": self.n_trades,
+            "wins": self.wins,
+            "losses": self.losses,
+            "win_rate": round(self.win_rate, 4),
+            "total_pnl": round(self.total_pnl, 2),
+            "avg_win": round(self.avg_win, 4),
+            "avg_loss": round(self.avg_loss, 4),
+            "payoff_ratio": round(self.payoff_ratio, 4),
             "profit_factor": round(self.profit_factor, 4),
-            "expectancy":    round(self.expectancy, 4),
-            "max_drawdown":  round(self.max_drawdown, 4),
-            "sharpe":        round(self.sharpe, 4),
-            "sortino":       round(self.sortino, 4),
-            "calmar":        round(self.calmar, 4),
-            "reason":        self.reason,
+            "expectancy": round(self.expectancy, 4),
+            "max_drawdown": round(self.max_drawdown, 4),
+            "sharpe": round(self.sharpe, 4),
+            "sortino": round(self.sortino, 4),
+            "calmar": round(self.calmar, 4),
+            "reason": self.reason,
         }
 
 
@@ -161,12 +160,20 @@ def compute(trades: Iterable, window_days: int = 0) -> PerfMetrics:
     calmar = (total / mdd) if mdd > 0 else 0.0
 
     return PerfMetrics(
-        n_trades=n, wins=wins, losses=losses,
-        win_rate=win_rate, total_pnl=total,
-        avg_win=avg_win, avg_loss=avg_loss,
-        payoff_ratio=payoff, profit_factor=pf,
-        expectancy=expectancy, max_drawdown=mdd,
-        sharpe=sharpe, sortino=sortino, calmar=calmar,
+        n_trades=n,
+        wins=wins,
+        losses=losses,
+        win_rate=win_rate,
+        total_pnl=total,
+        avg_win=avg_win,
+        avg_loss=avg_loss,
+        payoff_ratio=payoff,
+        profit_factor=pf,
+        expectancy=expectancy,
+        max_drawdown=mdd,
+        sharpe=sharpe,
+        sortino=sortino,
+        calmar=calmar,
     )
 
 
@@ -250,16 +257,16 @@ def heatmap_day_of_week(trades: Iterable, window_days: int = 0) -> Dict[str, dic
     for wd in range(7):
         bucket = buckets.get(wd, [])
         out[names[wd]] = {
-            "n":   len(bucket),
+            "n": len(bucket),
             "pnl": round(sum(bucket), 2),
             "avg": round(sum(bucket) / len(bucket), 4) if bucket else 0.0,
         }
     return out
 
 
-def calibration(trades: Iterable,
-                confidence_buckets: Iterable[float] = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
-                window_days: int = 0) -> List[dict]:
+def calibration(
+    trades: Iterable, confidence_buckets: Iterable[float] = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0), window_days: int = 0
+) -> List[dict]:
     """Hit-rate calibration.
 
     For each confidence bucket [b_i, b_{i+1}), compute the actual win
@@ -279,8 +286,7 @@ def calibration(trades: Iterable,
             if conf is None or pnl is None:
                 continue
             try:
-                raw.append({"conf": float(conf), "pnl": float(pnl),
-                            "ts": int(ts_ or 0)})
+                raw.append({"conf": float(conf), "pnl": float(pnl), "ts": int(ts_ or 0)})
             except (TypeError, ValueError):
                 continue
     if window_days > 0:
@@ -292,16 +298,18 @@ def calibration(trades: Iterable,
         lo, hi = buckets[i], buckets[i + 1]
         in_range = [r for r in raw if lo <= r["conf"] < hi]
         if not in_range:
-            out.append({"lo": lo, "hi": hi, "n": 0,
-                        "actual_win_rate": 0.0, "avg_conf": 0.0})
+            out.append({"lo": lo, "hi": hi, "n": 0, "actual_win_rate": 0.0, "avg_conf": 0.0})
             continue
         wins = sum(1 for r in in_range if r["pnl"] > 0)
-        out.append({
-            "lo": lo, "hi": hi,
-            "n": len(in_range),
-            "actual_win_rate": round(wins / len(in_range), 4),
-            "avg_conf": round(sum(r["conf"] for r in in_range) / len(in_range), 4),
-        })
+        out.append(
+            {
+                "lo": lo,
+                "hi": hi,
+                "n": len(in_range),
+                "actual_win_rate": round(wins / len(in_range), 4),
+                "avg_conf": round(sum(r["conf"] for r in in_range) / len(in_range), 4),
+            }
+        )
     return out
 
 
@@ -312,10 +320,10 @@ def snapshot(trades: Iterable, team_of_fn=None) -> dict:
         label = f"{days}d" if days else "all"
         base[label] = compute(trades, window_days=days).as_dict()
     out = {
-        "windows":       base,
+        "windows": base,
         "by_symbol_30d": by_symbol(trades, window_days=30),
-        "hour_30d":      heatmap_hour_of_day(trades, window_days=30),
-        "dow_30d":       heatmap_day_of_week(trades, window_days=30),
+        "hour_30d": heatmap_hour_of_day(trades, window_days=30),
+        "dow_30d": heatmap_day_of_week(trades, window_days=30),
         "calibration_30d": calibration(trades, window_days=30),
     }
     if team_of_fn is not None:
@@ -324,7 +332,12 @@ def snapshot(trades: Iterable, team_of_fn=None) -> dict:
 
 
 __all__ = [
-    "PerfMetrics", "compute", "by_symbol", "by_team",
-    "heatmap_hour_of_day", "heatmap_day_of_week",
-    "calibration", "snapshot",
+    "PerfMetrics",
+    "compute",
+    "by_symbol",
+    "by_team",
+    "heatmap_hour_of_day",
+    "heatmap_day_of_week",
+    "calibration",
+    "snapshot",
 ]

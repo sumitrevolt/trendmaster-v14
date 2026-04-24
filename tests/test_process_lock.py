@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents/process_lock.py."""
+
 from __future__ import annotations
 
 import os
@@ -98,10 +99,12 @@ def test_stale_pid_lock_is_stolen(tmp_path: Path):
 
 
 # ─── second acquisition refused while first held (Windows) ────────────────
-@pytest.mark.skipif(sys.platform != "win32",
-                    reason="msvcrt-based exclusive lock is Windows-only; "
-                           "POSIX flock between two FDs of the same process "
-                           "behaves differently and isn't part of this test.")
+@pytest.mark.skipif(
+    sys.platform != "win32",
+    reason="msvcrt-based exclusive lock is Windows-only; "
+    "POSIX flock between two FDs of the same process "
+    "behaves differently and isn't part of this test.",
+)
 def test_second_acquisition_refused_while_first_held(tmp_path: Path):
     first = SingleInstanceLock("dup", lock_dir=tmp_path)
     first.__enter__()
@@ -114,6 +117,7 @@ def test_second_acquisition_refused_while_first_held(tmp_path: Path):
         second_fh = open(first.lock_path, "w", encoding="ascii")
         try:
             import msvcrt
+
             with pytest.raises(OSError):
                 msvcrt.locking(second_fh.fileno(), msvcrt.LK_NBLCK, 1)
         finally:

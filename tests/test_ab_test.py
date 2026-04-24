@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.ab_test."""
+
 from __future__ import annotations
 
 import pytest
@@ -33,6 +34,7 @@ def test_register_and_tick_records_divergence():
 def test_no_divergence_when_variant_returns_same():
     def same(symbol, direction, confidence, features):
         return direction, confidence
+
     t = ABTester()
     t.register("identity", same)
     t.tick("EURUSD", "BUY", 0.70, {})
@@ -43,12 +45,13 @@ def test_no_divergence_when_variant_returns_same():
 def test_variant_failure_is_caught():
     def broken(symbol, direction, confidence, features):
         raise ValueError("boom")
+
     t = ABTester()
     t.register("broken", broken)
     # Should not raise.
     t.tick("EURUSD", "BUY", 0.70, {})
     s = t.summary()
-    assert s["broken"]["diverged"] == 0   # error falls back to identity
+    assert s["broken"]["diverged"] == 0  # error falls back to identity
 
 
 def test_multiple_variants_independent():
@@ -81,13 +84,20 @@ def test_welch_t_captures_mean_shift():
     a = [1.0, 1.1, 0.9, 1.0, 1.05] * 10
     b = [2.0, 2.1, 1.9, 2.0, 2.05] * 10
     t = welch_t(a, b)
-    assert t < -2.0   # a has smaller mean, large |t|
+    assert t < -2.0  # a has smaller mean, large |t|
 
 
 def test_shadow_record_as_dict():
-    rec = ShadowRecord(ts=1, symbol="X", variant="v", live_direction="BUY",
-                       live_confidence=0.5, shadow_direction="SELL",
-                       shadow_confidence=0.4, diverged=True)
+    rec = ShadowRecord(
+        ts=1,
+        symbol="X",
+        variant="v",
+        live_direction="BUY",
+        live_confidence=0.5,
+        shadow_direction="SELL",
+        shadow_confidence=0.4,
+        diverged=True,
+    )
     d = rec.as_dict()
     assert d["variant"] == "v"
     assert d["diverged"] is True

@@ -3,17 +3,19 @@ import sys, os
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_out.txt")
 
+
 def log(msg):
     print(msg, flush=True)
     with open(OUT, "a", encoding="utf-8") as f:
         f.write(msg + "\n")
 
+
 # clear file
 open(OUT, "w").close()
 
-log("="*50)
+log("=" * 50)
 log("MT5 TRADE TEST")
-log("="*50)
+log("=" * 50)
 
 # 1. init
 ok = mt5.initialize()
@@ -62,21 +64,21 @@ log(f"filling_mode flag={fm}  using={filling}")
 
 # 5. place order
 price = round(tick.ask, sym.digits)
-sl    = round(tick.ask - 5.0, sym.digits)
-tp    = round(tick.ask + 10.0, sym.digits)
+sl = round(tick.ask - 5.0, sym.digits)
+tp = round(tick.ask + 10.0, sym.digits)
 
 request = {
-    "action":       mt5.TRADE_ACTION_DEAL,
-    "symbol":       "XAUUSD",
-    "volume":       0.01,
-    "type":         mt5.ORDER_TYPE_BUY,
-    "price":        price,
-    "sl":           sl,
-    "tp":           tp,
-    "deviation":    20,
-    "magic":        234001,
-    "comment":      "TEST_TRADE",
-    "type_time":    mt5.ORDER_TIME_GTC,
+    "action": mt5.TRADE_ACTION_DEAL,
+    "symbol": "XAUUSD",
+    "volume": 0.01,
+    "type": mt5.ORDER_TYPE_BUY,
+    "price": price,
+    "sl": sl,
+    "tp": tp,
+    "deviation": 20,
+    "magic": 234001,
+    "comment": "TEST_TRADE",
+    "type_time": mt5.ORDER_TIME_GTC,
     "type_filling": filling,
 }
 

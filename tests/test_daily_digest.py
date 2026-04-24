@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.daily_digest."""
+
 from __future__ import annotations
 
 import json
@@ -8,35 +9,35 @@ from pathlib import Path
 import pytest
 
 from ai_trading_agents.daily_digest import (
-    ActionItem, generate_report, to_markdown, to_telegram, write_daily,
+    ActionItem,
+    generate_report,
+    to_markdown,
+    to_telegram,
+    write_daily,
 )
 
 
 def _fake_state():
     now = int(time.time())
     return {
-        "halted":                False,
-        "trading_paused":        False,
-        "restart_count":         3,
-        "start_of_day_equity":   500.0,
+        "halted": False,
+        "trading_paused": False,
+        "restart_count": 3,
+        "start_of_day_equity": 500.0,
         "daily_drawdown_peak_eq": 505.0,
         "drawdown_lockout_until": 0,
-        "cooldown_until_ts":     0,
-        "recent_results":        [
-            {"ts": now - 3600, "symbol": "XAUUSD", "pnl": 2.0,
-             "r_mult": 2.0, "confidence": 0.72},
-            {"ts": now - 7200, "symbol": "EURUSD", "pnl": -1.0,
-             "r_mult": -1.0, "confidence": 0.65},
-            {"ts": now - 10800, "symbol": "GBPJPY", "pnl": 3.0,
-             "r_mult": 3.0, "confidence": 0.80},
+        "cooldown_until_ts": 0,
+        "recent_results": [
+            {"ts": now - 3600, "symbol": "XAUUSD", "pnl": 2.0, "r_mult": 2.0, "confidence": 0.72},
+            {"ts": now - 7200, "symbol": "EURUSD", "pnl": -1.0, "r_mult": -1.0, "confidence": 0.65},
+            {"ts": now - 10800, "symbol": "GBPJPY", "pnl": 3.0, "r_mult": 3.0, "confidence": 0.80},
         ],
     }
 
 
 def test_generate_report_has_keys():
     digest = generate_report(_fake_state())
-    for key in ("date", "generated_at", "performance", "state_summary",
-                "action_items"):
+    for key in ("date", "generated_at", "performance", "state_summary", "action_items"):
         assert key in digest
 
 

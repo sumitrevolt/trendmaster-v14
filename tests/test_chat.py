@@ -1,12 +1,16 @@
 """Quick test: Send a chat message and see AI agent responses."""
+
 import asyncio, json, sys
-sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 
 async def test():
     try:
         import websockets
     except ImportError:
         import subprocess
+
         subprocess.run(["pip", "install", "websockets", "--quiet"])
         import websockets
 
@@ -41,5 +45,6 @@ async def test():
             print(f"\nTimeout - got {responses_received} responses")
         except Exception as e:
             print(f"Done: {e}")
+
 
 asyncio.run(test())

@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.structured_log (JSON formatter + ctx)."""
+
 from __future__ import annotations
 
 import json
@@ -11,8 +12,14 @@ from ai_trading_agents import structured_log as sl
 
 def _make_record(msg="hello", **extras):
     rec = logging.LogRecord(
-        name="test_logger", level=logging.INFO, pathname=__file__, lineno=7,
-        msg=msg, args=(), exc_info=None, func="t",
+        name="test_logger",
+        level=logging.INFO,
+        pathname=__file__,
+        lineno=7,
+        msg=msg,
+        args=(),
+        exc_info=None,
+        func="t",
     )
     for k, v in extras.items():
         setattr(rec, k, v)
@@ -66,12 +73,12 @@ def test_configure_with_json_env_installs(monkeypatch):
     monkeypatch.setenv("LOG_FORMAT", "json")
     # Use a scratch root so we don't pollute other tests.
     import io
+
     buf = io.StringIO()
     assert sl.configure(stream=buf) is True
     root = logging.getLogger()
     # At least one handler should now carry a JsonFormatter.
-    have_json = any(isinstance(h.formatter, sl.JsonFormatter)
-                    for h in root.handlers)
+    have_json = any(isinstance(h.formatter, sl.JsonFormatter) for h in root.handlers)
     assert have_json
 
 
@@ -81,10 +88,17 @@ def test_exception_field_populated_on_exc_info():
         raise ValueError("boom")
     except ValueError:
         import sys
+
         exc_info = sys.exc_info()
     rec = logging.LogRecord(
-        name="t", level=logging.ERROR, pathname=__file__, lineno=1,
-        msg="caught", args=(), exc_info=exc_info, func="t",
+        name="t",
+        level=logging.ERROR,
+        pathname=__file__,
+        lineno=1,
+        msg="caught",
+        args=(),
+        exc_info=exc_info,
+        func="t",
     )
     rec.module = "test_structured_log"
     out = json.loads(fmt.format(rec))

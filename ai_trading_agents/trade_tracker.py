@@ -44,6 +44,7 @@ Safety
   recorded deals.
 * Bounded — only fetches the last `lookback_days` of history (default 1).
 """
+
 from __future__ import annotations
 
 import logging
@@ -55,6 +56,7 @@ logger = logging.getLogger("trade_tracker")
 
 try:
     import MetaTrader5 as mt5  # type: ignore
+
     _HAS_MT5 = True
 except Exception:
     _HAS_MT5 = False
@@ -102,8 +104,9 @@ class TradeTracker:
     `state["recent_results"]`. Designed to be called from the brain's
     main tick loop — fast, idempotent, fail-safe.
     """
+
     lookback_days: int = 1
-    poll_interval_s: float = 30.0          # don't hammer mt5.history_deals
+    poll_interval_s: float = 30.0  # don't hammer mt5.history_deals
     _last_poll_ts: float = 0.0
     _seen_deal_ids: set = field(default_factory=set)
 
@@ -169,13 +172,15 @@ class TradeTracker:
                 worst = self._worst_loss_for(results, sym)
                 r_mult = profit / worst if worst > 0 else profit
 
-                results.append({
-                    "ts":       int(getattr(d, "time", now) or now),
-                    "symbol":   sym,
-                    "pnl":      round(profit, 2),
-                    "r_mult":   round(float(r_mult), 3),
-                    "deal_id":  deal_id,
-                })
+                results.append(
+                    {
+                        "ts": int(getattr(d, "time", now) or now),
+                        "symbol": sym,
+                        "pnl": round(profit, 2),
+                        "r_mult": round(float(r_mult), 3),
+                        "deal_id": deal_id,
+                    }
+                )
                 self._seen_deal_ids.add(deal_id)
                 added += 1
             except Exception as e:

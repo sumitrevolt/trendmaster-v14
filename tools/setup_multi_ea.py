@@ -25,6 +25,7 @@ Usage
 
 Safe to re-run. Backs up any existing profile with the same name.
 """
+
 from __future__ import annotations
 
 import shutil
@@ -49,17 +50,32 @@ def _load_symbols() -> List[str]:
     try:
         sys.path.insert(0, str(ROOT))
         from config import settings as _s
+
         syms = list(_s.TRADING_PAIRS)
         if syms:
             return syms
     except Exception as e:
         print(f"[i] settings import failed ({e}); using fallback list")
     return [
-        "XAUUSD", "XAGUSD",
-        "GBPJPY", "USDCAD", "USDCHF", "EURUSD", "GBPUSD", "AUDUSD",
-        "USDJPY", "NZDUSD", "EURJPY", "EURGBP", "AUDJPY", "CADJPY",
-        "BTCUSD", "ETHUSD",
-        "XTIUSD", "XBRUSD", "XNGUSD",
+        "XAUUSD",
+        "XAGUSD",
+        "GBPJPY",
+        "USDCAD",
+        "USDCHF",
+        "EURUSD",
+        "GBPUSD",
+        "AUDUSD",
+        "USDJPY",
+        "NZDUSD",
+        "EURJPY",
+        "EURGBP",
+        "AUDJPY",
+        "CADJPY",
+        "BTCUSD",
+        "ETHUSD",
+        "XTIUSD",
+        "XBRUSD",
+        "XNGUSD",
     ]
 
 
@@ -138,8 +154,7 @@ def _chart_template(symbol: str, chart_id: int, expert_block: str) -> str:
         f"askline_color=255\n"
         f"lastline_color=12632256\n"
         f"stops_color=17919\n"
-        f"windows_total=1\n\n"
-        + eb + "\n"
+        f"windows_total=1\n\n" + eb + "\n"
         "<window>\n"
         "height=100.000000\n"
         "objects=0\n"
@@ -181,8 +196,7 @@ def main() -> int:
 
     expert_block = EXPERT_BLOCK_SRC.read_text(encoding="ascii").strip()
     symbols = _load_symbols()
-    print(f"[i] generating profile for {len(symbols)} symbols: "
-          f"{', '.join(symbols)}")
+    print(f"[i] generating profile for {len(symbols)} symbols: {', '.join(symbols)}")
 
     # Backup any existing profile.
     if NEW_PROFILE_DIR.exists():
@@ -194,7 +208,8 @@ def main() -> int:
     for i, sym in enumerate(symbols, start=1):
         chart_file = NEW_PROFILE_DIR / f"chart{i:02d}.chr"
         chart_file.write_text(
-            _chart_template(sym, i, expert_block), encoding="utf-16-le",
+            _chart_template(sym, i, expert_block),
+            encoding="utf-16-le",
         )
     # Write profile.ini enumerating the charts.
     lines = [
@@ -211,10 +226,10 @@ def main() -> int:
     print(f"     {len(symbols)} chart files + profile.ini")
     print("\nNext steps:")
     print(f"  1. In MT5:  File > Profiles > {NEW_PROFILE_NAME}")
-    print( "  2. Verify each chart shows the AI_SUPERBB_v14_TrendMaster")
-    print( "     smiley face in the top-right (Auto-Trading enabled).")
-    print( "  3. Brain will write per-symbol signal files; EA on each")
-    print( "     chart will auto-derive its filename via InpAIAutoPerSymbol.")
+    print("  2. Verify each chart shows the AI_SUPERBB_v14_TrendMaster")
+    print("     smiley face in the top-right (Auto-Trading enabled).")
+    print("  3. Brain will write per-symbol signal files; EA on each")
+    print("     chart will auto-derive its filename via InpAIAutoPerSymbol.")
     return 0
 
 

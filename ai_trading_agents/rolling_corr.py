@@ -39,6 +39,7 @@ Design
 Opt-in: `RISK.use_rolling_corr=True` in settings (not shipped here —
 add it when you want to wire this in).
 """
+
 from __future__ import annotations
 
 import logging
@@ -54,17 +55,17 @@ logger = logging.getLogger("rolling_corr")
 
 @dataclass
 class CorrViolation:
-    other_symbol:  str
-    correlation:   float
-    direction:     str         # the OTHER side's direction
-    reason:        str
+    other_symbol: str
+    correlation: float
+    direction: str  # the OTHER side's direction
+    reason: str
 
     def as_dict(self) -> dict:
         return {
             "other_symbol": self.other_symbol,
-            "correlation":  round(self.correlation, 4),
-            "direction":    self.direction,
-            "reason":       self.reason,
+            "correlation": round(self.correlation, 4),
+            "direction": self.direction,
+            "reason": self.reason,
         }
 
 
@@ -72,9 +73,10 @@ class CorrViolation:
 class RollingCorrMatrix:
     """Fixed-window rolling correlation matrix across a configurable
     symbol set. One update() call per bar; check() is O(N_open * W)."""
-    window:      int = 20
-    _prices:     Dict[str, "deque[float]"] = field(default_factory=dict)
-    _lock:       Lock = field(default_factory=Lock)
+
+    window: int = 20
+    _prices: Dict[str, "deque[float]"] = field(default_factory=dict)
+    _lock: Lock = field(default_factory=Lock)
 
     # ──────────────────────────────────────────────────────────────────
     def update_bar(self, closes: Dict[str, float]) -> None:
@@ -113,11 +115,9 @@ class RollingCorrMatrix:
             return None
 
     # ──────────────────────────────────────────────────────────────────
-    def check(self,
-              symbol: str,
-              direction: str,
-              open_positions: Iterable,
-              threshold: float = 0.8) -> Optional[CorrViolation]:
+    def check(
+        self, symbol: str, direction: str, open_positions: Iterable, threshold: float = 0.8
+    ) -> Optional[CorrViolation]:
         """Return the first conflict (if any) when trying to open
         `symbol` in `direction` given current `open_positions`.
 
@@ -128,26 +128,24 @@ class RollingCorrMatrix:
         it's effectively a same-side exposure).
         """
         for p in open_positions:
-            other_sym = getattr(p, "symbol", None) or (
-                p.get("symbol") if isinstance(p, dict) else None
-            )
-            other_dir = getattr(p, "direction", None) or (
-                p.get("direction") if isinstance(p, dict) else None
-            )
+            other_sym = getattr(p, "symbol", None) or (p.get("symbol") if isinstance(p, dict) else None)
+            other_dir = getattr(p, "direction", None) or (p.get("direction") if isinstance(p, dict) else None)
             if not other_sym or not other_dir or other_sym == symbol:
                 continue
             c = self.corr(symbol, other_sym)
             if c is None:
                 continue
             # Same direction + positive corr > threshold ⇒ stacked risk.
-            if other_dir == direction and c >  float(threshold):
+            if other_dir == direction and c > float(threshold):
                 return CorrViolation(
                     other_symbol=other_sym,
                     correlation=c,
                     direction=other_dir,
-                    reason=(f"rolling corr {c:+.2f} with "
-                            f"{other_sym} ({other_dir}) > +{threshold:.2f} "
-                            f"— same-side stack risk"),
+                    reason=(
+                        f"rolling corr {c:+.2f} with "
+                        f"{other_sym} ({other_dir}) > +{threshold:.2f} "
+                        f"— same-side stack risk"
+                    ),
                 )
             # Opposite direction + negative corr < -threshold ⇒
             # structurally same exposure (anti-correlated pair).
@@ -156,9 +154,11 @@ class RollingCorrMatrix:
                     other_symbol=other_sym,
                     correlation=c,
                     direction=other_dir,
-                    reason=(f"rolling corr {c:+.2f} with "
-                            f"{other_sym} ({other_dir}) < -{threshold:.2f} "
-                            f"— anti-corr masks same exposure"),
+                    reason=(
+                        f"rolling corr {c:+.2f} with "
+                        f"{other_sym} ({other_dir}) < -{threshold:.2f} "
+                        f"— anti-corr masks same exposure"
+                    ),
                 )
         return None
 

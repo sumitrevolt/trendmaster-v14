@@ -1,4 +1,5 @@
 """CLI smoke tests — parser wiring only, no side-effects."""
+
 from __future__ import annotations
 
 import pytest

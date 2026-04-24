@@ -32,6 +32,7 @@ Safeguards
 * Fallback rule-based brain if LightGBM isn't installed — the system
   still works, just without the ML edge.
 """
+
 from __future__ import annotations
 
 import json
@@ -61,6 +62,7 @@ from ai_trading_agents.process_lock import SingleInstanceLock  # noqa: E402
 from ai_trading_agents.state_store import StateStore  # noqa: E402
 from ai_trading_agents.trade_tracker import TradeTracker, pnl_of  # noqa: E402
 from ai_trading_agents.reentry_tracker import ReentryTracker  # noqa: E402
+
 # [audit-fix 2026-04-22] wire portfolio-level risk manager into tick_once
 from ai_trading_agents.risk_manager import (  # noqa: E402
     Position as _RMPosition,
@@ -217,15 +219,18 @@ def _pair_sl_tp(sym: str) -> tuple:
     adx = float(p.get("adx_min", 22.0))
     return sl, tp, adx
 
+
 # ── Optional heavy deps ─────────────────────────────────────────────────
 try:
     import lightgbm as lgb  # type: ignore
+
     _HAS_LGB = True
 except ImportError:
     _HAS_LGB = False
 
 try:
     import MetaTrader5 as mt5  # type: ignore
+
     _HAS_MT5 = True
 except ImportError:
     _HAS_MT5 = False
@@ -236,13 +241,13 @@ logger = logging.getLogger("trend_master_brain")
 # =========================================================================
 #                          CONFIG SHORTCUTS
 # =========================================================================
-CFG          = getattr(settings, "TRENDMASTER_V14", {})
-PF_CFG       = getattr(settings, "PROFIT_OPTIMIZER", {})
+CFG = getattr(settings, "TRENDMASTER_V14", {})
+PF_CFG = getattr(settings, "PROFIT_OPTIMIZER", {})
 USE_PROFIT_FILTERS = bool(PF_CFG.get("enabled", True))
-SYMBOL       = CFG.get("primary_symbol", "XAUUSD")
-TF           = CFG.get("primary_timeframe", "M5")
-INFER_MS     = int(CFG.get("inference_interval_ms", 250))
-MIN_CONF     = float(CFG.get("min_ml_confidence", 0.58))
+SYMBOL = CFG.get("primary_symbol", "XAUUSD")
+TF = CFG.get("primary_timeframe", "M5")
+INFER_MS = int(CFG.get("inference_interval_ms", 250))
+MIN_CONF = float(CFG.get("min_ml_confidence", 0.58))
 # [R11 2026-04-23] Session confidence boost — when we're inside the London-NY
 # overlap (peak_hours_utc) or on the shoulder, _effective_min_conf() returns
 # MIN_CONF minus the configured boost, so more signals fire during high-
@@ -268,12 +273,12 @@ def _effective_min_conf(now_utc: Optional[datetime] = None) -> float:
     return MIN_CONF
 
 
-SIG_FILE     = CFG.get("signal_file", "trendmaster_signals.json")
-USE_COMMON   = bool(CFG.get("use_common_folder", False))
-MTF          = CFG.get("mtf_alignment", {"M5": True, "M15": True, "H1": True})
+SIG_FILE = CFG.get("signal_file", "trendmaster_signals.json")
+USE_COMMON = bool(CFG.get("use_common_folder", False))
+MTF = CFG.get("mtf_alignment", {"M5": True, "M15": True, "H1": True})
 FEAT_WINDOWS = CFG.get("feature_windows", [5, 10, 20, 50])
 AGENT_MIN_VOTES = int(CFG.get("agent_min_votes", 3))
-USE_AGENTS      = bool(CFG.get("use_multi_agent", True))
+USE_AGENTS = bool(CFG.get("use_multi_agent", True))
 
 # [audit-fix 2026-04-22] RISK settings shortcut — risk_manager.check_risk()
 # is called every signal BEFORE the brain writes a non-NONE direction.
@@ -323,12 +328,13 @@ def _build_risk_config() -> "_RMRiskConfig":
 # file `trendmaster_signals_{SYMBOL}.json`. The legacy single-symbol JSON
 # (`trendmaster_signals.json` for PRIMARY_SYMBOL) is preserved so existing
 # EA installs keep working without recompile.
-MULTI_SYMBOL    = bool(CFG.get("multi_symbol", False))
+MULTI_SYMBOL = bool(CFG.get("multi_symbol", False))
 ALL_SYMBOLS: List[str] = list(getattr(settings, "TRADING_PAIRS", [SYMBOL])) or [SYMBOL]
 # Per-symbol timeframe override helper (falls back to M30/H1/H4).
 try:
-    _tf_for = settings.timeframes_for           # type: ignore[attr-defined]
+    _tf_for = settings.timeframes_for  # type: ignore[attr-defined]
 except AttributeError:
+
     def _tf_for(_sym: str) -> List[str]:
         return ["M30", "H1", "H4"]
 
@@ -340,6 +346,8 @@ except AttributeError:
 # the gate first started biting) and then drop dups for `interval_s`.
 # Added 2026-04-22.
 _LOG_DEDUP_LAST: Dict[Tuple[str, str], float] = {}
+
+
 def _log_dedup(key: Tuple[str, str], interval_s: float = 60.0) -> bool:
     """Return True if this (symbol, reason) hasn't been logged in the last
     `interval_s` seconds — i.e. it's safe to emit the log line now."""
@@ -355,13 +363,13 @@ def _tf_to_mt5(tf: str) -> int:
     if not _HAS_MT5:
         return 0
     return {
-        "M1":  mt5.TIMEFRAME_M1,
-        "M5":  mt5.TIMEFRAME_M5,
+        "M1": mt5.TIMEFRAME_M1,
+        "M5": mt5.TIMEFRAME_M5,
         "M15": mt5.TIMEFRAME_M15,
         "M30": mt5.TIMEFRAME_M30,
-        "H1":  mt5.TIMEFRAME_H1,
-        "H4":  mt5.TIMEFRAME_H4,
-        "D1":  mt5.TIMEFRAME_D1,
+        "H1": mt5.TIMEFRAME_H1,
+        "H4": mt5.TIMEFRAME_H4,
+        "D1": mt5.TIMEFRAME_D1,
     }.get(tf, mt5.TIMEFRAME_M5)
 
 
@@ -374,8 +382,7 @@ def _tf_to_mt5(tf: str) -> int:
 #   * exponential-backoff initialize()
 #   * single-call retry on data pulls
 # Both are no-ops if _HAS_MT5 is False (CI / unit tests).
-def _mt5_initialize_with_retry(max_attempts: int = 5,
-                               base_delay_s: float = 2.0) -> bool:
+def _mt5_initialize_with_retry(max_attempts: int = 5, base_delay_s: float = 2.0) -> bool:
     if not _HAS_MT5:
         return False
     for attempt in range(1, max_attempts + 1):
@@ -385,8 +392,7 @@ def _mt5_initialize_with_retry(max_attempts: int = 5,
                     logger.info("MT5 connected on attempt %d", attempt)
                 return True
             err = mt5.last_error()
-            logger.warning("MT5 initialize attempt %d/%d failed: %s",
-                           attempt, max_attempts, err)
+            logger.warning("MT5 initialize attempt %d/%d failed: %s", attempt, max_attempts, err)
         except Exception as e:
             logger.warning("MT5 initialize attempt %d crashed: %s", attempt, e)
         delay = min(60.0, base_delay_s * (2 ** (attempt - 1)))
@@ -394,8 +400,7 @@ def _mt5_initialize_with_retry(max_attempts: int = 5,
     return False
 
 
-def _mt5_copy_rates_safe(symbol: str, tf: int, n: int,
-                         retries: int = 2):
+def _mt5_copy_rates_safe(symbol: str, tf: int, n: int, retries: int = 2):
     """copy_rates_from_pos with one re-init attempt on transient failure."""
     if not _HAS_MT5:
         return None
@@ -405,8 +410,7 @@ def _mt5_copy_rates_safe(symbol: str, tf: int, n: int,
             if rates is not None and len(rates) > 0:
                 return rates
         except Exception as e:
-            logger.debug("copy_rates_from_pos %s attempt %d failed: %s",
-                         symbol, attempt, e)
+            logger.debug("copy_rates_from_pos %s attempt %d failed: %s", symbol, attempt, e)
         # On second failure, try a quick re-init — broker may have nudged us.
         if attempt < retries:
             try:
@@ -434,9 +438,7 @@ def _rsi(x: pd.Series, n: int = 14) -> pd.Series:
 
 def _atr(df: pd.DataFrame, n: int = 14) -> pd.Series:
     h, l, c = df["high"], df["low"], df["close"]
-    tr = pd.concat(
-        [(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1
-    ).max(axis=1)
+    tr = pd.concat([(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
     return tr.rolling(n).mean()
 
 
@@ -444,46 +446,40 @@ def _adx(df: pd.DataFrame, n: int = 14) -> pd.Series:
     h, l, c = df["high"], df["low"], df["close"]
     up = h.diff()
     dn = -l.diff()
-    plus  = np.where((up > dn) & (up > 0), up, 0.0)
+    plus = np.where((up > dn) & (up > 0), up, 0.0)
     minus = np.where((dn > up) & (dn > 0), dn, 0.0)
-    tr    = pd.concat(
-        [(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1
-    ).max(axis=1)
+    tr = pd.concat([(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
     atr_n = tr.rolling(n).mean().replace(0, np.nan)
-    pdi = 100 * pd.Series(plus,  index=df.index).rolling(n).mean() / atr_n
+    pdi = 100 * pd.Series(plus, index=df.index).rolling(n).mean() / atr_n
     ndi = 100 * pd.Series(minus, index=df.index).rolling(n).mean() / atr_n
-    dx  = 100 * (pdi - ndi).abs() / (pdi + ndi).replace(0, np.nan)
+    dx = 100 * (pdi - ndi).abs() / (pdi + ndi).replace(0, np.nan)
     return dx.rolling(n).mean()
 
 
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """Build the feature matrix the ML model consumes."""
     x = df.copy()
-    x["ret_1"]  = x["close"].pct_change()
+    x["ret_1"] = x["close"].pct_change()
     x["hl_rng"] = (x["high"] - x["low"]) / x["close"]
 
     for w in FEAT_WINDOWS:
-        x[f"ema_{w}"]      = _ema(x["close"], w)
-        x[f"ret_{w}"]      = x["close"].pct_change(w)
-        x[f"vol_{w}"]      = x["ret_1"].rolling(w).std()
+        x[f"ema_{w}"] = _ema(x["close"], w)
+        x[f"ret_{w}"] = x["close"].pct_change(w)
+        x[f"vol_{w}"] = x["ret_1"].rolling(w).std()
         x[f"close_ema_{w}"] = (x["close"] - x[f"ema_{w}"]) / x["close"]
 
-    x["rsi_14"]   = _rsi(x["close"], 14)
-    x["atr_14"]   = _atr(x, 14)
-    x["adx_14"]   = _adx(x, 14)
+    x["rsi_14"] = _rsi(x["close"], 14)
+    x["atr_14"] = _atr(x, 14)
+    x["adx_14"] = _adx(x, 14)
 
     # EMA stack (trend signature)
-    x["ema_stack_bull"] = (
-        (x["ema_5"]  > x["ema_20"]) & (x["ema_20"] > x["ema_50"])
-    ).astype(int)
-    x["ema_stack_bear"] = (
-        (x["ema_5"]  < x["ema_20"]) & (x["ema_20"] < x["ema_50"])
-    ).astype(int)
+    x["ema_stack_bull"] = ((x["ema_5"] > x["ema_20"]) & (x["ema_20"] > x["ema_50"])).astype(int)
+    x["ema_stack_bear"] = ((x["ema_5"] < x["ema_20"]) & (x["ema_20"] < x["ema_50"])).astype(int)
 
     # BB context
     sma20 = x["close"].rolling(20).mean()
     std20 = x["close"].rolling(20).std()
-    x["bb_z"]     = (x["close"] - sma20) / std20.replace(0, np.nan)
+    x["bb_z"] = (x["close"] - sma20) / std20.replace(0, np.nan)
     x["bb_width"] = (4 * std20) / sma20.replace(0, np.nan)
 
     # Session one-hot
@@ -492,23 +488,40 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
             hours = x.index.hour  # type: ignore[attr-defined]
         except Exception:
             hours = pd.Series([0] * len(x))
-        x["sess_london"]  = ((hours >= 7)  & (hours < 12)).astype(int)
-        x["sess_ny"]      = ((hours >= 13) & (hours < 20)).astype(int)
+        x["sess_london"] = ((hours >= 7) & (hours < 12)).astype(int)
+        x["sess_ny"] = ((hours >= 13) & (hours < 20)).astype(int)
         x["sess_overlap"] = ((hours >= 12) & (hours < 16)).astype(int)
-        x["sess_asian"]   = ((hours >= 0)  & (hours < 7 )).astype(int)
+        x["sess_asian"] = ((hours >= 0) & (hours < 7)).astype(int)
 
     return x
 
 
 FEATURE_COLS = [
-    "ret_1", "hl_rng",
-    "ret_5", "ret_10", "ret_20", "ret_50",
-    "vol_5", "vol_10", "vol_20", "vol_50",
-    "close_ema_5", "close_ema_10", "close_ema_20", "close_ema_50",
-    "rsi_14", "atr_14", "adx_14",
-    "ema_stack_bull", "ema_stack_bear",
-    "bb_z", "bb_width",
-    "sess_london", "sess_ny", "sess_overlap", "sess_asian",
+    "ret_1",
+    "hl_rng",
+    "ret_5",
+    "ret_10",
+    "ret_20",
+    "ret_50",
+    "vol_5",
+    "vol_10",
+    "vol_20",
+    "vol_50",
+    "close_ema_5",
+    "close_ema_10",
+    "close_ema_20",
+    "close_ema_50",
+    "rsi_14",
+    "atr_14",
+    "adx_14",
+    "ema_stack_bull",
+    "ema_stack_bear",
+    "bb_z",
+    "bb_width",
+    "sess_london",
+    "sess_ny",
+    "sess_overlap",
+    "sess_asian",
 ]
 
 
@@ -517,12 +530,12 @@ FEATURE_COLS = [
 # =========================================================================
 @dataclass
 class BrainState:
-    model: Optional[object]        = None
-    rule_wr_buy:  float            = 0.5
-    rule_wr_sell: float            = 0.5
-    last_signal:  Dict             = field(default_factory=dict)
-    last_write_ts: float           = 0.0
-    wins:   int = 0
+    model: Optional[object] = None
+    rule_wr_buy: float = 0.5
+    rule_wr_sell: float = 0.5
+    last_signal: Dict = field(default_factory=dict)
+    last_write_ts: float = 0.0
+    wins: int = 0
     losses: int = 0
     # 2026-04-22: per-symbol last veto reason for /why command and tick_all
     # debugging. Populated by tick_once() whenever a profit_gate vetoes.
@@ -554,7 +567,7 @@ class TrendMasterBrain:
         # tick_once() reads. If either is True, the brain starts halted so
         # a /halt issued right before a crash/restart is still in effect.
         halted_persist = bool(self.persistent.get("halted"))
-        paused_legacy  = bool(self.persistent.get("trading_paused"))
+        paused_legacy = bool(self.persistent.get("trading_paused"))
         if halted_persist or paused_legacy:
             self.persistent["halted"] = True
             self.persistent["trading_paused"] = True
@@ -589,8 +602,7 @@ class TrendMasterBrain:
     def _load_model(self) -> None:
         if not _HAS_LGB:
             logger.warning(
-                "LightGBM not installed — falling back to rule-based inference. "
-                "Install with: pip install lightgbm"
+                "LightGBM not installed — falling back to rule-based inference. Install with: pip install lightgbm"
             )
             return
         if self.model_path.exists():
@@ -601,8 +613,7 @@ class TrendMasterBrain:
                 logger.warning("Failed to load model (%s), will use rules.", e)
 
     # ─── DATA PULL ──────────────────────────────────────────────────────
-    def pull_bars(self, tf: str, n: int = 500,
-                  symbol: Optional[str] = None) -> Optional[pd.DataFrame]:
+    def pull_bars(self, tf: str, n: int = 500, symbol: Optional[str] = None) -> Optional[pd.DataFrame]:
         if not _HAS_MT5:
             return None
         sym = symbol or SYMBOL
@@ -629,12 +640,14 @@ class TrendMasterBrain:
                 # binary model: single probability = P(BUY)
                 p_buy = float(p)
                 _thr = _effective_min_conf()
-                if p_buy >= _thr:   return "BUY",  p_buy
-                if p_buy <= 1.0 - _thr: return "SELL", 1.0 - p_buy
+                if p_buy >= _thr:
+                    return "BUY", p_buy
+                if p_buy <= 1.0 - _thr:
+                    return "SELL", 1.0 - p_buy
                 return "NONE", max(p_buy, 1.0 - p_buy)
             idx = int(np.argmax(p))
             conf = float(p[idx])
-            cls  = ["SELL", "NONE", "BUY"][idx] if len(p) == 3 else "NONE"
+            cls = ["SELL", "NONE", "BUY"][idx] if len(p) == 3 else "NONE"
             return cls, conf
         except Exception as e:
             logger.warning("ML inference failed (%s) — rule fallback.", e)
@@ -645,21 +658,27 @@ class TrendMasterBrain:
         last = x.iloc[-1]
         bull = bool(last.get("ema_stack_bull", 0))
         bear = bool(last.get("ema_stack_bear", 0))
-        adx  = float(last.get("adx_14", 0) or 0)
-        rsi  = float(last.get("rsi_14", 50))
-        bbz  = float(last.get("bb_z", 0) or 0)
+        adx = float(last.get("adx_14", 0) or 0)
+        rsi = float(last.get("rsi_14", 50))
+        bbz = float(last.get("bb_z", 0) or 0)
 
         # weighted rule: trend + momentum + volatility context
         score = 0.0
-        if bull and adx > 22: score += 0.35
-        if bull and bbz > 0:  score += 0.15
-        if bull and rsi > 50 and rsi < 75: score += 0.10
-        if bear and adx > 22: score -= 0.35
-        if bear and bbz < 0:  score -= 0.15
-        if bear and rsi < 50 and rsi > 25: score -= 0.10
+        if bull and adx > 22:
+            score += 0.35
+        if bull and bbz > 0:
+            score += 0.15
+        if bull and rsi > 50 and rsi < 75:
+            score += 0.10
+        if bear and adx > 22:
+            score -= 0.35
+        if bear and bbz < 0:
+            score -= 0.15
+        if bear and rsi < 50 and rsi > 25:
+            score -= 0.10
 
         if score >= 0.35:
-            return "BUY",  0.55 + min(0.4, score - 0.35)
+            return "BUY", 0.55 + min(0.4, score - 0.35)
         if score <= -0.35:
             return "SELL", 0.55 + min(0.4, -(score + 0.35))
         return "NONE", 0.5
@@ -681,8 +700,10 @@ class TrendMasterBrain:
             last = x.iloc[-1]
             bull = bool(last.get("ema_stack_bull", 0))
             bear = bool(last.get("ema_stack_bear", 0))
-            if direction == "BUY"  and not bull: return False
-            if direction == "SELL" and not bear: return False
+            if direction == "BUY" and not bull:
+                return False
+            if direction == "SELL" and not bear:
+                return False
         return True
 
     # ─── MULTI-AGENT VOTE (per-symbol timeframes) ──────────────────────
@@ -735,31 +756,35 @@ class TrendMasterBrain:
         suffix = Path(SIG_FILE).suffix or ".json"
         return f"{stem}_{symbol}{suffix}"
 
-    def write_signal(self, direction: str, confidence: float,
-                     agent_dir: int = 0,
-                     agent_votes: Optional[List[AgentVote]] = None,
-                     symbol: Optional[str] = None) -> None:
+    def write_signal(
+        self,
+        direction: str,
+        confidence: float,
+        agent_dir: int = 0,
+        agent_votes: Optional[List[AgentVote]] = None,
+        symbol: Optional[str] = None,
+    ) -> None:
         sym = symbol or SYMBOL
         path = self._resolve_signal_path(self._signal_filename_for(sym))
         # [R8 2026-04-23] Include per-symbol SL/TP/ADX so EA can use
         # symbol-specific params instead of flat InpSL/InpTP defaults.
         sl_m, tp_m, adx_min = _pair_sl_tp(sym)
         payload = {
-            "direction":  direction,
+            "direction": direction,
             "confidence": round(float(confidence), 4),
-            "ts":         int(time.time()),
-            "symbol":     sym,
-            "brain":      "TrendMaster_v14",
-            "model":      "lgbm" if self.state.model is not None else "rule",
+            "ts": int(time.time()),
+            "symbol": sym,
+            "brain": "TrendMaster_v14",
+            "model": "lgbm" if self.state.model is not None else "rule",
             "agents": {
-                "dir":   {+1: "BUY", -1: "SELL", 0: "NONE"}.get(int(agent_dir), "NONE"),
+                "dir": {+1: "BUY", -1: "SELL", 0: "NONE"}.get(int(agent_dir), "NONE"),
                 "votes": [v.as_dict() for v in (agent_votes or [])],
             },
             # Per-symbol SL/TP/ADX guidance (EA picks these up if it
             # supports per-signal overrides; ignored otherwise).
             "sl_atr_mult": round(sl_m, 3),
             "tp_atr_mult": round(tp_m, 3),
-            "adx_min":     round(adx_min, 1),
+            "adx_min": round(adx_min, 1),
         }
         # [R11 2026-04-23] EA runtime-override block — when enabled, EA
         # reads require_all_3 + max_spread_atr_pct from here instead of
@@ -790,22 +815,23 @@ class TrendMasterBrain:
                     break
                 except PermissionError as pe:  # WinError 5
                     last_err = pe
-                    time.sleep(0.05 * (2 ** attempt))
+                    time.sleep(0.05 * (2**attempt))
             if last_err is not None:
                 # All retries exhausted — log once with the final error.
-                logger.error("Signal write failed after retries (%s): %s",
-                             sym, last_err)
+                logger.error("Signal write failed after retries (%s): %s", sym, last_err)
                 try:
-                    if tmp.exists(): tmp.unlink()
+                    if tmp.exists():
+                        tmp.unlink()
                 except Exception:
                     pass
             else:
-                self.state.last_signal  = payload
+                self.state.last_signal = payload
                 self.state.last_write_ts = time.time()
         except Exception as e:
             logger.error("Signal write failed (%s): %s", sym, e)
             try:
-                if tmp.exists(): tmp.unlink()
+                if tmp.exists():
+                    tmp.unlink()
             except Exception:
                 pass
 
@@ -832,10 +858,7 @@ class TrendMasterBrain:
         # [enhancement 2026-04-23] Per-symbol latency histogram — gated
         # on METRICS.enabled so the prod default is zero overhead.
         _t0 = time.perf_counter()
-        _metrics_enabled = (
-            _metrics is not None
-            and getattr(settings, "METRICS", {}).get("enabled", False)
-        )
+        _metrics_enabled = _metrics is not None and getattr(settings, "METRICS", {}).get("enabled", False)
         df = self.pull_bars(TF, 500, symbol=sym)
         if df is None or len(df) < 120:
             return None
@@ -951,8 +974,7 @@ class TrendMasterBrain:
                     # log lines (see _log_dedup). The first hit always logs.
                     veto_key = (sym, "; ".join(gate.reasons))
                     if _log_dedup(veto_key, interval_s=60.0):
-                        logger.info("[%s] profit_gate veto: %s",
-                                    sym, "; ".join(gate.reasons))
+                        logger.info("[%s] profit_gate veto: %s", sym, "; ".join(gate.reasons))
                     direction = "NONE"
                     # Stash for /why command + tick_all summary.
                     self.state.last_veto_per_symbol[sym] = "; ".join(gate.reasons)
@@ -960,16 +982,16 @@ class TrendMasterBrain:
                     # stamp a lockout so the rest of the UTC day is blocked
                     # even if equity briefly rebounds. Cleared on SoD roll.
                     dd_reason = next(
-                        (r for r in gate.reasons if r.startswith("daily_dd:")), None,
+                        (r for r in gate.reasons if r.startswith("daily_dd:")),
+                        None,
                     )
                     if dd_reason:
                         # Lock out for the remainder of the UTC day.
                         now_utc = datetime.now(timezone.utc)
-                        end_of_day = int(time.time() + (
-                            (23 - now_utc.hour) * 3600
-                            + (59 - now_utc.minute) * 60
-                            + (60 - now_utc.second)
-                        ))
+                        end_of_day = int(
+                            time.time()
+                            + ((23 - now_utc.hour) * 3600 + (59 - now_utc.minute) * 60 + (60 - now_utc.second))
+                        )
                         prev = float(self.persistent.get("drawdown_lockout_until", 0) or 0)
                         if end_of_day > prev:
                             self.persistent["drawdown_lockout_until"] = end_of_day
@@ -1028,14 +1050,16 @@ class TrendMasterBrain:
                             try:
                                 # MT5 position.type: 0=BUY, 1=SELL
                                 pdir = "BUY" if int(getattr(p, "type", 0)) == 0 else "SELL"
-                                rm_positions.append(_RMPosition(
-                                    symbol=str(getattr(p, "symbol", "")),
-                                    direction=pdir,
-                                    lots=float(getattr(p, "volume", 0.0)),
-                                    entry_price=float(getattr(p, "price_open", 0.0)),
-                                    sl_price=float(getattr(p, "sl", 0.0) or 0.0),
-                                    tp_price=float(getattr(p, "tp", 0.0) or 0.0),
-                                ))
+                                rm_positions.append(
+                                    _RMPosition(
+                                        symbol=str(getattr(p, "symbol", "")),
+                                        direction=pdir,
+                                        lots=float(getattr(p, "volume", 0.0)),
+                                        entry_price=float(getattr(p, "price_open", 0.0)),
+                                        sl_price=float(getattr(p, "sl", 0.0) or 0.0),
+                                        tp_price=float(getattr(p, "tp", 0.0) or 0.0),
+                                    )
+                                )
                             except Exception:
                                 continue
                 # SL distance (price units) — derived from last ATR
@@ -1059,8 +1083,7 @@ class TrendMasterBrain:
                     except Exception:
                         pass
                 rm_cfg = _build_risk_config()
-                rm_risk_pct = float(RISK_CFG_RAW.get("risk_percent",
-                                                      rm_cfg.risk_per_trade_pct))
+                rm_risk_pct = float(RISK_CFG_RAW.get("risk_percent", rm_cfg.risk_per_trade_pct))
                 # [enhancement 2026-04-23 R3] Meta-labeling gate (Lopez de
                 # Prado). If a trained per-team model exists and
                 # META_LABELER.enabled is True, its p_win decides (a)
@@ -1071,23 +1094,25 @@ class TrendMasterBrain:
                 if _MetaLabeler is not None and _ml_cfg.get("enabled"):
                     try:
                         team = _rm_team_of(sym)
-                        ml_path = str(_ml_cfg.get(
-                            "model_path_template",
-                            "ai_trading_agents/ml_models/meta_{team}.pkl",
-                        )).format(team=team)
+                        ml_path = str(
+                            _ml_cfg.get(
+                                "model_path_template",
+                                "ai_trading_agents/ml_models/meta_{team}.pkl",
+                            )
+                        ).format(team=team)
                         ml_path_abs = _ROOT / ml_path
                         lab = _MetaLabeler.load(str(ml_path_abs))
                         # Best-effort features: the ML brain's feature row.
-                        feat_dict = {c: float(x[c].iloc[-1]) if c in x.columns else 0.0
-                                     for c in ("ema_ratio", "rsi_14", "atr_14", "adx_14")
-                                     if True}
+                        feat_dict = {
+                            c: float(x[c].iloc[-1]) if c in x.columns else 0.0
+                            for c in ("ema_ratio", "rsi_14", "atr_14", "adx_14")
+                            if True
+                        }
                         pred = lab.predict(feat_dict, direction)
                         if not pred.act:
                             reason = f"meta_labeler: p_win={pred.p_win:.2f} below threshold"
                             prev_veto = self.state.last_veto_per_symbol.get(sym, "")
-                            self.state.last_veto_per_symbol[sym] = (
-                                f"{prev_veto} | {reason}" if prev_veto else reason
-                            )
+                            self.state.last_veto_per_symbol[sym] = f"{prev_veto} | {reason}" if prev_veto else reason
                             direction = "NONE"
                         elif _ml_cfg.get("apply_to_sizing"):
                             _meta_scale = float(pred.scale)
@@ -1097,14 +1122,15 @@ class TrendMasterBrain:
                 # [enhancement 2026-04-23 R3] HMM regime gate — veto when
                 # market is in a high-probability chop state.
                 _hmm_cfg = getattr(settings, "REGIME_HMM", {}) or {}
-                if (direction in ("BUY", "SELL")
-                        and _RegimeHMM is not None and _hmm_cfg.get("enabled")):
+                if direction in ("BUY", "SELL") and _RegimeHMM is not None and _hmm_cfg.get("enabled"):
                     try:
                         team = _rm_team_of(sym)
-                        hmm_path = str(_hmm_cfg.get(
-                            "model_path_template",
-                            "ai_trading_agents/ml_models/regime_{team}.pkl",
-                        )).format(team=team)
+                        hmm_path = str(
+                            _hmm_cfg.get(
+                                "model_path_template",
+                                "ai_trading_agents/ml_models/regime_{team}.pkl",
+                            )
+                        ).format(team=team)
                         hmm = _RegimeHMM.load(str(_ROOT / hmm_path))
                         if hmm.trained:
                             obs = hmm.classify(list(df["close"].tail(200)))
@@ -1128,9 +1154,7 @@ class TrendMasterBrain:
                 # Activation requires BOTH the settings flag and the
                 # TRENDMASTER_V14.use_kelly_sizing toggle.
                 _kelly_cfg_blk = getattr(settings, "KELLY_SIZING", {}) or {}
-                if (_kelly_apply is not None
-                        and _kelly_cfg_blk.get("enabled")
-                        and CFG.get("use_kelly_sizing", False)):
+                if _kelly_apply is not None and _kelly_cfg_blk.get("enabled") and CFG.get("use_kelly_sizing", False):
                     try:
                         kcfg = _KellyConfig(
                             lookback_trades=int(_kelly_cfg_blk.get("lookback_trades", 40)),
@@ -1140,11 +1164,13 @@ class TrendMasterBrain:
                             kelly_fraction=float(_kelly_cfg_blk.get("kelly_fraction", 0.5)),
                             shadow_mode=bool(_kelly_cfg_blk.get("shadow", True)),
                         )
-                        rm_risk_pct = float(_kelly_apply(
-                            list(self.persistent.get("recent_results", [])),
-                            rm_risk_pct,
-                            kcfg,
-                        ))
+                        rm_risk_pct = float(
+                            _kelly_apply(
+                                list(self.persistent.get("recent_results", [])),
+                                rm_risk_pct,
+                                kcfg,
+                            )
+                        )
                     except Exception as _ke:
                         logger.debug("kelly sizer skipped: %s", _ke)
                 # Apply meta-labeler sizing scale last.
@@ -1182,8 +1208,7 @@ class TrendMasterBrain:
                     equity=rm_equity,
                     start_of_day=float(self.persistent.get("start_of_day_equity") or rm_equity),
                     open_positions=rm_positions,
-                    recent_results=[pnl_of(r) for r in
-                                    list(self.persistent.get("recent_results", []))[-20:]],
+                    recent_results=[pnl_of(r) for r in list(self.persistent.get("recent_results", []))[-20:]],
                     cooldown_active=(time.time() < rm_cooldown_until),
                 )
                 rm_decision = _rm_check_risk(sym, direction, rm_lots, rm_state, rm_cfg)
@@ -1194,9 +1219,7 @@ class TrendMasterBrain:
                     # Append to veto chain so /why picks it up alongside
                     # any profit-gate reason.
                     prev_veto = self.state.last_veto_per_symbol.get(sym, "")
-                    self.state.last_veto_per_symbol[sym] = (
-                        f"{prev_veto} | {reason}" if prev_veto else reason
-                    )
+                    self.state.last_veto_per_symbol[sym] = f"{prev_veto} | {reason}" if prev_veto else reason
                     direction = "NONE"
             except Exception as e:
                 logger.warning("[%s] risk_manager skipped (%s)", sym, e)
@@ -1205,14 +1228,18 @@ class TrendMasterBrain:
         # the trade actually survived all gates (direction still BUY/SELL),
         # consume the permit so it can't be re-used, and log the event.
         try:
-            if (direction in ("BUY", "SELL")
-                    and self._reentry is not None
-                    and locals().get("_reentry_permit") is not None):
+            if (
+                direction in ("BUY", "SELL")
+                and self._reentry is not None
+                and locals().get("_reentry_permit") is not None
+            ):
                 _rp = _reentry_permit  # type: ignore[name-defined]
                 self._reentry.consume(_rp, state=self.persistent)
                 logger.info(
                     "[%s] reentry permit CONSUMED (deal_id=%d size_mult=%.2f)",
-                    sym, _rp.deal_id, float(_rp.size_mult),
+                    sym,
+                    _rp.deal_id,
+                    float(_rp.size_mult),
                 )
                 # Event-log the re-entry for attribution.
                 try:
@@ -1286,7 +1313,7 @@ class TrendMasterBrain:
                             )
                         except Exception:
                             pass
-                self._persist_counter = self._persist_every_n   # force flush
+                self._persist_counter = self._persist_every_n  # force flush
             self._persist_counter += 1
             if self._persist_counter >= self._persist_every_n:
                 self.store.save(self.persistent)
@@ -1328,7 +1355,8 @@ class TrendMasterBrain:
                 )
                 if direction in ("BUY", "SELL"):
                     _metrics.signal_writes.labels(
-                        symbol=sym, direction=direction,
+                        symbol=sym,
+                        direction=direction,
                     ).inc()
                 elif self.state.last_veto_per_symbol.get(sym):
                     # First token of the veto chain is the category
@@ -1346,13 +1374,11 @@ class TrendMasterBrain:
         """Snapshot for `/status` — what the brain is doing right now.
         Touches MT5 only with try/except so a broker hiccup never wedges
         the listener thread."""
-        mode = (
-            f"MULTI ({len(ALL_SYMBOLS)} syms)" if MULTI_SYMBOL else f"SINGLE ({SYMBOL})"
-        )
+        mode = f"MULTI ({len(ALL_SYMBOLS)} syms)" if MULTI_SYMBOL else f"SINGLE ({SYMBOL})"
         last = self.state.last_signal or {}
         last_dir = last.get("direction", "—")
         last_conf = last.get("confidence", 0.0)
-        last_sym  = last.get("symbol", SYMBOL)
+        last_sym = last.get("symbol", SYMBOL)
         age_s = int(time.time() - (self.state.last_write_ts or time.time()))
         cooldown_until = float(self.persistent.get("cooldown_until_ts", 0) or 0)
         cooldown_left = max(0, int(cooldown_until - time.time()))
@@ -1373,16 +1399,14 @@ class TrendMasterBrain:
                 pass
 
         # [audit-fix 2026-04-22] honor both legacy and canonical keys.
-        paused = bool(self.persistent.get("trading_paused")
-                      or self.persistent.get("halted"))
-        paused_line = ("Trading: <b>🛑 HALTED</b> (use /resume)\n"
-                       if paused else "Trading: <b>🟢 LIVE</b>\n")
+        paused = bool(self.persistent.get("trading_paused") or self.persistent.get("halted"))
+        paused_line = "Trading: <b>🛑 HALTED</b> (use /resume)\n" if paused else "Trading: <b>🟢 LIVE</b>\n"
 
         return (
             f"<b>🧠 TrendMaster v14 status</b>\n"
             f"{paused_line}"
             f"Mode: <code>{mode}</code>\n"
-            f"Last sig: <code>{last_sym} {last_dir} {last_conf*100:.1f}%</code> "
+            f"Last sig: <code>{last_sym} {last_dir} {last_conf * 100:.1f}%</code> "
             f"({age_s}s ago)\n"
             f"Equity: <code>{eq_now:.2f}</code>  |  Bal: <code>{bal:.2f}</code>\n"
             f"Cooldown: <code>{cooldown_left}s</code>\n"
@@ -1409,17 +1433,18 @@ class TrendMasterBrain:
         # entries don't, so treat them as "today" to be conservative — they
         # only exist on freshly-upgraded installs.
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
         def _is_today(r) -> bool:
             if not isinstance(r, dict):
-                return True   # legacy float — count it
+                return True  # legacy float — count it
             try:
                 ts = int(r.get("ts", 0) or 0)
             except (TypeError, ValueError):
                 return True
             if ts <= 0:
                 return True
-            return (datetime.fromtimestamp(ts, tz=timezone.utc)
-                    .strftime("%Y-%m-%d") == today)
+            return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d") == today
+
         todays = [r for r in recent if _is_today(r)]
         wins = sum(1 for r in todays if pnl_of(r) > 0)
         losses = sum(1 for r in todays if pnl_of(r) < 0)
@@ -1447,7 +1472,7 @@ class TrendMasterBrain:
             m = _perf.compute(trades, window_days=days).as_dict()
             lines.append(
                 f"<b>{w}</b> n=<code>{m['n_trades']}</code> "
-                f"WR=<code>{m['win_rate']*100:.1f}%</code> "
+                f"WR=<code>{m['win_rate'] * 100:.1f}%</code> "
                 f"PnL=<code>{m['total_pnl']:+.2f}</code> "
                 f"Sharpe=<code>{m['sharpe']:+.2f}</code> "
                 f"Sortino=<code>{m['sortino']:+.2f}</code> "
@@ -1458,12 +1483,12 @@ class TrendMasterBrain:
         if bysym:
             items = list(bysym.items())
             lines.append("")
-            lines.append("<b>Top 30d</b>: " + ", ".join(
-                f"{s}=<code>{m['total_pnl']:+.2f}</code>"
-                for s, m in items[:3]))
-            lines.append("<b>Worst 30d</b>: " + ", ".join(
-                f"{s}=<code>{m['total_pnl']:+.2f}</code>"
-                for s, m in items[-3:][::-1]))
+            lines.append(
+                "<b>Top 30d</b>: " + ", ".join(f"{s}=<code>{m['total_pnl']:+.2f}</code>" for s, m in items[:3])
+            )
+            lines.append(
+                "<b>Worst 30d</b>: " + ", ".join(f"{s}=<code>{m['total_pnl']:+.2f}</code>" for s, m in items[-3:][::-1])
+            )
         return "\n".join(lines)
 
     def _handle_digest(self, args: str = "") -> str:
@@ -1487,14 +1512,14 @@ class TrendMasterBrain:
             return f"gate analysis failed: <code>{e!r}</code>"
         if rep.total_vetoes == 0:
             return "No veto events logged yet (need EVENT_LOG.enabled=True)."
-        lines = [f"<b>Gate value — 30d</b>",
-                 f"vetoes=<code>{rep.total_vetoes}</code> "
-                 f"saved=<code>${rep.total_saved:+.2f}</code> "
-                 f"cost=<code>${rep.total_cost:+.2f}</code>"]
+        lines = [
+            f"<b>Gate value — 30d</b>",
+            f"vetoes=<code>{rep.total_vetoes}</code> "
+            f"saved=<code>${rep.total_saved:+.2f}</code> "
+            f"cost=<code>${rep.total_cost:+.2f}</code>",
+        ]
         for g in sorted(rep.by_gate.values(), key=lambda g: -g.net)[:8]:
-            lines.append(f" • <code>{g.gate:15s}</code> "
-                         f"n=<code>{g.vetoes:4d}</code> "
-                         f"net=<code>${g.net:+6.2f}</code>")
+            lines.append(f" • <code>{g.gate:15s}</code> n=<code>{g.vetoes:4d}</code> net=<code>${g.net:+6.2f}</code>")
         return "\n".join(lines)
 
     def _handle_var(self, args: str = "") -> str:
@@ -1505,14 +1530,13 @@ class TrendMasterBrain:
             return "Portfolio-risk module not importable."
         cfg = getattr(settings, "PORTFOLIO_RISK", {}) or {}
         if not cfg.get("enabled"):
-            return ("Portfolio VaR/CVaR disabled "
-                    "(<code>PORTFOLIO_RISK.enabled=False</code>).")
+            return "Portfolio VaR/CVaR disabled (<code>PORTFOLIO_RISK.enabled=False</code>)."
         conf = float(cfg.get("confidence", 0.95))
         snap = _portfolio_risk.snapshot(
             list(self.persistent.get("recent_results", [])),
             confidence=conf,
         )
-        lines = [f"<b>📉 Portfolio VaR ({int(conf*100)}%)</b>"]
+        lines = [f"<b>📉 Portfolio VaR ({int(conf * 100)}%)</b>"]
         for method_key, method_data in snap.items():
             lines.append(
                 f"<b>{method_key}</b>: "
@@ -1532,8 +1556,10 @@ class TrendMasterBrain:
             return "Drift detector module not importable."
         cfg_blk = getattr(settings, "DRIFT", {}) or {}
         if not cfg_blk.get("enabled"):
-            return ("Drift detection is disabled (<code>DRIFT.enabled=False</code>).\n"
-                    "Flip the flag in <code>config/settings.py</code> and restart.")
+            return (
+                "Drift detection is disabled (<code>DRIFT.enabled=False</code>).\n"
+                "Flip the flag in <code>config/settings.py</code> and restart."
+            )
         arg = (args or "").strip().lower()
         det = _drift.get_detector("pnl")
         if arg == "reset":
@@ -1569,18 +1595,21 @@ class TrendMasterBrain:
         requires `YES` as the next token to prevent accidental triggers."""
         panic_cfg = getattr(settings, "PANIC", {}) or {}
         if not panic_cfg.get("enabled"):
-            return ("Panic-flatten is disabled (<code>PANIC.enabled=False</code>).\n"
-                    "Plain <code>/halt</code> still blocks new entries. "
-                    "Enable in <code>config/settings.py</code>, restart, and "
-                    "re-issue <code>/halt close YES</code>.")
-        if not extra or (panic_cfg.get("require_yes", True)
-                         and extra[0].upper() != "YES"):
-            return ("⚠️  <b>Confirmation required.</b>\n"
-                    "To flatten all open TrendMaster positions AND block new "
-                    "entries, type:\n<code>/halt close YES</code>\n\n"
-                    "Plain <code>/halt</code> (no <code>close</code>) only "
-                    "blocks new entries — existing positions keep running "
-                    "under EA management.")
+            return (
+                "Panic-flatten is disabled (<code>PANIC.enabled=False</code>).\n"
+                "Plain <code>/halt</code> still blocks new entries. "
+                "Enable in <code>config/settings.py</code>, restart, and "
+                "re-issue <code>/halt close YES</code>."
+            )
+        if not extra or (panic_cfg.get("require_yes", True) and extra[0].upper() != "YES"):
+            return (
+                "⚠️  <b>Confirmation required.</b>\n"
+                "To flatten all open TrendMaster positions AND block new "
+                "entries, type:\n<code>/halt close YES</code>\n\n"
+                "Plain <code>/halt</code> (no <code>close</code>) only "
+                "blocks new entries — existing positions keep running "
+                "under EA management."
+            )
         # Step 1 — set the halt flag (idempotent).
         halt_reply = self._handle_halt_plain()
         if _panic_flatten is None:
@@ -1611,8 +1640,7 @@ class TrendMasterBrain:
         about most). `tick_once` reads this flag every cycle and forces
         direction=NONE when it's True.
         """
-        already = bool(self.persistent.get("trading_paused")
-                       or self.persistent.get("halted"))
+        already = bool(self.persistent.get("trading_paused") or self.persistent.get("halted"))
         self.persistent["trading_paused"] = True
         # [audit-fix 2026-04-22] also write canonical `halted` key so the
         # durable flag is explicit in brain_state.json. tick_once still
@@ -1631,20 +1659,20 @@ class TrendMasterBrain:
             try:
                 _get_tg().notify_alert(
                     "TrendMaster v14 HALTED",
-                    "All new entries blocked via <code>/halt</code>.\n"
-                    "Send <code>/resume</code> to re-enable.",
+                    "All new entries blocked via <code>/halt</code>.\nSend <code>/resume</code> to re-enable.",
                     emoji="🛑",
                 )
             except Exception:
                 pass
-        return ("🛑 <b>HALTED</b>. New entries blocked across all symbols.\n"
-                "Existing trades remain under EA TP/SL management.\n"
-                "Send <code>/resume</code> to re-enable.")
+        return (
+            "🛑 <b>HALTED</b>. New entries blocked across all symbols.\n"
+            "Existing trades remain under EA TP/SL management.\n"
+            "Send <code>/resume</code> to re-enable."
+        )
 
     def _handle_resume(self) -> str:
         """`/resume` — undo `/halt`. Idempotent."""
-        was_paused = bool(self.persistent.get("trading_paused")
-                          or self.persistent.get("halted"))
+        was_paused = bool(self.persistent.get("trading_paused") or self.persistent.get("halted"))
         self.persistent["trading_paused"] = False
         # [audit-fix 2026-04-22] mirror canonical `halted` key.
         self.persistent["halted"] = False
@@ -1664,8 +1692,7 @@ class TrendMasterBrain:
                 )
             except Exception:
                 pass
-        return ("🟢 <b>RESUMED</b>. Brain is live again — new signals will "
-                "fire on the next tick.")
+        return "🟢 <b>RESUMED</b>. Brain is live again — new signals will fire on the next tick."
 
     def _handle_why(self, args: str = "") -> str:
         """`/why <SYMBOL>` — explain why a symbol is currently NONE.
@@ -1679,20 +1706,22 @@ class TrendMasterBrain:
         sym = (args or "").strip().upper()
         if not sym:
             sample = ", ".join(ALL_SYMBOLS[:6])
-            return ("Usage: <code>/why &lt;SYMBOL&gt;</code>\n"
-                    f"e.g. <code>/why XAUUSD</code>\n"
-                    f"Known symbols: <code>{sample}…</code>")
+            return (
+                "Usage: <code>/why &lt;SYMBOL&gt;</code>\n"
+                f"e.g. <code>/why XAUUSD</code>\n"
+                f"Known symbols: <code>{sample}…</code>"
+            )
         if sym not in ALL_SYMBOLS:
-            return (f"<code>{sym}</code> is not in TRADING_PAIRS.\n"
-                    "Use <code>/symbols</code> to list active pairs.")
+            return f"<code>{sym}</code> is not in TRADING_PAIRS.\nUse <code>/symbols</code> to list active pairs."
 
         # 1) Read the latest signal file for this symbol from disk.
         try:
             sig_path = self._resolve_signal_path(self._signal_filename_for(sym))
             payload = json.loads(sig_path.read_text(encoding="ascii"))
         except Exception as e:
-            return (f"<b>{sym}</b>: signal file unreadable (<code>{e}</code>).\n"
-                    "Brain may not have ticked this symbol yet.")
+            return (
+                f"<b>{sym}</b>: signal file unreadable (<code>{e}</code>).\nBrain may not have ticked this symbol yet."
+            )
 
         direction = payload.get("direction", "?")
         conf = float(payload.get("confidence", 0.0))
@@ -1701,8 +1730,10 @@ class TrendMasterBrain:
         agent_blob = payload.get("agents") or {}
         votes = agent_blob.get("votes") or []
 
-        lines = [f"<b>/why {sym}</b>",
-                 f"direction: <code>{direction}</code>  conf: <code>{conf*100:.0f}%</code>  age: <code>{age_s}s</code>"]
+        lines = [
+            f"<b>/why {sym}</b>",
+            f"direction: <code>{direction}</code>  conf: <code>{conf * 100:.0f}%</code>  age: <code>{age_s}s</code>",
+        ]
 
         if votes:
             lines.append("<b>Agents</b>:")
@@ -1736,9 +1767,8 @@ class TrendMasterBrain:
                 c = float(c)
             except Exception:
                 c = 0.0
-            rows.append(f"• <code>{sym}</code> → <code>{d} {c*100:.0f}%</code>")
-        return ("<b>Active symbols</b>\n" if MULTI_SYMBOL
-                else "<b>Active symbol</b>\n") + "\n".join(rows)
+            rows.append(f"• <code>{sym}</code> → <code>{d} {c * 100:.0f}%</code>")
+        return ("<b>Active symbols</b>\n" if MULTI_SYMBOL else "<b>Active symbol</b>\n") + "\n".join(rows)
 
     def _maybe_send_daily_summary(self) -> None:
         """Once per UTC day, after `daily_summary_hour_utc` (default 22:00),
@@ -1758,8 +1788,7 @@ class TrendMasterBrain:
                 return
             # Build & send.
             body = self._build_pnl_message()
-            _get_tg().notify_alert("TrendMaster v14 daily summary",
-                                   body, emoji="📊")
+            _get_tg().notify_alert("TrendMaster v14 daily summary", body, emoji="📊")
             self.persistent["daily_summary_sent_date"] = today
             self.store.save(self.persistent)
         except Exception as e:
@@ -1832,16 +1861,15 @@ class TrendMasterBrain:
             line_parts = []
             for k in ("BUY", "SELL", "NONE", "ERR"):
                 if buckets[k]:
-                    line_parts.append(f"{k}={len(buckets[k])}({','.join(buckets[k][:6])}{'…' if len(buckets[k])>6 else ''})")
+                    line_parts.append(
+                        f"{k}={len(buckets[k])}({','.join(buckets[k][:6])}{'…' if len(buckets[k]) > 6 else ''})"
+                    )
             logger.info("tick_all summary: %s", " | ".join(line_parts) or "no symbols")
         return out
 
     def run_forever(self) -> None:
         if not _HAS_MT5:
-            logger.error(
-                "MetaTrader5 package not available — cannot run brain. "
-                "Install with: pip install MetaTrader5"
-            )
+            logger.error("MetaTrader5 package not available — cannot run brain. Install with: pip install MetaTrader5")
             return
 
         # Single-instance guard. Two brains writing the same JSON ⇒ EA
@@ -1849,13 +1877,11 @@ class TrendMasterBrain:
         # one rather than crash later in confusing ways.
         with SingleInstanceLock("brain") as lock:
             if not lock.acquired:
-                msg = (f"Another brain is already running (PID={lock.holder_pid}). "
-                       f"Refusing to start a second instance.")
+                msg = f"Another brain is already running (PID={lock.holder_pid}). Refusing to start a second instance."
                 logger.error(msg)
                 if _get_tg is not None:
                     try:
-                        _get_tg().notify_alert("TrendMaster v14 startup blocked",
-                                               msg, emoji="🛑")
+                        _get_tg().notify_alert("TrendMaster v14 startup blocked", msg, emoji="🛑")
                     except Exception:
                         pass
                 return
@@ -1888,18 +1914,16 @@ class TrendMasterBrain:
 
             # Bump restart counter so the dashboard / Telegram can show
             # how often we've come back from the dead.
-            self.persistent["restart_count"] = int(
-                self.persistent.get("restart_count", 0)) + 1
+            self.persistent["restart_count"] = int(self.persistent.get("restart_count", 0)) + 1
             self.persistent["last_started_at"] = int(time.time())
             self.store.save(self.persistent)
 
-            mode_label = (
-                f"MULTI ({len(ALL_SYMBOLS)} syms)" if MULTI_SYMBOL else f"SINGLE ({SYMBOL})"
-            )
+            mode_label = f"MULTI ({len(ALL_SYMBOLS)} syms)" if MULTI_SYMBOL else f"SINGLE ({SYMBOL})"
             logger.info(
-                "TrendMaster brain online | mode=%s tf=%s interval=%dms "
-                "model=%s restart#%d",
-                mode_label, TF, INFER_MS,
+                "TrendMaster brain online | mode=%s tf=%s interval=%dms model=%s restart#%d",
+                mode_label,
+                TF,
+                INFER_MS,
                 "lgbm" if self.state.model else "rule",
                 self.persistent["restart_count"],
             )
@@ -1909,20 +1933,20 @@ class TrendMasterBrain:
             if _get_tg_cmds is not None:
                 try:
                     listener = _get_tg_cmds()
-                    listener.register_command("status",  self._build_status_message)
-                    listener.register_command("pnl",     self._build_pnl_message)
+                    listener.register_command("status", self._build_status_message)
+                    listener.register_command("pnl", self._build_pnl_message)
                     listener.register_command("symbols", self._build_symbols_message)
-                    listener.register_command("halt",    self._handle_halt)
-                    listener.register_command("resume",  self._handle_resume)
-                    listener.register_command("why",     self._handle_why)
+                    listener.register_command("halt", self._handle_halt)
+                    listener.register_command("resume", self._handle_resume)
+                    listener.register_command("why", self._handle_why)
                     # [enhancement 2026-04-23] /drift snapshot command.
-                    listener.register_command("drift",   self._handle_drift)
+                    listener.register_command("drift", self._handle_drift)
                     # [enhancement 2026-04-23 R3] /var portfolio-risk snapshot.
-                    listener.register_command("var",     self._handle_var)
+                    listener.register_command("var", self._handle_var)
                     # [enhancement 2026-04-23 R4] operator-grade surface.
-                    listener.register_command("perf",    self._handle_perf)
-                    listener.register_command("digest",  self._handle_digest)
-                    listener.register_command("gates",   self._handle_gates)
+                    listener.register_command("perf", self._handle_perf)
+                    listener.register_command("digest", self._handle_digest)
+                    listener.register_command("gates", self._handle_gates)
                     listener.start()
                 except Exception as e:
                     logger.debug("telegram command listener init skipped: %s", e)
@@ -2012,8 +2036,9 @@ class TrendMasterBrain:
 # =========================================================================
 #                             TRAINER (offline)
 # =========================================================================
-def train_from_history(bars_csv: str, out_model: Optional[str] = None,
-                       horizon: int = 6, threshold_atr: float = 1.0) -> None:
+def train_from_history(
+    bars_csv: str, out_model: Optional[str] = None, horizon: int = 6, threshold_atr: float = 1.0
+) -> None:
     """
     Train a LightGBM multi-class (SELL / NONE / BUY) classifier from a CSV
     of OHLCV. Label rule: look `horizon` bars ahead; if move > +threshold*ATR
@@ -2032,13 +2057,12 @@ def train_from_history(bars_csv: str, out_model: Optional[str] = None,
 
     atr = x["atr_14"]
     fwd = x["close"].shift(-horizon) - x["close"]
-    lbl = np.where(fwd >  threshold_atr * atr, 2,
-          np.where(fwd < -threshold_atr * atr, 0, 1)).astype(int)
+    lbl = np.where(fwd > threshold_atr * atr, 2, np.where(fwd < -threshold_atr * atr, 0, 1)).astype(int)
     x["label"] = lbl
     x = x.dropna().iloc[:-horizon]
 
     feats = x[FEATURE_COLS].values
-    y     = x["label"].values
+    y = x["label"].values
 
     cut = int(len(x) * 0.8)
     d_tr = lgb.Dataset(feats[:cut], y[:cut])
@@ -2056,8 +2080,7 @@ def train_from_history(bars_csv: str, out_model: Optional[str] = None,
         bagging_freq=5,
         verbosity=-1,
     )
-    model = lgb.train(params, d_tr, num_boost_round=500,
-                      valid_sets=[d_va], callbacks=[lgb.early_stopping(30)])
+    model = lgb.train(params, d_tr, num_boost_round=500, valid_sets=[d_va], callbacks=[lgb.early_stopping(30)])
 
     out = out_model or str(_HERE / "trend_master_model.lgb")
     model.save_model(out)
@@ -2093,8 +2116,7 @@ def _setup_logging() -> None:
         root.removeHandler(h)
     root.setLevel(logging.INFO)
 
-    fh = RotatingFileHandler(
-        log_path, maxBytes=50 * 1024 * 1024, backupCount=5, encoding="utf-8")
+    fh = RotatingFileHandler(log_path, maxBytes=50 * 1024 * 1024, backupCount=5, encoding="utf-8")
     fh.setFormatter(fmt)
     fh.setLevel(logging.INFO)
     root.addHandler(fh)

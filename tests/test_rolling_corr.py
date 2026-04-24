@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.rolling_corr."""
+
 from __future__ import annotations
 
 import math

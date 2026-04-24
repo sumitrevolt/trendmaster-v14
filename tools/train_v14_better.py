@@ -5,6 +5,7 @@ Better trainer for TrendMaster v14:
   - Class weights to penalize NONE-only collapse
   - Walk-forward holdout with precision/recall per direction
 """
+
 from __future__ import annotations
 import sys, os, json
 from pathlib import Path
@@ -19,9 +20,9 @@ from ai_trading_agents.trend_master_brain import build_features, FEATURE_COLS
 CSV = ROOT / "data" / "xauusd_m5_history.csv"
 OUT = ROOT / "ai_trading_agents" / "trend_master_model.lgb"
 
-HORIZON = 12          # 12 bars on M5 = 1 hour ahead
-THR_ATR = 0.5         # 0.5 * ATR move = "directional" event
-CONF_DEPLOY = 0.45    # threshold the brain will use at runtime
+HORIZON = 12  # 12 bars on M5 = 1 hour ahead
+THR_ATR = 0.5  # 0.5 * ATR move = "directional" event
+CONF_DEPLOY = 0.45  # threshold the brain will use at runtime
 
 print(f"loading {CSV}")
 df = pd.read_csv(CSV, parse_dates=True, index_col=0)
@@ -33,8 +34,7 @@ print(f"feature rows: {len(x)}")
 
 atr = x["atr_14"]
 fwd = x["close"].shift(-HORIZON) - x["close"]
-lbl = np.where(fwd >  THR_ATR * atr, 2,
-       np.where(fwd < -THR_ATR * atr, 0, 1)).astype(int)
+lbl = np.where(fwd > THR_ATR * atr, 2, np.where(fwd < -THR_ATR * atr, 0, 1)).astype(int)
 x["label"] = lbl
 x = x.dropna().iloc[:-HORIZON]
 
@@ -67,15 +67,14 @@ params = dict(
     lambda_l2=0.5,
     verbosity=-1,
 )
-model = lgb.train(params, d_tr, num_boost_round=1500,
-                  valid_sets=[d_va], callbacks=[lgb.early_stopping(50)])
+model = lgb.train(params, d_tr, num_boost_round=1500, valid_sets=[d_va], callbacks=[lgb.early_stopping(50)])
 
 # === holdout report ===
 probs = model.predict(X_va)
 pred = probs.argmax(axis=1)
 maxp = probs.max(axis=1)
 acc = (pred == y_va).mean()
-print(f"\nholdout overall accuracy: {acc:.4f}  (random=0.333, majority={(y_va==1).mean():.3f})")
+print(f"\nholdout overall accuracy: {acc:.4f}  (random=0.333, majority={(y_va == 1).mean():.3f})")
 
 print("\nholdout predicted class distribution:")
 print(pd.Series(pred).value_counts().sort_index())

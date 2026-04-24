@@ -4,6 +4,7 @@ All tests run OFFLINE — `requests` is never actually called because we
 construct listeners with empty token/chat_id (so `enabled=False`) or
 monkeypatch the requests module out.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -20,8 +21,21 @@ from ai_trading_agents.telegram_commands import (
 # The set check is the canonical assertion; the length check below is just
 # a guard so anyone adding a new command has to update the set above on
 # purpose (not silently grow the surface).
-EXPECTED_COMMANDS = {"ping", "help", "status", "pnl", "symbols", "halt", "resume", "why",
-                     "drift", "var", "perf", "digest", "gates"}
+EXPECTED_COMMANDS = {
+    "ping",
+    "help",
+    "status",
+    "pnl",
+    "symbols",
+    "halt",
+    "resume",
+    "why",
+    "drift",
+    "var",
+    "perf",
+    "digest",
+    "gates",
+}
 
 
 def test_known_commands_contains_expected_set():

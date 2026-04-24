@@ -24,6 +24,7 @@ Outputs
 This script does NOT wire the models into trend_master_brain.py. Integration
 is a separate step that should wait until every team has >=300 closed trades.
 """
+
 from __future__ import annotations
 
 import json
@@ -52,9 +53,18 @@ REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
 # ---------------------------------------------------------------------------
 TEAM_METALS = {"XAUUSD", "XAGUSD"}
 TEAM_FOREX = {
-    "GBPJPY", "USDCAD", "USDCHF", "EURUSD", "GBPUSD",
-    "AUDUSD", "USDJPY", "NZDUSD", "EURJPY", "EURGBP",
-    "AUDJPY", "CADJPY",
+    "GBPJPY",
+    "USDCAD",
+    "USDCHF",
+    "EURUSD",
+    "GBPUSD",
+    "AUDUSD",
+    "USDJPY",
+    "NZDUSD",
+    "EURJPY",
+    "EURGBP",
+    "AUDJPY",
+    "CADJPY",
 }
 TEAM_CRYPTO = {"BTCUSD", "ETHUSD"}
 TEAM_COMMODITIES = {"XTIUSD", "XBRUSD", "XNGUSD"}
@@ -76,10 +86,21 @@ def team_of(symbol: str) -> str | None:
 
 
 FEATURE_COLS = [
-    "trend_aligned", "liquidity_sweep", "structure_shift", "order_block",
-    "fvg", "ema_aligned", "candle_pattern", "rsi_optimal", "rsi_divergence",
-    "volume_spike", "good_volatility", "session_london", "session_ny",
-    "session_overlap", "session_asian",
+    "trend_aligned",
+    "liquidity_sweep",
+    "structure_shift",
+    "order_block",
+    "fvg",
+    "ema_aligned",
+    "candle_pattern",
+    "rsi_optimal",
+    "rsi_divergence",
+    "volume_spike",
+    "good_volatility",
+    "session_london",
+    "session_ny",
+    "session_overlap",
+    "session_asian",
 ]
 
 
@@ -112,11 +133,7 @@ def bucket_by_team(trades: list[dict]) -> dict[str, list[dict]]:
     # sort each bucket by timestamp so 80/20 is a true time-based split
     for team, lst in buckets.items():
         lst.sort(key=lambda r: r.get("timestamp", ""))
-    print(
-        "[bucket] "
-        + "  ".join(f"{team}={len(buckets[team])}" for team in TEAMS)
-        + f"  skipped={skipped}"
-    )
+    print("[bucket] " + "  ".join(f"{team}={len(buckets[team])}" for team in TEAMS) + f"  skipped={skipped}")
     return buckets
 
 
@@ -129,9 +146,9 @@ def bucket_by_team(trades: list[dict]) -> dict[str, list[dict]]:
 _SESSION_FEATURES = {"session_london", "session_ny", "session_overlap", "session_asian"}
 
 
-def train_team(team: str, rows: list[dict], *,
-               cv_mode: str = "holdout",
-               drop_session_features: bool = False) -> dict[str, Any]:
+def train_team(
+    team: str, rows: list[dict], *, cv_mode: str = "holdout", drop_session_features: bool = False
+) -> dict[str, Any]:
     """Train a single team's LightGBM model. Returns metadata dict.
 
     Parameters
@@ -150,16 +167,17 @@ def train_team(team: str, rows: list[dict], *,
     import joblib
     import lightgbm as lgb
     from sklearn.metrics import (
-        accuracy_score, precision_score, recall_score, f1_score,
+        accuracy_score,
+        precision_score,
+        recall_score,
+        f1_score,
         roc_auc_score,
     )
 
     n = len(rows)
-    print(f"\n[{team}] training with N={n} trades (cv={cv_mode} "
-          f"drop_session={drop_session_features})")
+    print(f"\n[{team}] training with N={n} trades (cv={cv_mode} drop_session={drop_session_features})")
 
-    feature_cols = [c for c in FEATURE_COLS
-                    if not (drop_session_features and c in _SESSION_FEATURES)]
+    feature_cols = [c for c in FEATURE_COLS if not (drop_session_features and c in _SESSION_FEATURES)]
     X = np.array(
         [[1 if r["features"][c] else 0 for c in feature_cols] for r in rows],
         dtype=np.float32,
@@ -186,10 +204,15 @@ def train_team(team: str, rows: list[dict], *,
         oof_prob: list[float] = []
         for tr_idx, te_idx in cv.split(X, y):
             m = lgb.LGBMClassifier(
-                objective="binary", class_weight="balanced",
-                n_estimators=200, learning_rate=0.05, num_leaves=15,
-                max_depth=5, min_data_in_leaf=10,
-                verbosity=-1, random_state=42,
+                objective="binary",
+                class_weight="balanced",
+                n_estimators=200,
+                learning_rate=0.05,
+                num_leaves=15,
+                max_depth=5,
+                min_data_in_leaf=10,
+                verbosity=-1,
+                random_state=42,
             )
             m.fit(X[tr_idx], y[tr_idx])
             pr = m.predict_proba(X[te_idx])[:, 1]
@@ -202,13 +225,12 @@ def train_team(team: str, rows: list[dict], *,
         X_te = np.asarray([])
         y_te = np.asarray([])
         cpcv_metrics = {
-            "accuracy":  float(accuracy_score(oof_true, oof_pred)),
+            "accuracy": float(accuracy_score(oof_true, oof_pred)),
             "precision": float(precision_score(oof_true, oof_pred, zero_division=0)),
-            "recall":    float(recall_score(oof_true, oof_pred, zero_division=0)),
-            "f1":        float(f1_score(oof_true, oof_pred, zero_division=0)),
-            "auc_roc":   (float(roc_auc_score(oof_true, oof_prob))
-                          if len(set(oof_true)) == 2 else None),
-            "n_folds":   cv.get_n_splits(),
+            "recall": float(recall_score(oof_true, oof_pred, zero_division=0)),
+            "f1": float(f1_score(oof_true, oof_pred, zero_division=0)),
+            "auc_roc": (float(roc_auc_score(oof_true, oof_prob)) if len(set(oof_true)) == 2 else None),
+            "n_folds": cv.get_n_splits(),
         }
         print(f"[{team}] CPCV out-of-fold: {cpcv_metrics}")
     else:
@@ -235,9 +257,7 @@ def train_team(team: str, rows: list[dict], *,
         pred = model.predict(Xs)
         out = {
             "accuracy": float(accuracy_score(ys, pred)),
-            "precision": float(
-                precision_score(ys, pred, zero_division=0)
-            ),
+            "precision": float(precision_score(ys, pred, zero_division=0)),
             "recall": float(recall_score(ys, pred, zero_division=0)),
             "f1": float(f1_score(ys, pred, zero_division=0)),
             "auc_roc": None,
@@ -298,9 +318,7 @@ def train_team(team: str, rows: list[dict], *,
         "train_metrics": train_metrics,
         "test_metrics": test_metrics,
         "feature_importance_top5": top5,
-        "feature_importance_all": [
-            {"feature": f, "gain": float(g)} for f, g in fi_pairs
-        ],
+        "feature_importance_all": [{"feature": f, "gain": float(g)} for f, g in fi_pairs],
         "hyperparams": {
             "objective": "binary",
             "class_weight": "balanced",
@@ -314,9 +332,7 @@ def train_team(team: str, rows: list[dict], *,
 
 
 def stub_team(team: str, n: int) -> dict[str, Any]:
-    print(
-        f"\n[{team}] INSUFFICIENT DATA (N={n} < {MIN_TRADES}) - emitting stub"
-    )
+    print(f"\n[{team}] INSUFFICIENT DATA (N={n} < {MIN_TRADES}) - emitting stub")
     return {
         "team": team,
         "status": "insufficient_data",
@@ -346,33 +362,25 @@ def write_report(results: list[dict[str, Any]]) -> None:
     lines.append(f"Generated: {now}")
     lines.append("")
     lines.append(
-        "Source: `logs/brain_memory.json` -> `trade_history[]` "
-        "(bucketed by team using `risk_manager.team_of`)."
+        "Source: `logs/brain_memory.json` -> `trade_history[]` (bucketed by team using `risk_manager.team_of`)."
     )
     lines.append("")
 
     # summary table
     lines.append("## Summary")
     lines.append("")
-    lines.append(
-        "| Team | Status | N | Wins | Losses | Win% | "
-        "Train Acc | Test Acc | Precision | Recall | F1 | AUC |"
-    )
-    lines.append(
-        "|------|--------|---|------|--------|------|"
-        "-----------|----------|-----------|--------|----|-----|"
-    )
+    lines.append("| Team | Status | N | Wins | Losses | Win% | Train Acc | Test Acc | Precision | Recall | F1 | AUC |")
+    lines.append("|------|--------|---|------|--------|------|-----------|----------|-----------|--------|----|-----|")
     for r in results:
         if r["status"] != "trained":
             lines.append(
-                f"| {r['team']} | {r['status']} | {r.get('n_samples', 0)} "
-                f"| - | - | - | - | - | - | - | - | - |"
+                f"| {r['team']} | {r['status']} | {r.get('n_samples', 0)} | - | - | - | - | - | - | - | - | - |"
             )
             continue
         tr, te = r["train_metrics"], r["test_metrics"] or {}
         lines.append(
             f"| {r['team']} | trained | {r['n_samples']} "
-            f"| {r['wins']} | {r['losses']} | {r['win_rate']*100:.1f}% "
+            f"| {r['wins']} | {r['losses']} | {r['win_rate'] * 100:.1f}% "
             f"| {_fmt(tr.get('accuracy'))} "
             f"| {_fmt(te.get('accuracy'))} "
             f"| {_fmt(te.get('precision'))} "
@@ -387,18 +395,14 @@ def write_report(results: list[dict[str, Any]]) -> None:
         lines.append(f"## {r['team']}")
         lines.append("")
         if r["status"] != "trained":
-            lines.append(
-                f"- Status: **{r['status']}**  "
-                f"(N={r.get('n_samples', 0)}, "
-                f"min required={MIN_TRADES})"
-            )
+            lines.append(f"- Status: **{r['status']}**  (N={r.get('n_samples', 0)}, min required={MIN_TRADES})")
             lines.append(f"- {r.get('note', '')}")
             lines.append("")
             continue
 
-        lines.append(f"- Samples: {r['n_samples']} "
-                     f"({r['wins']}W / {r['losses']}L, "
-                     f"win rate {r['win_rate']*100:.1f}%)")
+        lines.append(
+            f"- Samples: {r['n_samples']} ({r['wins']}W / {r['losses']}L, win rate {r['win_rate'] * 100:.1f}%)"
+        )
         lines.append(f"- Model: `{r['model_path']}`")
         lines.append(f"- Trained at: {r['trained_at']}")
         lines.append("")
@@ -467,21 +471,17 @@ def write_report(results: list[dict[str, Any]]) -> None:
     lines.append("## Recommendation")
     lines.append("")
     lines.append(
-        "**Do NOT wire these into `trend_master_brain.py` yet.** Keep the "
-        "current single-model fallback in production."
+        "**Do NOT wire these into `trend_master_brain.py` yet.** Keep the current single-model fallback in production."
     )
     lines.append("")
-    lines.append(
-        "Gates to hit before switching the brain to per-team models:"
-    )
+    lines.append("Gates to hit before switching the brain to per-team models:")
     lines.append("")
     lines.append(
         "1. At least **300 closed trades per team** covering **>=10 "
         "distinct trading days** (ideally spanning a news week)."
     )
     lines.append(
-        "2. Each team's test-slice AUC-ROC stably above 0.60 on a "
-        "held-out **calendar** window (not an intra-day tail)."
+        "2. Each team's test-slice AUC-ROC stably above 0.60 on a held-out **calendar** window (not an intra-day tail)."
     )
     lines.append(
         "3. Cross-symbol coverage inside each team (e.g. both XAUUSD and "
@@ -550,17 +550,25 @@ def write_registry(results: list[dict[str, Any]]) -> None:
 def main() -> int:
     # [enhancement 2026-04-23] CLI flags for CPCV + session-feature drop.
     import argparse
+
     p = argparse.ArgumentParser(
         prog="train_per_team",
         description="Per-team LightGBM trainer with optional CPCV.",
     )
-    p.add_argument("--cv", choices=("holdout", "cpcv"), default="holdout",
-                   help="Cross-validation mode: 'holdout' (legacy 80/20) or "
-                        "'cpcv' (Combinatorial Purged CV with embargo). "
-                        "Use cpcv for honest out-of-fold metrics.")
-    p.add_argument("--drop-session-features", action="store_true",
-                   help="Drop session_london/ny/overlap/asian features before fit. "
-                        "Prevents the model from re-learning the session_window gate.")
+    p.add_argument(
+        "--cv",
+        choices=("holdout", "cpcv"),
+        default="holdout",
+        help="Cross-validation mode: 'holdout' (legacy 80/20) or "
+        "'cpcv' (Combinatorial Purged CV with embargo). "
+        "Use cpcv for honest out-of-fold metrics.",
+    )
+    p.add_argument(
+        "--drop-session-features",
+        action="store_true",
+        help="Drop session_london/ny/overlap/asian features before fit. "
+        "Prevents the model from re-learning the session_window gate.",
+    )
     args = p.parse_args()
 
     print(f"[env] python {sys.version.split()[0]}")
@@ -579,11 +587,14 @@ def main() -> int:
         rows = buckets[team]
         if len(rows) >= MIN_TRADES:
             try:
-                results.append(train_team(
-                    team, rows,
-                    cv_mode=args.cv,
-                    drop_session_features=args.drop_session_features,
-                ))
+                results.append(
+                    train_team(
+                        team,
+                        rows,
+                        cv_mode=args.cv,
+                        drop_session_features=args.drop_session_features,
+                    )
+                )
             except Exception as exc:
                 print(f"[{team}] TRAIN FAILED: {exc}")
                 results.append(

@@ -52,6 +52,7 @@ Usage
     if out.act:
         adjusted_lots = base_lots * out.scale
 """
+
 from __future__ import annotations
 
 import logging
@@ -69,25 +70,26 @@ logger = logging.getLogger("meta_labeler")
 @dataclass
 class MetaConfig:
     """Tuning knobs. Stored alongside the model so inference matches training."""
-    p_win_threshold:   float = 0.55     # don't act unless meta ≥ this
-    min_scale:         float = 0.5      # floor on size scale (p_win * 2)
-    max_scale:         float = 1.5      # ceiling
-    use_logistic_cal:  bool  = True     # Platt-style scaling on p_win
-    feature_order:     List[str] = field(default_factory=list)
+
+    p_win_threshold: float = 0.55  # don't act unless meta ≥ this
+    min_scale: float = 0.5  # floor on size scale (p_win * 2)
+    max_scale: float = 1.5  # ceiling
+    use_logistic_cal: bool = True  # Platt-style scaling on p_win
+    feature_order: List[str] = field(default_factory=list)
 
 
 @dataclass
 class MetaPrediction:
-    p_win:     float
-    act:       bool
-    scale:     float        # multiplier for lot size
-    reason:    str
+    p_win: float
+    act: bool
+    scale: float  # multiplier for lot size
+    reason: str
 
     def as_dict(self) -> dict:
         return {
-            "p_win":  round(self.p_win, 4),
-            "act":    self.act,
-            "scale":  round(self.scale, 4),
+            "p_win": round(self.p_win, 4),
+            "act": self.act,
+            "scale": round(self.scale, 4),
             "reason": self.reason,
         }
 
@@ -101,28 +103,31 @@ class MetaLabeler:
     both sides — no duplicate training. The meta-model's output is
     p(the trade will be a winner regardless of side).
     """
-    model:     Optional[Any]         = None
-    cfg:       MetaConfig            = field(default_factory=MetaConfig)
-    trained:   bool                  = False
-    metrics:   Dict[str, float]      = field(default_factory=dict)
+
+    model: Optional[Any] = None
+    cfg: MetaConfig = field(default_factory=MetaConfig)
+    trained: bool = False
+    metrics: Dict[str, float] = field(default_factory=dict)
 
     # ──────────────────────────────────────────────────────────────────
     # Inference
     # ──────────────────────────────────────────────────────────────────
-    def predict(self,
-                features: Dict[str, float],
-                primary_direction: str) -> MetaPrediction:
+    def predict(self, features: Dict[str, float], primary_direction: str) -> MetaPrediction:
         # Direction check FIRST — an invalid direction should be rejected
         # regardless of whether the meta-model is trained. (A null labeler
         # should still never claim to act on a NONE signal.)
         if primary_direction not in ("BUY", "SELL"):
             return MetaPrediction(
-                p_win=0.0, act=False, scale=0.0,
+                p_win=0.0,
+                act=False,
+                scale=0.0,
                 reason=f"unexpected primary direction: {primary_direction}",
             )
         if not self.trained or self.model is None:
             return MetaPrediction(
-                p_win=0.5, act=True, scale=1.0,
+                p_win=0.5,
+                act=True,
+                scale=1.0,
                 reason="meta-model not trained — primary passes through",
             )
         side_feat = 1.0 if primary_direction == "BUY" else -1.0
@@ -132,7 +137,9 @@ class MetaLabeler:
             p = float(self.model.predict_proba(x.reshape(1, -1))[0, 1])
         except Exception as e:
             return MetaPrediction(
-                p_win=0.5, act=True, scale=1.0,
+                p_win=0.5,
+                act=True,
+                scale=1.0,
                 reason=f"meta inference failed ({e!r}) — passthrough",
             )
 
@@ -148,8 +155,7 @@ class MetaLabeler:
                 span = 1.0 - thr
                 scale = 1.0 + (p - thr) / span * (self.cfg.max_scale - 1.0)
         scale = float(max(self.cfg.min_scale, min(self.cfg.max_scale, scale)) if act else 0.0)
-        reason = (f"p_win={p:.3f} {'≥' if act else '<'} threshold={thr:.2f}"
-                  f" → scale={scale:.2f}")
+        reason = f"p_win={p:.3f} {'≥' if act else '<'} threshold={thr:.2f} → scale={scale:.2f}"
         return MetaPrediction(p_win=p, act=act, scale=scale, reason=reason)
 
     def _row_from_dict(self, features: Dict[str, float], side_feat: float) -> np.ndarray:
@@ -166,15 +172,17 @@ class MetaLabeler:
     # Training
     # ──────────────────────────────────────────────────────────────────
     @classmethod
-    def train(cls,
-              X: np.ndarray,
-              y: np.ndarray,
-              side: np.ndarray,
-              *,
-              feature_order: Sequence[str],
-              cv_splitter: Optional[Any] = None,
-              cfg: Optional[MetaConfig] = None,
-              model_factory: Optional[Any] = None) -> "MetaLabeler":
+    def train(
+        cls,
+        X: np.ndarray,
+        y: np.ndarray,
+        side: np.ndarray,
+        *,
+        feature_order: Sequence[str],
+        cv_splitter: Optional[Any] = None,
+        cfg: Optional[MetaConfig] = None,
+        model_factory: Optional[Any] = None,
+    ) -> "MetaLabeler":
         """Train a meta-model with optional CPCV splitter for honest OOS metrics.
 
         Parameters
@@ -192,16 +200,17 @@ class MetaLabeler:
         """
         from sklearn.linear_model import LogisticRegression
         from sklearn.metrics import (
-            accuracy_score, precision_score, recall_score, f1_score,
+            accuracy_score,
+            precision_score,
+            recall_score,
+            f1_score,
             roc_auc_score,
         )
 
         cfg = cfg or MetaConfig(feature_order=list(feature_order))
         if not cfg.feature_order:
             cfg.feature_order = list(feature_order)
-        model_factory = model_factory or (
-            lambda: LogisticRegression(max_iter=500, class_weight="balanced")
-        )
+        model_factory = model_factory or (lambda: LogisticRegression(max_iter=500, class_weight="balanced"))
 
         X = np.asarray(X, dtype=float)
         y = np.asarray(y, dtype=int)
@@ -232,7 +241,9 @@ class MetaLabeler:
                 oof_pred.extend((p >= cfg.p_win_threshold).astype(int).tolist())
                 oof_prob.extend(p.tolist())
             metrics = _oof_metrics(
-                np.asarray(oof_true), np.asarray(oof_pred), np.asarray(oof_prob),
+                np.asarray(oof_true),
+                np.asarray(oof_pred),
+                np.asarray(oof_prob),
             )
             model = model_factory()
             model.fit(X_full, y)
@@ -246,12 +257,15 @@ class MetaLabeler:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
         with open(p, "wb") as f:
-            pickle.dump({
-                "model":   self.model,
-                "cfg":     self.cfg,
-                "trained": self.trained,
-                "metrics": self.metrics,
-            }, f)
+            pickle.dump(
+                {
+                    "model": self.model,
+                    "cfg": self.cfg,
+                    "trained": self.trained,
+                    "metrics": self.metrics,
+                },
+                f,
+            )
 
     @classmethod
     def load(cls, path: str) -> "MetaLabeler":
@@ -275,8 +289,13 @@ class MetaLabeler:
 def _oof_metrics(y_true, y_pred, y_prob) -> Dict[str, float]:
     """Out-of-fold classification metrics; handles degenerate singles."""
     from sklearn.metrics import (
-        accuracy_score, precision_score, recall_score, f1_score, roc_auc_score,
+        accuracy_score,
+        precision_score,
+        recall_score,
+        f1_score,
+        roc_auc_score,
     )
+
     out: Dict[str, float] = {}
     try:
         out["accuracy"] = float(accuracy_score(y_true, y_pred))

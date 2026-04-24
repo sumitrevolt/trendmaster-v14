@@ -41,6 +41,7 @@ Usage from the brain
     listener.register_command("status", lambda: "OK, brain alive")
     listener.start()                                 # daemon, fire & forget
 """
+
 from __future__ import annotations
 
 import logging
@@ -56,12 +57,14 @@ logger = logging.getLogger("telegram_commands")
 # whether it's imported first, last, or alone (e.g. in a CLI smoke test).
 try:
     from ai_trading_agents.telegram_notifier import _load_env as _tg_load_env  # type: ignore
+
     _tg_load_env()
 except Exception:
     pass
 
 try:
     import requests  # type: ignore
+
     _HAS_REQ = True
 except ImportError:
     _HAS_REQ = False
@@ -71,13 +74,24 @@ _TG_API = "https://api.telegram.org/bot{token}/{method}"
 
 # Commands the listener will dispatch on. Adding a command here only enables
 # it — the brain still has to register a callback via register_command().
-KNOWN_COMMANDS = ("ping", "help", "status", "pnl", "symbols", "halt", "resume", "why",
-                  # [enhancement 2026-04-23] /drift snapshot command for ADWIN detector.
-                  "drift",
-                  # [enhancement 2026-04-23 R3] /var portfolio risk snapshot.
-                  "var",
-                  # [enhancement 2026-04-23 R4 — operator grade] perf + digest.
-                  "perf", "digest", "gates")
+KNOWN_COMMANDS = (
+    "ping",
+    "help",
+    "status",
+    "pnl",
+    "symbols",
+    "halt",
+    "resume",
+    "why",
+    # [enhancement 2026-04-23] /drift snapshot command for ADWIN detector.
+    "drift",
+    # [enhancement 2026-04-23 R3] /var portfolio risk snapshot.
+    "var",
+    # [enhancement 2026-04-23 R4 — operator grade] perf + digest.
+    "perf",
+    "digest",
+    "gates",
+)
 
 
 class TelegramCommandListener:
@@ -90,15 +104,17 @@ class TelegramCommandListener:
       * raises          → caught, logged, "(internal error)" reply.
     """
 
-    def __init__(self,
-                 token: Optional[str] = None,
-                 chat_id: Optional[str] = None,
-                 poll_timeout_s: int = 30,
-                 http_timeout_s: float = 35.0):
+    def __init__(
+        self,
+        token: Optional[str] = None,
+        chat_id: Optional[str] = None,
+        poll_timeout_s: int = 30,
+        http_timeout_s: float = 35.0,
+    ):
         # Re-use the same env vars the notifier reads, so a single .env wires
         # both sides (push notifier + pull command listener).
-        self.token   = (token   or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
-        self.chat_id = (chat_id or os.getenv("TELEGRAM_CHAT_ID",   "")).strip()
+        self.token = (token or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
+        self.chat_id = (chat_id or os.getenv("TELEGRAM_CHAT_ID", "")).strip()
         self.poll_timeout_s = int(poll_timeout_s)
         self.http_timeout_s = float(http_timeout_s)
         self.enabled = bool(self.token and self.chat_id and _HAS_REQ)
@@ -112,22 +128,23 @@ class TelegramCommandListener:
 
         if not self.enabled:
             why = []
-            if not _HAS_REQ:     why.append("no requests")
-            if not self.token:   why.append("no token")
-            if not self.chat_id: why.append("no chat_id")
-            logger.info("Telegram command listener disabled (%s).",
-                        ", ".join(why) or "unknown")
+            if not _HAS_REQ:
+                why.append("no requests")
+            if not self.token:
+                why.append("no token")
+            if not self.chat_id:
+                why.append("no chat_id")
+            logger.info("Telegram command listener disabled (%s).", ", ".join(why) or "unknown")
 
     # ─── public API ─────────────────────────────────────────────────────
-    def register_command(self, name: str,
-                         fn: Callable[..., Optional[str]]) -> None:
+    def register_command(self, name: str, fn: Callable[..., Optional[str]]) -> None:
         # `fn` may be either zero-arg `() -> str` or one-arg `(args:str) -> str`.
         # The dispatcher inspects the signature at call time and adapts.
         name = name.lstrip("/").lower()
         if name not in KNOWN_COMMANDS:
-            logger.warning("register_command: '%s' not in KNOWN_COMMANDS — "
-                           "ignored. Add it to KNOWN_COMMANDS to enable.",
-                           name)
+            logger.warning(
+                "register_command: '%s' not in KNOWN_COMMANDS — ignored. Add it to KNOWN_COMMANDS to enable.", name
+            )
             return
         self._handlers[name] = fn
 
@@ -140,11 +157,9 @@ class TelegramCommandListener:
         self._handlers.setdefault("ping", self._builtin_ping)
         self._handlers.setdefault("help", self._builtin_help)
         self._stop.clear()
-        self._thread = threading.Thread(
-            target=self._poll_loop, name="tg-cmd-listener", daemon=True)
+        self._thread = threading.Thread(target=self._poll_loop, name="tg-cmd-listener", daemon=True)
         self._thread.start()
-        logger.info("Telegram command listener started (commands: %s)",
-                    ", ".join(sorted(self._handlers)))
+        logger.info("Telegram command listener started (commands: %s)", ", ".join(sorted(self._handlers)))
 
     def stop(self) -> None:
         self._stop.set()
@@ -208,8 +223,7 @@ class TelegramCommandListener:
         if not self.enabled:
             return 0
         url = _TG_API.format(token=self.token, method="getUpdates")
-        r = requests.get(url, params={"timeout": 0, "limit": 1, "offset": -1},
-                         timeout=self.http_timeout_s)
+        r = requests.get(url, params={"timeout": 0, "limit": 1, "offset": -1}, timeout=self.http_timeout_s)
         data = r.json()
         if not data.get("ok"):
             return 0
@@ -245,8 +259,7 @@ class TelegramCommandListener:
         # Authorisation: only honour messages from the configured chat.
         # str() compare because Telegram returns int chat ids.
         if str(chat.get("id")) != str(self.chat_id):
-            logger.warning("Ignoring command from unauthorised chat id=%s",
-                           chat.get("id"))
+            logger.warning("Ignoring command from unauthorised chat id=%s", chat.get("id"))
             return
 
         # Strip leading '/' and any '@botname' suffix Telegram adds in groups.
@@ -269,6 +282,7 @@ class TelegramCommandListener:
             # via inspection. Falls back to no-arg call on TypeError so a
             # handler that simply doesn't accept args still runs.
             import inspect as _inspect
+
             try:
                 _params = _inspect.signature(fn).parameters
                 if len(_params) >= 1:

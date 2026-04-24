@@ -1,4 +1,5 @@
 """Unit tests for tools.slippage_model."""
+
 from __future__ import annotations
 
 import pytest
@@ -38,7 +39,7 @@ def test_commission_applied_per_lot():
     profile["EURUSD"] = dict(profile["EURUSD"], commission_per_lot=7.0)
     m = CostModel(profile=profile, style="spread_linear", slippage_pips=0.0)
     f = m.fill("EURUSD", "buy", 1.1000, lots=0.5)
-    assert f.commission_usd == pytest.approx(3.5)   # 7 * 0.5
+    assert f.commission_usd == pytest.approx(3.5)  # 7 * 0.5
 
 
 def test_sqrt_impact_scales_with_lots():
@@ -53,9 +54,16 @@ def test_fill_as_dict_has_expected_keys():
     m = CostModel(style="flat")
     f = m.fill("EURUSD", "buy", 1.1000, lots=0.01)
     d = f.as_dict()
-    for k in ("side", "requested_price", "filled_price", "lots",
-              "spread_cost_usd", "commission_usd", "slippage_usd",
-              "total_cost_usd"):
+    for k in (
+        "side",
+        "requested_price",
+        "filled_price",
+        "lots",
+        "spread_cost_usd",
+        "commission_usd",
+        "slippage_usd",
+        "total_cost_usd",
+    ):
         assert k in d
 
 

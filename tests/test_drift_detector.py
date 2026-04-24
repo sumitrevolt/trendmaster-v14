@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.drift_detector."""
+
 from __future__ import annotations
 
 import random

@@ -2,6 +2,7 @@
 Smoke test for the TrendMaster v14 brain.
 Runs entirely offline — no MT5 connection needed.
 """
+
 from __future__ import annotations
 import sys
 from pathlib import Path
@@ -13,8 +14,14 @@ import numpy as np
 import pandas as pd
 
 from ai_trading_agents.trend_master_brain import (
-    TrendMasterBrain, build_features, FEATURE_COLS,
-    SYMBOL, TF, INFER_MS, MIN_CONF, SIG_FILE,
+    TrendMasterBrain,
+    build_features,
+    FEATURE_COLS,
+    SYMBOL,
+    TF,
+    INFER_MS,
+    MIN_CONF,
+    SIG_FILE,
 )
 
 
@@ -25,10 +32,10 @@ def _synth_bars(n: int = 300, seed: int = 7) -> pd.DataFrame:
     noise = rng.normal(0, 0.002, n).cumsum()
     close = 2000 * (1 + drift + noise)
     high = close * (1 + rng.uniform(0.0001, 0.0015, n))
-    low  = close * (1 - rng.uniform(0.0001, 0.0015, n))
-    op   = np.r_[close[0], close[:-1]]
-    vol  = rng.integers(800, 1800, n)
-    idx  = pd.date_range("2026-04-01", periods=n, freq="5min", tz="UTC")
+    low = close * (1 - rng.uniform(0.0001, 0.0015, n))
+    op = np.r_[close[0], close[:-1]]
+    vol = rng.integers(800, 1800, n)
+    idx = pd.date_range("2026-04-01", periods=n, freq="5min", tz="UTC")
     return pd.DataFrame(
         {"open": op, "high": high, "low": low, "close": close, "volume": vol},
         index=idx,

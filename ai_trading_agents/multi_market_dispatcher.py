@@ -3,6 +3,7 @@ multi_market_dispatcher.py — iterate TRADING_PAIRS across 4 teams,
 run the agent bus per symbol, apply the risk + profit gates, and
 produce a per-symbol signal dict that the brain / CLI can write / print.
 """
+
 from __future__ import annotations
 
 import logging
@@ -20,7 +21,10 @@ if str(_ROOT) not in sys.path:
 from config import settings  # noqa: E402
 from ai_trading_agents.multi_agent import vote_all  # noqa: E402
 from ai_trading_agents.risk_manager import (  # noqa: E402
-    RiskConfig, RiskState, check_risk, team_of,
+    RiskConfig,
+    RiskState,
+    check_risk,
+    team_of,
 )
 from ai_trading_agents.profit_filters import evaluate_all  # noqa: E402
 
@@ -28,6 +32,7 @@ logger = logging.getLogger("dispatcher")
 
 try:
     import MetaTrader5 as mt5  # type: ignore
+
     _HAS_MT5 = True
 except ImportError:
     _HAS_MT5 = False
@@ -43,23 +48,26 @@ def _csv_path(symbol: str) -> Path:
 def _resample_m5_to(df: pd.DataFrame, tf: str) -> pd.DataFrame:
     minutes = _TF_MINUTES.get(tf, 5)
     rule = f"{minutes}min"
-    return df.resample(rule).agg({
-        "open":  "first",
-        "high":  "max",
-        "low":   "min",
-        "close": "last",
-        "volume": "sum",
-    }).dropna()
+    return (
+        df.resample(rule)
+        .agg(
+            {
+                "open": "first",
+                "high": "max",
+                "low": "min",
+                "close": "last",
+                "volume": "sum",
+            }
+        )
+        .dropna()
+    )
 
 
-def load_frames(symbol: str,
-                tfs: List[str] = ["M30", "H1", "H4"]) -> Dict[str, pd.DataFrame]:
+def load_frames(symbol: str, tfs: List[str] = ["M30", "H1", "H4"]) -> Dict[str, pd.DataFrame]:
     frames: Dict[str, pd.DataFrame] = {}
     if _HAS_MT5:
         for tf in tfs:
-            mt5_tf = {"M30": mt5.TIMEFRAME_M30,
-                      "H1":  mt5.TIMEFRAME_H1,
-                      "H4":  mt5.TIMEFRAME_H4}.get(tf)
+            mt5_tf = {"M30": mt5.TIMEFRAME_M30, "H1": mt5.TIMEFRAME_H1, "H4": mt5.TIMEFRAME_H4}.get(tf)
             if mt5_tf is None:
                 continue
             rates = mt5.copy_rates_from_pos(symbol, mt5_tf, 0, 500)
@@ -95,20 +103,20 @@ def _last_atr(df: pd.DataFrame, n: int = 14):
     if df is None or len(df) < n + 2:
         return 0.0, pd.Series(dtype=float)
     h, l, c = df["high"], df["low"], df["close"]
-    tr = pd.concat(
-        [(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1
-    ).max(axis=1)
+    tr = pd.concat([(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
     atr = tr.rolling(n).mean().dropna()
     return float(atr.iloc[-1]) if len(atr) else 0.0, atr
 
 
-def scan_once(symbols: Optional[List[str]] = None,
-              min_votes: int = 3,
-              risk_state: Optional[RiskState] = None,
-              risk_cfg: Optional[RiskConfig] = None,
-              spread_lookup: Optional[Dict[str, float]] = None,
-              recent_results: Optional[List[float]] = None,
-              cooldown_active: bool = False) -> Dict[str, dict]:
+def scan_once(
+    symbols: Optional[List[str]] = None,
+    min_votes: int = 3,
+    risk_state: Optional[RiskState] = None,
+    risk_cfg: Optional[RiskConfig] = None,
+    spread_lookup: Optional[Dict[str, float]] = None,
+    recent_results: Optional[List[float]] = None,
+    cooldown_active: bool = False,
+) -> Dict[str, dict]:
     symbols = symbols or getattr(settings, "TRADING_PAIRS", ["XAUUSD"])
     risk_cfg = risk_cfg or RiskConfig()
     spread_lookup = spread_lookup or {}
@@ -120,13 +128,11 @@ def scan_once(symbols: Optional[List[str]] = None,
         frames = load_frames(sym)
         if not frames:
             out[sym] = {
-                "direction": "NONE", "confidence": 0.0,
+                "direction": "NONE",
+                "confidence": 0.0,
                 "votes": [],
-                "risk":  {"allow": False, "reason": "no data"},
-                "profit_gate": {"allow": False,
-                                "reasons": ["no data"],
-                                "score_adjust": 0.0,
-                                "detail": {}},
+                "risk": {"allow": False, "reason": "no data"},
+                "profit_gate": {"allow": False, "reasons": ["no data"], "score_adjust": 0.0, "detail": {}},
                 "team": team_of(sym),
                 "agent_summary": "no-data",
             }
@@ -134,12 +140,11 @@ def scan_once(symbols: Optional[List[str]] = None,
 
         direction, votes = vote_all(frames, min_votes=min_votes)
         dir_name = {1: "BUY", -1: "SELL", 0: "NONE"}[direction]
-        conf = 0.5 + 0.15 * sum(
-            1 for v in votes if v.vote == direction and direction != 0)
+        conf = 0.5 + 0.15 * sum(1 for v in votes if v.vote == direction and direction != 0)
 
         ref_tf = "H1" if "H1" in frames else next(iter(frames))
         atr_last, atr_series = _last_atr(frames[ref_tf])
-        equity_now   = getattr(risk_state, "equity",       0.0) if risk_state else 0.0
+        equity_now = getattr(risk_state, "equity", 0.0) if risk_state else 0.0
         equity_start = getattr(risk_state, "start_of_day", 0.0) if risk_state else 0.0
 
         profit_gate = evaluate_all(
@@ -160,18 +165,17 @@ def scan_once(symbols: Optional[List[str]] = None,
 
         risk = {"allow": True, "reason": "n/a"}
         if direction != 0 and risk_state is not None:
-            dec = check_risk(sym, dir_name, risk_cfg.min_lot,
-                             risk_state, risk_cfg)
+            dec = check_risk(sym, dir_name, risk_cfg.min_lot, risk_state, risk_cfg)
             risk = dec.as_dict()
 
         summary = "+".join(f"{v.name}:{v.vote:+d}" for v in votes)
         out[sym] = {
-            "direction":     dir_name,
-            "confidence":    round(conf, 3),
-            "votes":         [v.as_dict() for v in votes],
-            "risk":          risk,
-            "profit_gate":   profit_gate.as_dict(),
-            "team":          team_of(sym),
+            "direction": dir_name,
+            "confidence": round(conf, 3),
+            "votes": [v.as_dict() for v in votes],
+            "risk": risk,
+            "profit_gate": profit_gate.as_dict(),
+            "team": team_of(sym),
             "agent_summary": summary,
         }
     return out

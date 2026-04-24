@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents/state_store.py."""
+
 from __future__ import annotations
 
 import json

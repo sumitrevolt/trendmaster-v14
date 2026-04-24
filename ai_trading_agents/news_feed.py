@@ -38,6 +38,7 @@ Opt-in. To run automatically, add to the brain supervisor's startup:
 
 Or run as a scheduled task independently of the brain process.
 """
+
 from __future__ import annotations
 
 import json
@@ -52,6 +53,7 @@ logger = logging.getLogger("news_feed")
 
 try:
     import requests  # type: ignore
+
     _HAS_REQ = True
 except Exception:
     _HAS_REQ = False
@@ -71,38 +73,38 @@ _MIN_FETCH_INTERVAL_S = 6 * 3600
 
 
 _IMPACT_MAP = {
-    "high":     "high",
-    "red":      "high",
-    "high impact":       "high",
-    "medium":   "medium",
+    "high": "high",
+    "red": "high",
+    "high impact": "high",
+    "medium": "medium",
     "moderate": "medium",
-    "orange":   "medium",
-    "low":      "low",
-    "yellow":   "low",
-    "holiday":  "none",
-    "none":     "none",
+    "orange": "medium",
+    "low": "low",
+    "yellow": "low",
+    "holiday": "none",
+    "none": "none",
 }
 
 
 @dataclass
 class FetchResult:
-    fetched:       int = 0
-    appended:      int = 0
-    duplicates:    int = 0
-    filtered_out:  int = 0
-    source_url:    str = ""
-    path_written:  str = ""
-    note:          str = ""
+    fetched: int = 0
+    appended: int = 0
+    duplicates: int = 0
+    filtered_out: int = 0
+    source_url: str = ""
+    path_written: str = ""
+    note: str = ""
 
     def as_dict(self) -> dict:
         return {
-            "fetched":      self.fetched,
-            "appended":     self.appended,
-            "duplicates":   self.duplicates,
+            "fetched": self.fetched,
+            "appended": self.appended,
+            "duplicates": self.duplicates,
             "filtered_out": self.filtered_out,
-            "source_url":   self.source_url,
+            "source_url": self.source_url,
             "path_written": self.path_written,
-            "note":         self.note,
+            "note": self.note,
         }
 
 
@@ -124,8 +126,7 @@ def fetch_weekly_high_impact(
 
     for url in url_candidates:
         try:
-            resp = requests.get(url, timeout=timeout_s,
-                                headers={"User-Agent": "TrendMaster-v14/news-feed"})
+            resp = requests.get(url, timeout=timeout_s, headers={"User-Agent": "TrendMaster-v14/news-feed"})
             if resp.status_code != 200:
                 continue
             ctype = (resp.headers.get("Content-Type") or "").lower()
@@ -167,9 +168,9 @@ def _ff_json_to_event(ev: dict) -> Optional[dict]:
         impact = str(ev.get("impact", "") or "").strip().lower()
         impact = _IMPACT_MAP.get(impact, "none")
         return {
-            "ts_utc":   dt_utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "event":    str(ev.get("title") or ev.get("event") or "").strip(),
-            "impact":   impact,
+            "ts_utc": dt_utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "event": str(ev.get("title") or ev.get("event") or "").strip(),
+            "impact": impact,
             "currency": str(ev.get("country") or ev.get("currency") or "").strip().upper(),
         }
     except Exception:
@@ -179,8 +180,7 @@ def _ff_json_to_event(ev: dict) -> Optional[dict]:
 # ──────────────────────────────────────────────────────────────────────
 # Merge into news_calendar.json
 # ──────────────────────────────────────────────────────────────────────
-def merge_events(calendar_path: Path,
-                 new_events: Iterable[dict]) -> FetchResult:
+def merge_events(calendar_path: Path, new_events: Iterable[dict]) -> FetchResult:
     """Merge `new_events` into the on-disk calendar. Idempotent on
     `(ts_utc, event)` key. Preserves the `__HEADER__` row if present.
 
@@ -195,8 +195,7 @@ def merge_events(calendar_path: Path,
             with open(calendar_path, "r", encoding="utf-8") as f:
                 existing = json.load(f) or []
             # Preserve a header row if the first entry is one.
-            if existing and isinstance(existing[0], dict) \
-                    and existing[0].get("event") == "__HEADER__":
+            if existing and isinstance(existing[0], dict) and existing[0].get("event") == "__HEADER__":
                 header = existing.pop(0)
         except Exception as e:
             result.note = f"existing calendar unreadable ({e!r}); starting fresh"
@@ -237,16 +236,14 @@ def fetch_and_merge(
     respecting the fetch-rate limit. Safe to call on a cron.
     """
     if calendar_path is None:
-        calendar_path = (Path(__file__).resolve().parent.parent
-                         / "config" / "news_calendar.json")
+        calendar_path = Path(__file__).resolve().parent.parent / "config" / "news_calendar.json"
     # Rate limit via an adjacent timestamp file (cheap, no dep).
     stamp = calendar_path.with_suffix(".lastfetch")
     try:
         if stamp.exists():
             last = float(stamp.read_text().strip() or "0")
             if (time.time() - last) < min_interval_s:
-                return FetchResult(note="skipped (rate-limited)",
-                                   path_written=str(calendar_path))
+                return FetchResult(note="skipped (rate-limited)", path_written=str(calendar_path))
     except Exception:
         pass
 
@@ -264,13 +261,14 @@ def fetch_and_merge(
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     r = fetch_and_merge()
     print(json.dumps(r.as_dict(), indent=2))
 
 
 __all__ = [
-    "FetchResult", "fetch_weekly_high_impact",
-    "merge_events", "fetch_and_merge",
+    "FetchResult",
+    "fetch_weekly_high_impact",
+    "merge_events",
+    "fetch_and_merge",
 ]

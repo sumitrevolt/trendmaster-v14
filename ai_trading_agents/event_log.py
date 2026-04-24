@@ -33,6 +33,7 @@ Enable via `EVENT_LOG.enabled=True`. The brain writes `signal` events
 from `tick_once` and `fill` events if the trade_tracker picks up new
 deals. The dashboard exposes `/events?since=TS` for a time-range query.
 """
+
 from __future__ import annotations
 
 import json
@@ -52,20 +53,20 @@ _SCHEMA_VERSION = 1
 
 @dataclass
 class Event:
-    ts:        int              # unix seconds
-    kind:      str              # "signal" | "fill" | "veto" | "drift" | "halt" | "resume"
-    symbol:    str
-    payload:   Dict[str, Any]   # arbitrary details
-    corr_id:   str              # correlation id for tracing
+    ts: int  # unix seconds
+    kind: str  # "signal" | "fill" | "veto" | "drift" | "halt" | "resume"
+    symbol: str
+    payload: Dict[str, Any]  # arbitrary details
+    corr_id: str  # correlation id for tracing
 
     def as_line(self) -> str:
         return json.dumps(
             {
-                "v":   _SCHEMA_VERSION,
-                "ts":  self.ts,
-                "k":   self.kind,
-                "s":   self.symbol,
-                "p":   self.payload,
+                "v": _SCHEMA_VERSION,
+                "ts": self.ts,
+                "k": self.kind,
+                "s": self.symbol,
+                "p": self.payload,
                 "cid": self.corr_id,
             },
             separators=(",", ":"),
@@ -75,12 +76,12 @@ class Event:
 
 @dataclass
 class EventLog:
-    path:           Path
-    buffer_max:     int   = 100
-    flush_every_s:  float = 1.0
-    _buf:           List[Event]       = field(default_factory=list)
-    _lock:          threading.Lock    = field(default_factory=threading.Lock)
-    _last_flush:    float             = 0.0
+    path: Path
+    buffer_max: int = 100
+    flush_every_s: float = 1.0
+    _buf: List[Event] = field(default_factory=list)
+    _lock: threading.Lock = field(default_factory=threading.Lock)
+    _last_flush: float = 0.0
 
     def __post_init__(self):
         self.path = Path(self.path)
@@ -89,21 +90,17 @@ class EventLog:
             # Touch so /events can read-without-404 on first call.
             self.path.touch()
 
-    def append(self, kind: str, symbol: str, payload: Dict[str, Any],
-               corr_id: str = "") -> None:
+    def append(self, kind: str, symbol: str, payload: Dict[str, Any], corr_id: str = "") -> None:
         ev = Event(
             ts=int(time.time()),
             kind=kind,
             symbol=symbol,
             payload=payload,
-            corr_id=corr_id or f"{int(time.time()*1000)}-{symbol}",
+            corr_id=corr_id or f"{int(time.time() * 1000)}-{symbol}",
         )
         with self._lock:
             self._buf.append(ev)
-            need_flush = (
-                len(self._buf) >= self.buffer_max
-                or (time.time() - self._last_flush) >= self.flush_every_s
-            )
+            need_flush = len(self._buf) >= self.buffer_max or (time.time() - self._last_flush) >= self.flush_every_s
             if need_flush:
                 self._flush_locked()
 
@@ -128,16 +125,14 @@ class EventLog:
             logger.warning("event_log flush failed: %s", e)
             if len(self._buf) > self.buffer_max * 10:
                 logger.error("event_log buffer overflow — dropping oldest")
-                self._buf = self._buf[-self.buffer_max:]
+                self._buf = self._buf[-self.buffer_max :]
             self._last_flush = time.time()
 
     def flush(self) -> None:
         with self._lock:
             self._flush_locked()
 
-    def read_since(self, since_ts: int,
-                   kinds: Optional[Iterable[str]] = None,
-                   limit: int = 1000) -> List[dict]:
+    def read_since(self, since_ts: int, kinds: Optional[Iterable[str]] = None, limit: int = 1000) -> List[dict]:
         """Stream-scan — OK up to ~100k events per call. For heavier use
         switch to a real database (DuckDB / SQLite / Parquet)."""
         out: List[dict] = []

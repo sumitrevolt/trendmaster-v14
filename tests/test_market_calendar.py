@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.market_calendar."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -6,7 +7,9 @@ from datetime import datetime, timezone
 import pytest
 
 from ai_trading_agents.market_calendar import (
-    is_holiday, is_market_open, is_weekend_closed,
+    is_holiday,
+    is_market_open,
+    is_weekend_closed,
 )
 
 

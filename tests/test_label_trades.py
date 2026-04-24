@@ -1,4 +1,5 @@
 """Unit tests for tools/label_trades.py — no MT5, no lightgbm needed."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -12,17 +13,35 @@ from tools.label_trades import label
 def _write_trades(path: Path) -> None:
     rows = [
         # BUY wins by 2R (entry=100 sl=99, close=102)
-        {"open_time": "2026-04-01T10:00:00Z", "symbol": "XAUUSD",
-         "type": "BUY", "open_price": 100, "sl": 99,
-         "close_price": 102, "close_time": "2026-04-01T11:00:00Z"},
+        {
+            "open_time": "2026-04-01T10:00:00Z",
+            "symbol": "XAUUSD",
+            "type": "BUY",
+            "open_price": 100,
+            "sl": 99,
+            "close_price": 102,
+            "close_time": "2026-04-01T11:00:00Z",
+        },
         # SELL loses — went against by 1R
-        {"open_time": "2026-04-01T12:00:00Z", "symbol": "XAUUSD",
-         "type": "SELL", "open_price": 100, "sl": 101,
-         "close_price": 101, "close_time": "2026-04-01T13:00:00Z"},
+        {
+            "open_time": "2026-04-01T12:00:00Z",
+            "symbol": "XAUUSD",
+            "type": "SELL",
+            "open_price": 100,
+            "sl": 101,
+            "close_price": 101,
+            "close_time": "2026-04-01T13:00:00Z",
+        },
         # BUY breakeven
-        {"open_time": "2026-04-01T14:00:00Z", "symbol": "EURUSD",
-         "type": "BUY", "open_price": 1.1, "sl": 1.09,
-         "close_price": 1.1, "close_time": "2026-04-01T15:00:00Z"},
+        {
+            "open_time": "2026-04-01T14:00:00Z",
+            "symbol": "EURUSD",
+            "type": "BUY",
+            "open_price": 1.1,
+            "sl": 1.09,
+            "close_price": 1.1,
+            "close_time": "2026-04-01T15:00:00Z",
+        },
     ]
     pd.DataFrame(rows).to_csv(path, index=False)
 

@@ -2,6 +2,7 @@
 Auto-reloads the AMD_Bot_Visualizer indicator in MT5
 using pyautogui + pygetwindow to control the MT5 GUI programmatically.
 """
+
 import time
 import pyautogui
 import pygetwindow as gw
@@ -10,6 +11,7 @@ import sys
 
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.4
+
 
 def find_mt5_window():
     """Find and bring MetaTrader 5 window to front."""
@@ -27,14 +29,16 @@ def find_mt5_window():
     print(f"✅ Found MT5 window: {mt5_win.title}")
     return mt5_win
 
+
 def click_chart_center(mt5_win):
     """Click in the center of the MT5 chart area."""
     # Chart area is roughly right half of window
     chart_x = mt5_win.left + int(mt5_win.width * 0.65)
-    chart_y = mt5_win.top  + int(mt5_win.height * 0.45)
+    chart_y = mt5_win.top + int(mt5_win.height * 0.45)
     pyautogui.click(chart_x, chart_y)
     time.sleep(0.3)
     return chart_x, chart_y
+
 
 def reload_visualizer():
     mt5_win = find_mt5_window()
@@ -50,11 +54,11 @@ def reload_visualizer():
     print("Step 2: Clicking 'Indicators List'...")
     # Look for 'Indicators List' in context menu - it appears near top of menu
     # Use keyboard shortcut instead for reliability
-    pyautogui.press('escape')
+    pyautogui.press("escape")
     time.sleep(0.3)
 
     # Use MT5 keyboard shortcut: Ctrl+I opens Indicators List dialog
-    pyautogui.hotkey('ctrl', 'i')
+    pyautogui.hotkey("ctrl", "i")
     time.sleep(1.5)
     print("✅ Opened Indicators List dialog (Ctrl+I)")
 
@@ -68,19 +72,19 @@ def reload_visualizer():
     # Click Delete button - it's usually on the right side of the dialog
     time.sleep(0.5)
 
-    # Try to find and click the Delete button using image search, 
+    # Try to find and click the Delete button using image search,
     # or navigate by Tab key
     # Press Delete key
-    pyautogui.press('delete')
+    pyautogui.press("delete")
     time.sleep(0.5)
     print("Step 3: Deleted old indicator instance...")
 
     # Close the dialog (OK or Enter)
-    pyautogui.press('enter')
+    pyautogui.press("enter")
     time.sleep(0.5)
 
     print("Step 4: Re-opening Navigator (Ctrl+N)...")
-    pyautogui.hotkey('ctrl', 'n')
+    pyautogui.hotkey("ctrl", "n")
     time.sleep(0.8)
 
     print("Step 5: Pressing Ctrl+I to attach new indicator from Navigator...")
@@ -90,6 +94,7 @@ def reload_visualizer():
 
     print("\n✅ Done! MT5 should now show the upgraded AI Swarm Bot Visualizer.")
     print("   Check your chart for green/red FVG arrows and blue ⚡Sweep labels.")
+
 
 if __name__ == "__main__":
     print("🤖 AI Swarm MT5 Indicator Auto-Reloader")

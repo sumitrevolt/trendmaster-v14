@@ -16,6 +16,7 @@ ARCHIVED (moved to archive/):
   dashboards, legacy bat launchers
   __pycache__ (deleted)
 """
+
 from __future__ import annotations
 import shutil, os, sys
 from pathlib import Path
@@ -31,6 +32,7 @@ ARCH.mkdir(exist_ok=True)
 
 moved = 0
 deleted = 0
+
 
 def move(rel: str, bucket: str) -> None:
     global moved
@@ -48,6 +50,7 @@ def move(rel: str, bucket: str) -> None:
     print(f"[move] {rel:60s} -> archive/{bucket}/{dst.name}")
     moved += 1
 
+
 def rmtree_if(rel: str) -> None:
     global deleted
     p = ROOT / rel
@@ -56,25 +59,26 @@ def rmtree_if(rel: str) -> None:
         print(f"[rm]   {rel}")
         deleted += 1
 
+
 # --- legacy EAs (root) ---
-for f in ("AI_AMD_SMC_Indicator_v11.mq5",
-          "AI_TradingView_Replica_v1.mq5"):
+for f in ("AI_AMD_SMC_Indicator_v11.mq5", "AI_TradingView_Replica_v1.mq5"):
     move(f, "legacy_experts")
 
 # legacy EAs inside ai_trading_agents/
-for f in ("ai_trading_agents/AI_AMD_SMC_Indicator.mq5",
-          "ai_trading_agents/MultiIndicatorSignals.mq5"):
+for f in ("ai_trading_agents/AI_AMD_SMC_Indicator.mq5", "ai_trading_agents/MultiIndicatorSignals.mq5"):
     move(f, "legacy_experts")
 
 # --- legacy Python entrypoints (root) ---
-for f in ("main.py", "ai_swarm_main.py", "safe_start.py",
-          "close_orphans.py", "run_backtest.py"):
+for f in ("main.py", "ai_swarm_main.py", "safe_start.py", "close_orphans.py", "run_backtest.py"):
     move(f, "legacy_python")
 
 # legacy Python inside ai_trading_agents/ (keep ONLY trend_master_brain, __init__, requirements, .env*)
 KEEP_IN_AGENTS = {
-    "trend_master_brain.py", "__init__.py", "requirements.txt",
-    ".env", ".env.example",
+    "trend_master_brain.py",
+    "__init__.py",
+    "requirements.txt",
+    ".env",
+    ".env.example",
 }
 agents_dir = ROOT / "ai_trading_agents"
 for p in list(agents_dir.iterdir()):
@@ -115,8 +119,7 @@ for p in list(ROOT.glob("mt5_*.png")):
     moved += 1
 
 # --- root misc ---
-for f in ("QUICK_START.txt", "STATUS.json",
-          "sync_engine.ps1", "trendmaster_signals.json"):
+for f in ("QUICK_START.txt", "STATUS.json", "sync_engine.ps1", "trendmaster_signals.json"):
     move(f, "legacy_state")
 
 # --- tools: remove legacy ---

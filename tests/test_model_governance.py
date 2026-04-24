@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.model_governance."""
+
 from __future__ import annotations
 
 import json
@@ -7,15 +8,20 @@ from pathlib import Path
 import pytest
 
 from ai_trading_agents.model_governance import (
-    DeploymentEntry, Governance, ModelCard,
+    DeploymentEntry,
+    Governance,
+    ModelCard,
 )
 
 
 def test_register_card_writes_json(tmp_path):
     g = Governance(models_dir=tmp_path)
     card = ModelCard(
-        name="lgbm_METALS", version="v1", team="METALS",
-        model_kind="lightgbm", trained_at="2026-04-23T00:00:00Z",
+        name="lgbm_METALS",
+        version="v1",
+        team="METALS",
+        model_kind="lightgbm",
+        trained_at="2026-04-23T00:00:00Z",
         trained_on_rows=241,
         feature_cols=["f1", "f2"],
         cv_method="cpcv",
@@ -30,10 +36,12 @@ def test_register_card_writes_json(tmp_path):
 
 def test_list_cards_filters_by_team(tmp_path):
     g = Governance(models_dir=tmp_path)
-    g.register_card(ModelCard(name="a", version="v1", team="METALS",
-                               model_kind="lgbm", trained_at="t", trained_on_rows=0))
-    g.register_card(ModelCard(name="b", version="v1", team="CRYPTO",
-                               model_kind="lgbm", trained_at="t", trained_on_rows=0))
+    g.register_card(
+        ModelCard(name="a", version="v1", team="METALS", model_kind="lgbm", trained_at="t", trained_on_rows=0)
+    )
+    g.register_card(
+        ModelCard(name="b", version="v1", team="CRYPTO", model_kind="lgbm", trained_at="t", trained_on_rows=0)
+    )
     metals = g.list_cards(team="METALS")
     crypto = g.list_cards(team="CRYPTO")
     assert len(metals) == 1

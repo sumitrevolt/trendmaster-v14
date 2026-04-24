@@ -24,6 +24,7 @@ enabled, `tick_all` writes the latest VaR/CVaR to metrics (if METRICS
 also on) and the `/var` Telegram command returns a one-shot snapshot.
 No veto logic attached — this is an observability + alerting primitive.
 """
+
 from __future__ import annotations
 
 import logging
@@ -38,29 +39,29 @@ logger = logging.getLogger("portfolio_risk")
 
 @dataclass
 class VaRResult:
-    method:        str          # "historical" | "parametric" | "cornish_fisher"
-    confidence:    float        # 0.95, 0.99, etc.
-    var:           float        # absolute loss value (positive number)
-    cvar:          float        # expected shortfall
-    n_samples:     int
-    mean:          float
-    std:           float
-    skew:          float
-    kurt:          float
-    reason:        str = ""
+    method: str  # "historical" | "parametric" | "cornish_fisher"
+    confidence: float  # 0.95, 0.99, etc.
+    var: float  # absolute loss value (positive number)
+    cvar: float  # expected shortfall
+    n_samples: int
+    mean: float
+    std: float
+    skew: float
+    kurt: float
+    reason: str = ""
 
     def as_dict(self) -> dict:
         return {
-            "method":     self.method,
+            "method": self.method,
             "confidence": self.confidence,
-            "var":        round(self.var, 4),
-            "cvar":       round(self.cvar, 4),
-            "n_samples":  self.n_samples,
-            "mean":       round(self.mean, 6),
-            "std":        round(self.std, 6),
-            "skew":       round(self.skew, 4),
-            "kurt":       round(self.kurt, 4),
-            "reason":     self.reason,
+            "var": round(self.var, 4),
+            "cvar": round(self.cvar, 4),
+            "n_samples": self.n_samples,
+            "mean": round(self.mean, 6),
+            "std": round(self.std, 6),
+            "skew": round(self.skew, 4),
+            "kurt": round(self.kurt, 4),
+            "reason": self.reason,
         }
 
 
@@ -91,8 +92,8 @@ def _moments(arr: np.ndarray) -> Tuple[float, float, float, float]:
     if s == 0 or not np.isfinite(s):
         return m, 0.0, 0.0, 0.0
     z = (arr - m) / s
-    skew = float((z ** 3).mean())
-    kurt = float((z ** 4).mean() - 3.0)
+    skew = float((z**3).mean())
+    kurt = float((z**4).mean() - 3.0)
     return m, s, skew, kurt
 
 
@@ -103,15 +104,15 @@ def historical_var(pnls: Iterable, confidence: float = 0.95) -> VaRResult:
     arr = arr[np.isfinite(arr)]
     n = len(arr)
     if n < 10:
-        return VaRResult("historical", confidence, 0.0, 0.0, n, 0.0, 0.0, 0.0, 0.0,
-                         reason=f"insufficient samples ({n} < 10)")
+        return VaRResult(
+            "historical", confidence, 0.0, 0.0, n, 0.0, 0.0, 0.0, 0.0, reason=f"insufficient samples ({n} < 10)"
+        )
     q = 1.0 - confidence
     var_val = -float(np.quantile(arr, q))  # positive loss number
     tail = arr[arr <= np.quantile(arr, q)]
     cvar_val = -float(tail.mean()) if len(tail) else var_val
     m, s, sk, kt = _moments(arr)
-    return VaRResult("historical", confidence, max(0.0, var_val),
-                     max(0.0, cvar_val), n, m, s, sk, kt)
+    return VaRResult("historical", confidence, max(0.0, var_val), max(0.0, cvar_val), n, m, s, sk, kt)
 
 
 def parametric_var(pnls: Iterable, confidence: float = 0.95) -> VaRResult:
@@ -124,8 +125,9 @@ def parametric_var(pnls: Iterable, confidence: float = 0.95) -> VaRResult:
     arr = arr[np.isfinite(arr)]
     n = len(arr)
     if n < 10:
-        return VaRResult("parametric", confidence, 0.0, 0.0, n, 0.0, 0.0, 0.0, 0.0,
-                         reason=f"insufficient samples ({n} < 10)")
+        return VaRResult(
+            "parametric", confidence, 0.0, 0.0, n, 0.0, 0.0, 0.0, 0.0, reason=f"insufficient samples ({n} < 10)"
+        )
     m, s, sk, kt = _moments(arr)
     var_val = max(0.0, z * s - m)
     # CVaR for a normal = φ(z) / (1-α) × σ − μ
@@ -148,13 +150,11 @@ def cornish_fisher_var(pnls: Iterable, confidence: float = 0.95) -> VaRResult:
     arr = arr[np.isfinite(arr)]
     n = len(arr)
     if n < 30:
-        return VaRResult("cornish_fisher", confidence, 0.0, 0.0, n, 0.0, 0.0, 0.0, 0.0,
-                         reason=f"insufficient samples ({n} < 30)")
+        return VaRResult(
+            "cornish_fisher", confidence, 0.0, 0.0, n, 0.0, 0.0, 0.0, 0.0, reason=f"insufficient samples ({n} < 30)"
+        )
     m, s, sk, kt = _moments(arr)
-    z_cf = (z
-            + (z * z - 1.0) * sk / 6.0
-            + (z ** 3 - 3.0 * z) * kt / 24.0
-            - (2.0 * z ** 3 - 5.0 * z) * (sk ** 2) / 36.0)
+    z_cf = z + (z * z - 1.0) * sk / 6.0 + (z**3 - 3.0 * z) * kt / 24.0 - (2.0 * z**3 - 5.0 * z) * (sk**2) / 36.0
     var_val = max(0.0, z_cf * s - m)
     # CF-adjusted CVaR uses the same correction on the φ(z)/α term —
     # approximate form, good enough for monitoring.
@@ -166,13 +166,16 @@ def cornish_fisher_var(pnls: Iterable, confidence: float = 0.95) -> VaRResult:
 def snapshot(pnls: Iterable, confidence: float = 0.95) -> dict:
     """Compute all three methods at once — handy for dashboards."""
     return {
-        "historical":     historical_var(pnls, confidence).as_dict(),
-        "parametric":     parametric_var(pnls, confidence).as_dict(),
+        "historical": historical_var(pnls, confidence).as_dict(),
+        "parametric": parametric_var(pnls, confidence).as_dict(),
         "cornish_fisher": cornish_fisher_var(pnls, confidence).as_dict(),
     }
 
 
 __all__ = [
-    "VaRResult", "historical_var", "parametric_var", "cornish_fisher_var",
+    "VaRResult",
+    "historical_var",
+    "parametric_var",
+    "cornish_fisher_var",
     "snapshot",
 ]

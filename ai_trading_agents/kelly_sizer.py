@@ -40,6 +40,7 @@ Shadow mode: set `KELLY_SIZING.shadow=True` to log what the multiplier
 *would* have been without applying it. Run for 2 weeks, compare against
 realized P&L before promoting to live.
 """
+
 from __future__ import annotations
 
 import logging
@@ -56,35 +57,36 @@ _DEFAULT_KELLY_FRACTION = 0.5
 
 @dataclass
 class KellyConfig:
-    lookback_trades:  int   = 40
-    min_samples:      int   = 20
-    max_fraction:     float = 2.0      # hard cap multiplier
-    floor_fraction:   float = 0.25     # never go below 25% of base risk
-    kelly_fraction:   float = _DEFAULT_KELLY_FRACTION
+    lookback_trades: int = 40
+    min_samples: int = 20
+    max_fraction: float = 2.0  # hard cap multiplier
+    floor_fraction: float = 0.25  # never go below 25% of base risk
+    kelly_fraction: float = _DEFAULT_KELLY_FRACTION
     # When True, `apply()` returns 1.0 (identity) and logs the shadow value.
-    shadow_mode:      bool  = False
+    shadow_mode: bool = False
 
 
 @dataclass
 class KellyDecision:
     """What `apply()` returns to the caller."""
-    multiplier:    float
-    win_rate:      float
-    avg_win:       float
-    avg_loss:      float
-    raw_kelly:     float
-    samples_used:  int
-    reason:        str
+
+    multiplier: float
+    win_rate: float
+    avg_win: float
+    avg_loss: float
+    raw_kelly: float
+    samples_used: int
+    reason: str
 
     def as_dict(self) -> dict:
         return {
-            "multiplier":    round(self.multiplier, 4),
-            "win_rate":      round(self.win_rate, 4),
-            "avg_win":       round(self.avg_win, 4),
-            "avg_loss":      round(self.avg_loss, 4),
-            "raw_kelly":     round(self.raw_kelly, 4),
-            "samples_used":  self.samples_used,
-            "reason":        self.reason,
+            "multiplier": round(self.multiplier, 4),
+            "win_rate": round(self.win_rate, 4),
+            "avg_win": round(self.avg_win, 4),
+            "avg_loss": round(self.avg_loss, 4),
+            "raw_kelly": round(self.raw_kelly, 4),
+            "samples_used": self.samples_used,
+            "reason": self.reason,
         }
 
 
@@ -109,8 +111,7 @@ def _extract_pnl(entry: Union[float, dict, None]) -> float:
     return 0.0
 
 
-def compute_multiplier(results: Iterable,
-                       cfg: Optional[KellyConfig] = None) -> KellyDecision:
+def compute_multiplier(results: Iterable, cfg: Optional[KellyConfig] = None) -> KellyDecision:
     """Compute the Kelly multiplier from a list of recent trade results.
 
     `results` accepts either plain float PnL entries (legacy) or dict
@@ -121,7 +122,7 @@ def compute_multiplier(results: Iterable,
     use `.multiplier` but can also surface `.reason` in logs or `/status`.
     """
     cfg = cfg or KellyConfig()
-    raw: List[float] = [_extract_pnl(e) for e in list(results)[-cfg.lookback_trades:]]
+    raw: List[float] = [_extract_pnl(e) for e in list(results)[-cfg.lookback_trades :]]
 
     # Sanitize — drop entries that normalize to exactly 0.0 (break-even
     # trades shouldn't influence win/loss stats).
@@ -155,7 +156,7 @@ def compute_multiplier(results: Iterable,
 
     win_rate = len(wins) / n
     avg_win = sum(wins) / len(wins)
-    avg_loss = abs(sum(losses) / len(losses))   # magnitude
+    avg_loss = abs(sum(losses) / len(losses))  # magnitude
     payoff_ratio = avg_win / avg_loss if avg_loss > 0 else 0.0
 
     if payoff_ratio <= 0:
@@ -189,23 +190,24 @@ def compute_multiplier(results: Iterable,
         avg_loss=-avg_loss,
         raw_kelly=kelly,
         samples_used=n,
-        reason=(f"fractional-kelly={cfg.kelly_fraction}, "
-                f"W={win_rate:.2%}, R={payoff_ratio:.2f}"),
+        reason=(f"fractional-kelly={cfg.kelly_fraction}, W={win_rate:.2%}, R={payoff_ratio:.2f}"),
     )
 
 
-def apply(results: Iterable,
-          base_risk_pct: float,
-          cfg: Optional[KellyConfig] = None) -> float:
+def apply(results: Iterable, base_risk_pct: float, cfg: Optional[KellyConfig] = None) -> float:
     """Return the adjusted risk % a caller should use, or `base_risk_pct`
     verbatim when in shadow mode. Logs the shadow multiplier for later
     comparison."""
     cfg = cfg or KellyConfig()
     decision = compute_multiplier(results, cfg)
     if cfg.shadow_mode:
-        logger.info("[kelly-shadow] would_apply=%sx base=%.3f%% → sized=%.3f%% (%s)",
-                    decision.multiplier, base_risk_pct,
-                    base_risk_pct * decision.multiplier, decision.reason)
+        logger.info(
+            "[kelly-shadow] would_apply=%sx base=%.3f%% → sized=%.3f%% (%s)",
+            decision.multiplier,
+            base_risk_pct,
+            base_risk_pct * decision.multiplier,
+            decision.reason,
+        )
         return float(base_risk_pct)
     return float(base_risk_pct * decision.multiplier)
 

@@ -30,6 +30,7 @@ Coverage
 Calendar is static, hand-curated — same pattern as `news_calendar.json`.
 File: `config/market_holidays.json`. Refresh yearly.
 """
+
 from __future__ import annotations
 
 import json
@@ -42,18 +43,34 @@ logger = logging.getLogger("market_calendar")
 
 
 # ---------- symbol → market classification ----------
-_FOREX = {"EURUSD", "GBPUSD", "USDJPY", "USDCAD", "USDCHF", "AUDUSD",
-          "NZDUSD", "EURJPY", "GBPJPY", "EURGBP", "AUDJPY", "CADJPY"}
+_FOREX = {
+    "EURUSD",
+    "GBPUSD",
+    "USDJPY",
+    "USDCAD",
+    "USDCHF",
+    "AUDUSD",
+    "NZDUSD",
+    "EURJPY",
+    "GBPJPY",
+    "EURGBP",
+    "AUDJPY",
+    "CADJPY",
+}
 _METALS = {"XAUUSD", "XAGUSD"}
 _COMMODITIES = {"XTIUSD", "XBRUSD", "XNGUSD"}
 _CRYPTO = {"BTCUSD", "ETHUSD"}
 
 
 def _market(sym: str) -> str:
-    if sym in _CRYPTO:      return "CRYPTO"
-    if sym in _METALS:      return "METALS"
-    if sym in _COMMODITIES: return "COMMODITIES"
-    if sym in _FOREX:       return "FOREX"
+    if sym in _CRYPTO:
+        return "CRYPTO"
+    if sym in _METALS:
+        return "METALS"
+    if sym in _COMMODITIES:
+        return "COMMODITIES"
+    if sym in _FOREX:
+        return "FOREX"
     return "UNKNOWN"
 
 
@@ -66,7 +83,7 @@ def is_weekend_closed(now_utc: datetime, sym: str) -> Tuple[bool, str]:
     """Returns (closed, reason). Crypto returns open regardless."""
     if _market(sym) == "CRYPTO":
         return False, "crypto-24x7"
-    dow = now_utc.weekday()   # Mon=0 ... Sun=6
+    dow = now_utc.weekday()  # Mon=0 ... Sun=6
     hour = now_utc.hour
     # Friday after 22:00 UTC → closed.
     if dow == 4 and hour >= 22:
@@ -105,6 +122,7 @@ def _load_holidays(path: Optional[Path] = None) -> list:
     exchange-wide outages you hand-add.
     """
     import time as _t
+
     now = _t.time()
     if (now - _CACHE["loaded_ts"]) < _CACHE_TTL_S and _CACHE["holidays"]:
         return _CACHE["holidays"]
@@ -141,7 +159,7 @@ def _sym_markets(sym: str) -> set:
             if cur in sym:
                 tags.add(f"FOREX_{cur}")
     elif mkt == "METALS":
-        tags.add("FOREX_USD")   # gold/silver price'd in USD
+        tags.add("FOREX_USD")  # gold/silver price'd in USD
     elif mkt == "COMMODITIES":
         tags.add("FOREX_USD")
     return tags

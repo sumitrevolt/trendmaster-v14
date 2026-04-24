@@ -21,6 +21,7 @@ Output
 This is the binary target for the "should I take this setup?" classifier
 in tools/retrain_from_trades.py.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -39,9 +40,9 @@ if str(_ROOT) not in sys.path:
 REQUIRED = ["open_time", "symbol", "type", "open_price", "sl", "close_price"]
 
 
-def label(trades_csv: Optional[str] = None,
-          out_dir: Optional[str] = None,
-          symbol_filter: Optional[str] = None) -> pd.DataFrame:
+def label(
+    trades_csv: Optional[str] = None, out_dir: Optional[str] = None, symbol_filter: Optional[str] = None
+) -> pd.DataFrame:
     path = Path(trades_csv) if trades_csv else _ROOT / "logs" / "trades.csv"
     if not path.exists():
         raise FileNotFoundError(f"No trades csv at {path}")
@@ -59,7 +60,7 @@ def label(trades_csv: Optional[str] = None,
 
     # R = (close - entry) / |entry - sl|, flipped for shorts
     risk = (df["open_price"] - df["sl"]).abs()
-    risk = risk.where(risk > 0)   # avoid /0
+    risk = risk.where(risk > 0)  # avoid /0
     move = df["close_price"] - df["open_price"]
     move = move.where(df["direction"] == "BUY", -move)
     df["r_multiple"] = (move / risk).round(3)
@@ -67,14 +68,11 @@ def label(trades_csv: Optional[str] = None,
 
     out_root = Path(out_dir) if out_dir else _ROOT / "data"
     out_root.mkdir(parents=True, exist_ok=True)
-    keep = ["open_time", "symbol", "direction", "open_price", "sl",
-            "close_price", "r_multiple", "won_R"]
+    keep = ["open_time", "symbol", "direction", "open_price", "sl", "close_price", "r_multiple", "won_R"]
     for sym, g in df.groupby("symbol"):
         out = out_root / f"labels_{sym.lower()}.csv"
-        g[keep].rename(columns={"open_time": "time",
-                                "open_price": "entry"}).to_csv(out, index=False)
-        print(f"wrote {out} — {len(g)} trades, won_R rate "
-              f"{g['won_R'].mean():.2%}")
+        g[keep].rename(columns={"open_time": "time", "open_price": "entry"}).to_csv(out, index=False)
+        print(f"wrote {out} — {len(g)} trades, won_R rate {g['won_R'].mean():.2%}")
     return df[keep]
 
 

@@ -8,6 +8,7 @@ pull routine (just run it) and symmetric across pairs.
 Writes to data/{symbol_lower}_m5_history.csv, which the backtester and
 retrainer both read from by default.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -52,8 +53,7 @@ def pull_all(bars: int = 50_000, symbols: list[str] | None = None) -> int:
         df = pd.DataFrame(rates)
         df["time"] = pd.to_datetime(df["time"], unit="s", utc=True)
         out = out_dir / f"{sym.lower()}_m5_history.csv"
-        cols = [c for c in ("time", "open", "high", "low", "close",
-                            "tick_volume") if c in df.columns]
+        cols = [c for c in ("time", "open", "high", "low", "close", "tick_volume") if c in df.columns]
         df[cols].rename(columns={"tick_volume": "volume"}).to_csv(out, index=False)
         logger.info("[%s] %d bars → %s", sym, len(df), out.name)
         ok += 1

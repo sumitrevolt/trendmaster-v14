@@ -35,6 +35,7 @@ Every permit carries the `deal_id` of the SL-hit trade. `scan_for_sl_hits`
 keeps a `_seen_deal_ids` set (hydrated from state on first call) so
 scanning twice never mints two permits for the same close.
 """
+
 from __future__ import annotations
 
 import logging
@@ -57,11 +58,12 @@ _SL_R_MULT_THRESHOLD = -0.9
 @dataclass
 class ReentryPermit:
     """One-shot authorization to re-enter a stopped-out pair at reduced size."""
+
     symbol: str
-    direction: str            # "BUY" or "SELL" (original trade direction)
-    original_sl_ts: int       # unix seconds when the SL hit
-    expires_ts: int           # original_sl_ts + max_age_minutes * 60
-    deal_id: int = 0          # broker ticket of the stopped-out deal
+    direction: str  # "BUY" or "SELL" (original trade direction)
+    original_sl_ts: int  # unix seconds when the SL hit
+    expires_ts: int  # original_sl_ts + max_age_minutes * 60
+    deal_id: int = 0  # broker ticket of the stopped-out deal
     used: bool = False
     size_mult: float = 0.7
 
@@ -84,6 +86,7 @@ class ReentryPermit:
 @dataclass
 class ReentryTracker:
     """Minter + matcher for re-entry permits."""
+
     cfg: Dict[str, Any] = field(default_factory=dict)
     _seen_deal_ids: set = field(default_factory=set)
 
@@ -190,7 +193,7 @@ class ReentryTracker:
 
             permit = ReentryPermit(
                 symbol=sym,
-                direction=direction,          # may be "" if brain hasn't stamped yet
+                direction=direction,  # may be "" if brain hasn't stamped yet
                 original_sl_ts=sl_ts,
                 expires_ts=sl_ts + max_age_s,
                 deal_id=deal_id,
@@ -202,7 +205,10 @@ class ReentryTracker:
             self._seen_deal_ids.add(deal_id)
             logger.info(
                 "reentry: minted permit symbol=%s dir=%s deal_id=%d expires_in=%ds",
-                sym, direction or "?", deal_id, max_age_s,
+                sym,
+                direction or "?",
+                deal_id,
+                max_age_s,
             )
 
         if newly_minted:
@@ -217,8 +223,7 @@ class ReentryTracker:
     # ────────────────────────────────────────────────────────────────
     #                    PERMIT DISCOVERY / USE
     # ────────────────────────────────────────────────────────────────
-    def _count_used_today(self, permits: List[ReentryPermit], symbol: str,
-                          now_ts: int) -> int:
+    def _count_used_today(self, permits: List[ReentryPermit], symbol: str, now_ts: int) -> int:
         """How many permits have been consumed for this symbol today (UTC)?"""
         today = datetime.fromtimestamp(now_ts, tz=timezone.utc).strftime("%Y-%m-%d")
         n = 0
@@ -230,10 +235,14 @@ class ReentryTracker:
                 n += 1
         return n
 
-    def available_permit(self, symbol: str, direction: str, now_ts: int,
-                         state: Optional[Dict[str, Any]] = None,
-                         todays_permits_used: Optional[int] = None,
-                         ) -> Optional[ReentryPermit]:
+    def available_permit(
+        self,
+        symbol: str,
+        direction: str,
+        now_ts: int,
+        state: Optional[Dict[str, Any]] = None,
+        todays_permits_used: Optional[int] = None,
+    ) -> Optional[ReentryPermit]:
         """
         Return a live unexpired permit matching symbol+direction.
 
@@ -278,8 +287,7 @@ class ReentryTracker:
             return p
         return None
 
-    def consume(self, permit: ReentryPermit,
-                state: Optional[Dict[str, Any]] = None) -> None:
+    def consume(self, permit: ReentryPermit, state: Optional[Dict[str, Any]] = None) -> None:
         """
         Mark the permit used so it won't match again. If `state` is given,
         also mutates the persisted list in-place (caller handles save).

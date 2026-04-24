@@ -35,6 +35,7 @@ Not wired into the brain yet. Reference pattern:
 
 Training offline via `python tools/train_regime_hmm.py XAUUSD`.
 """
+
 from __future__ import annotations
 
 import logging
@@ -50,6 +51,7 @@ logger = logging.getLogger("regime_hmm")
 
 try:
     from hmmlearn.hmm import GaussianHMM as _LibGaussianHMM  # type: ignore
+
     _HAS_HMMLEARN = True
 except Exception:
     _HAS_HMMLEARN = False
@@ -63,9 +65,9 @@ _STATE_LABELS_3 = ("chop", "trend-calm", "trend-volatile")
 
 @dataclass
 class HMMConfig:
-    n_states:    int  = 2
-    n_iter:     int  = 50
-    tol:        float = 1e-4
+    n_states: int = 2
+    n_iter: int = 50
+    tol: float = 1e-4
     random_seed: int = 7
     # Feature construction knobs:
     use_abs_return: bool = True
@@ -75,21 +77,21 @@ class HMMConfig:
 @dataclass
 class RegimeObs:
     state_idx: int
-    state:     str
-    prob:      float
+    state: str
+    prob: float
     probs_all: List[float]
 
 
 @dataclass
 class RegimeHMM:
-    cfg:            HMMConfig          = field(default_factory=HMMConfig)
-    means:          Optional[np.ndarray] = None
-    covars:         Optional[np.ndarray] = None
-    trans:          Optional[np.ndarray] = None
-    init_probs:     Optional[np.ndarray] = None
-    state_labels:   List[str]           = field(default_factory=list)
-    trained:        bool                = False
-    library_model:  Optional[object]    = None  # hmmlearn instance if used
+    cfg: HMMConfig = field(default_factory=HMMConfig)
+    means: Optional[np.ndarray] = None
+    covars: Optional[np.ndarray] = None
+    trans: Optional[np.ndarray] = None
+    init_probs: Optional[np.ndarray] = None
+    state_labels: List[str] = field(default_factory=list)
+    trained: bool = False
+    library_model: Optional[object] = None  # hmmlearn instance if used
 
     # ──────────────────────────────────────────────────────────────────
     # Feature construction
@@ -110,8 +112,7 @@ class RegimeHMM:
         X = self._features(closes)
         if len(X) < self.cfg.min_history_bars:
             raise ValueError(
-                f"insufficient history: have {len(X)} return observations, "
-                f"need {self.cfg.min_history_bars}"
+                f"insufficient history: have {len(X)} return observations, need {self.cfg.min_history_bars}"
             )
         if _HAS_HMMLEARN:
             self._fit_via_lib(X)
@@ -164,8 +165,7 @@ class RegimeHMM:
             log_gamma = log_alpha + log_beta
             # Normalise each row via log-sum-exp (no overflow).
             log_gamma_max = log_gamma.max(axis=1, keepdims=True)
-            log_gamma_norm = (log_gamma_max
-                              + np.log(np.exp(log_gamma - log_gamma_max).sum(axis=1, keepdims=True)))
+            log_gamma_norm = log_gamma_max + np.log(np.exp(log_gamma - log_gamma_max).sum(axis=1, keepdims=True))
             gamma = np.exp(log_gamma - log_gamma_norm)
 
             # xi in log-space, then exp only after normalisation.
@@ -174,10 +174,12 @@ class RegimeHMM:
             for t in range(n - 1):
                 # log_xi[t, i, j] = log_alpha[t,i] + log_trans[i,j]
                 #                 + log_emis[t+1,j] + log_beta[t+1,j]
-                log_xi = (log_alpha[t].reshape(K, 1)
-                          + log_trans
-                          + log_emis[t + 1].reshape(1, K)
-                          + log_beta[t + 1].reshape(1, K))
+                log_xi = (
+                    log_alpha[t].reshape(K, 1)
+                    + log_trans
+                    + log_emis[t + 1].reshape(1, K)
+                    + log_beta[t + 1].reshape(1, K)
+                )
                 m = log_xi.max()
                 if not np.isfinite(m):
                     continue
@@ -186,8 +188,7 @@ class RegimeHMM:
 
             # ---- M-step ----
             init = gamma[0]
-            trans = (xi.sum(axis=0) /
-                     np.clip(gamma[:-1].sum(axis=0).reshape(K, 1), 1e-12, None))
+            trans = xi.sum(axis=0) / np.clip(gamma[:-1].sum(axis=0).reshape(K, 1), 1e-12, None)
             for k in range(K):
                 w = gamma[:, k]
                 wsum = w.sum()
@@ -207,8 +208,7 @@ class RegimeHMM:
         self.trans = trans
         self.init_probs = init
 
-    def _log_gaussian(self, X: np.ndarray,
-                      means: np.ndarray, covars: np.ndarray) -> np.ndarray:
+    def _log_gaussian(self, X: np.ndarray, means: np.ndarray, covars: np.ndarray) -> np.ndarray:
         n, d = X.shape
         K = means.shape[0]
         out = np.zeros((n, K))
@@ -228,8 +228,7 @@ class RegimeHMM:
         for t in range(1, n):
             for j in range(K):
                 log_alpha[t, j] = (
-                    self._logsumexp(log_alpha[t - 1] + np.log(np.clip(trans[:, j], 1e-12, None)))
-                    + log_emis[t, j]
+                    self._logsumexp(log_alpha[t - 1] + np.log(np.clip(trans[:, j], 1e-12, None))) + log_emis[t, j]
                 )
         # _logsumexp returns a plain Python float — wrap in a length-1
         # array so callers that .sum() it still work.
@@ -243,9 +242,7 @@ class RegimeHMM:
         for t in range(n - 2, -1, -1):
             for i in range(K):
                 log_beta[t, i] = self._logsumexp(
-                    np.log(np.clip(trans[i, :], 1e-12, None))
-                    + log_emis[t + 1]
-                    + log_beta[t + 1]
+                    np.log(np.clip(trans[i, :], 1e-12, None)) + log_emis[t + 1] + log_beta[t + 1]
                 )
         return log_beta
 
@@ -285,12 +282,10 @@ class RegimeHMM:
     # ──────────────────────────────────────────────────────────────────
     def classify(self, closes: Sequence[float]) -> RegimeObs:
         if not self.trained or self.means is None:
-            return RegimeObs(state_idx=-1, state="unknown",
-                             prob=0.0, probs_all=[])
+            return RegimeObs(state_idx=-1, state="unknown", prob=0.0, probs_all=[])
         X = self._features(closes)
         if len(X) == 0:
-            return RegimeObs(state_idx=-1, state="unknown",
-                             prob=0.0, probs_all=[])
+            return RegimeObs(state_idx=-1, state="unknown", prob=0.0, probs_all=[])
         log_emis = self._log_gaussian(X, self.means, self.covars)
         log_alpha, _ = self._forward(log_emis, self.trans, self.init_probs)
         # Smoothed posterior over the LAST observation, via log-sum-exp
@@ -300,14 +295,19 @@ class RegimeHMM:
         if not np.isfinite(m):
             # All emissions underflowed — return uniform.
             K = len(self.state_labels) or (self.means.shape[0] if self.means is not None else 2)
-            return RegimeObs(state_idx=0, state=self.state_labels[0] if self.state_labels else "unknown",
-                             prob=1.0 / K, probs_all=[1.0 / K] * K)
+            return RegimeObs(
+                state_idx=0,
+                state=self.state_labels[0] if self.state_labels else "unknown",
+                prob=1.0 / K,
+                probs_all=[1.0 / K] * K,
+            )
         probs = np.exp(last - m)
         probs = probs / probs.sum()
         idx = int(np.argmax(probs))
         label = self.state_labels[idx] if idx < len(self.state_labels) else f"state_{idx}"
         return RegimeObs(
-            state_idx=idx, state=label,
+            state_idx=idx,
+            state=label,
             prob=float(probs[idx]),
             probs_all=[float(x) for x in probs],
         )
@@ -319,13 +319,13 @@ class RegimeHMM:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
         blob = {
-            "cfg":          self.cfg,
-            "means":        self.means,
-            "covars":       self.covars,
-            "trans":        self.trans,
-            "init_probs":   self.init_probs,
+            "cfg": self.cfg,
+            "means": self.means,
+            "covars": self.covars,
+            "trans": self.trans,
+            "init_probs": self.init_probs,
             "state_labels": self.state_labels,
-            "trained":      self.trained,
+            "trained": self.trained,
         }
         with open(p, "wb") as f:
             pickle.dump(blob, f)

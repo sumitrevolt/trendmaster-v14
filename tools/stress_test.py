@@ -31,6 +31,7 @@ References: luxalgo.com/blog/stress-testing-for-trading-strategies-2,
 backtestbase.com/education/monte-carlo-stress-testing, jonaylor.com/blog/
 algo-backtests-are-lying-to-you.
 """
+
 from __future__ import annotations
 
 import json
@@ -53,21 +54,21 @@ logger = logging.getLogger("stress_test")
 
 @dataclass
 class ScenarioResult:
-    name:              str
-    passed:            bool
-    score:             float       # 0-100; higher = more robust
-    pnl_delta:         float
-    max_dd_delta:      float
-    reason:            str
+    name: str
+    passed: bool
+    score: float  # 0-100; higher = more robust
+    pnl_delta: float
+    max_dd_delta: float
+    reason: str
 
     def as_dict(self) -> dict:
         return {
-            "name":         self.name,
-            "passed":       self.passed,
-            "score":        round(self.score, 2),
-            "pnl_delta":    round(self.pnl_delta, 2),
+            "name": self.name,
+            "passed": self.passed,
+            "score": round(self.score, 2),
+            "pnl_delta": round(self.pnl_delta, 2),
             "max_dd_delta": round(self.max_dd_delta, 2),
-            "reason":       self.reason,
+            "reason": self.reason,
         }
 
 
@@ -79,16 +80,18 @@ class StressReport:
     def as_dict(self) -> dict:
         return {
             "robustness_score": round(self.robustness_score, 2),
-            "scenarios":        [s.as_dict() for s in self.scenarios],
+            "scenarios": [s.as_dict() for s in self.scenarios],
         }
 
     def human(self) -> str:
         lines = [f"Robustness score: {self.robustness_score:.1f}/100"]
         for s in self.scenarios:
             tag = "PASS" if s.passed else "FAIL"
-            lines.append(f"  [{tag}] {s.name:24s}  score={s.score:5.1f}  "
-                         f"dPnL={s.pnl_delta:+7.2f}  dDD={s.max_dd_delta:+6.2f}  "
-                         f"- {s.reason}")
+            lines.append(
+                f"  [{tag}] {s.name:24s}  score={s.score:5.1f}  "
+                f"dPnL={s.pnl_delta:+7.2f}  dDD={s.max_dd_delta:+6.2f}  "
+                f"- {s.reason}"
+            )
         return "\n".join(lines)
 
 
@@ -119,9 +122,14 @@ def flash_crash(pnls: List[float], shock: float = -100.0) -> ScenarioResult:
     # Pass if still profitable AND shock absorbed ≤ 2× loss-cap.
     passed = after["total_pnl"] > 0 and abs(dd_delta) < abs(shock) * 2
     score = max(0.0, 100.0 * (after["total_pnl"] / max(1e-9, base["total_pnl"])))
-    return ScenarioResult("flash_crash", passed, min(100.0, score),
-                          delta, dd_delta,
-                          f"-${abs(shock):.0f} shock; new DD={after['max_dd']:.2f}")
+    return ScenarioResult(
+        "flash_crash",
+        passed,
+        min(100.0, score),
+        delta,
+        dd_delta,
+        f"-${abs(shock):.0f} shock; new DD={after['max_dd']:.2f}",
+    )
 
 
 def order_shuffle(pnls: List[float], iters: int = 1000, seed: int = 42) -> ScenarioResult:
@@ -142,15 +150,14 @@ def order_shuffle(pnls: List[float], iters: int = 1000, seed: int = 42) -> Scena
     depend = abs(dd_delta) / max(1e-9, abs(base["max_dd"]))
     passed = depend < 1.5
     score = max(0.0, 100.0 * (1.0 - min(1.0, depend / 2.0)))
-    return ScenarioResult("order_shuffle", passed, score,
-                          0.0, dd_delta,
-                          f"worst DD over {iters} shuffles = {worst:.2f}")
+    return ScenarioResult(
+        "order_shuffle", passed, score, 0.0, dd_delta, f"worst DD over {iters} shuffles = {worst:.2f}"
+    )
 
 
-def spread_spike(pnls: List[float], spike_multiplier: float = 10.0,
-                 n_affected: int = 5) -> ScenarioResult:
+def spread_spike(pnls: List[float], spike_multiplier: float = 10.0, n_affected: int = 5) -> ScenarioResult:
     """Subtract `n_affected` trades' worth of 10× spread cost."""
-    extra_cost_per_trade = 1.50 * (spike_multiplier - 1.0)   # ~$1.50 base spread
+    extra_cost_per_trade = 1.50 * (spike_multiplier - 1.0)  # ~$1.50 base spread
     adj = list(pnls)
     for i in range(min(n_affected, len(adj))):
         adj[i] -= extra_cost_per_trade
@@ -159,10 +166,10 @@ def spread_spike(pnls: List[float], spike_multiplier: float = 10.0,
     delta = after["total_pnl"] - before["total_pnl"]
     dd_delta = after["max_dd"] - before["max_dd"]
     passed = after["total_pnl"] > before["total_pnl"] * 0.5
-    score = max(0.0, 100.0 * (after["total_pnl"] /
-                              max(1e-9, before["total_pnl"])))
-    return ScenarioResult("spread_spike", passed, min(100.0, score), delta, dd_delta,
-                          f"{spike_multiplier}× spread × {n_affected} trades")
+    score = max(0.0, 100.0 * (after["total_pnl"] / max(1e-9, before["total_pnl"])))
+    return ScenarioResult(
+        "spread_spike", passed, min(100.0, score), delta, dd_delta, f"{spike_multiplier}× spread × {n_affected} trades"
+    )
 
 
 def mt5_outage(pnls: List[float], missed_fraction: float = 0.15) -> ScenarioResult:
@@ -175,14 +182,13 @@ def mt5_outage(pnls: List[float], missed_fraction: float = 0.15) -> ScenarioResu
     delta = after["total_pnl"] - before["total_pnl"]
     dd_delta = after["max_dd"] - before["max_dd"]
     passed = after["total_pnl"] > 0
-    score = max(0.0, 100.0 * (after["total_pnl"] /
-                              max(1e-9, before["total_pnl"])))
-    return ScenarioResult("mt5_outage", passed, min(100.0, score), delta, dd_delta,
-                          f"{int(missed_fraction*100)}% of trades dropped")
+    score = max(0.0, 100.0 * (after["total_pnl"] / max(1e-9, before["total_pnl"])))
+    return ScenarioResult(
+        "mt5_outage", passed, min(100.0, score), delta, dd_delta, f"{int(missed_fraction * 100)}% of trades dropped"
+    )
 
 
-def gap_risk(pnls: List[float], gap_size: float = -50.0,
-             freq: int = 10) -> ScenarioResult:
+def gap_risk(pnls: List[float], gap_size: float = -50.0, freq: int = 10) -> ScenarioResult:
     """Inject overnight gap losses every `freq` trades."""
     adj = list(pnls)
     for i in range(freq, len(adj), freq):
@@ -192,14 +198,13 @@ def gap_risk(pnls: List[float], gap_size: float = -50.0,
     delta = after["total_pnl"] - before["total_pnl"]
     dd_delta = after["max_dd"] - before["max_dd"]
     passed = after["total_pnl"] > 0
-    score = max(0.0, 100.0 * (after["total_pnl"] /
-                              max(1e-9, before["total_pnl"])))
-    return ScenarioResult("gap_risk", passed, min(100.0, score), delta, dd_delta,
-                          f"${gap_size} gap every {freq}th trade")
+    score = max(0.0, 100.0 * (after["total_pnl"] / max(1e-9, before["total_pnl"])))
+    return ScenarioResult(
+        "gap_risk", passed, min(100.0, score), delta, dd_delta, f"${gap_size} gap every {freq}th trade"
+    )
 
 
-def black_monday(pnls: List[float], shock_pct: float = -0.20,
-                 notional: float = 300.0) -> ScenarioResult:
+def black_monday(pnls: List[float], shock_pct: float = -0.20, notional: float = 300.0) -> ScenarioResult:
     """One Black-Monday-style -20% day on account notional."""
     shock_loss = notional * shock_pct
     shocked = list(pnls) + [shock_loss]
@@ -208,10 +213,15 @@ def black_monday(pnls: List[float], shock_pct: float = -0.20,
     delta = after["total_pnl"] - before["total_pnl"]
     dd_delta = after["max_dd"] - before["max_dd"]
     passed = after["total_pnl"] > before["total_pnl"] * 0.25
-    score = max(0.0, 100.0 * (after["total_pnl"] /
-                              max(1e-9, before["total_pnl"])))
-    return ScenarioResult("black_monday", passed, min(100.0, score), delta, dd_delta,
-                          f"{int(shock_pct*100)}% one-day shock on ${notional}")
+    score = max(0.0, 100.0 * (after["total_pnl"] / max(1e-9, before["total_pnl"])))
+    return ScenarioResult(
+        "black_monday",
+        passed,
+        min(100.0, score),
+        delta,
+        dd_delta,
+        f"{int(shock_pct * 100)}% one-day shock on ${notional}",
+    )
 
 
 # ======================================================================
@@ -233,7 +243,8 @@ def run_all(pnls: List[float]) -> StressReport:
         penalties = sum(1 for s in report.scenarios if not s.passed)
         # Penalise unpasses 20% each; floor at zero.
         report.robustness_score = max(
-            0.0, sum(scores) / len(scores) - 20.0 * penalties,
+            0.0,
+            sum(scores) / len(scores) - 20.0 * penalties,
         )
     return report
 
@@ -260,8 +271,7 @@ def _load_pnls_from_brain_memory() -> List[float]:
 
 
 def main() -> int:
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     pnls = _load_pnls_from_brain_memory()
     if not pnls:
         print("No PnL data found in logs/brain_memory.json. Run the brain first.")
@@ -281,7 +291,13 @@ if __name__ == "__main__":
 
 
 __all__ = [
-    "ScenarioResult", "StressReport",
-    "flash_crash", "order_shuffle", "spread_spike", "mt5_outage",
-    "gap_risk", "black_monday", "run_all",
+    "ScenarioResult",
+    "StressReport",
+    "flash_crash",
+    "order_shuffle",
+    "spread_spike",
+    "mt5_outage",
+    "gap_risk",
+    "black_monday",
+    "run_all",
 ]

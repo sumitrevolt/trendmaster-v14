@@ -38,6 +38,7 @@ Enable via `AB_TEST.enabled=True`. Register variants in settings:
         ],
     }
 """
+
 from __future__ import annotations
 
 import importlib
@@ -55,11 +56,10 @@ logger = logging.getLogger("ab_test")
 
 @dataclass
 class Variant:
-    name:  str
-    func:  Callable[..., Tuple[str, float]]
+    name: str
+    func: Callable[..., Tuple[str, float]]
 
-    def apply(self, symbol: str, direction: str, confidence: float,
-              features: Dict) -> Tuple[str, float]:
+    def apply(self, symbol: str, direction: str, confidence: float, features: Dict) -> Tuple[str, float]:
         try:
             return self.func(symbol, direction, confidence, features)
         except Exception as e:
@@ -69,14 +69,14 @@ class Variant:
 
 @dataclass
 class ShadowRecord:
-    ts:               int
-    symbol:           str
-    variant:          str
-    live_direction:   str
-    live_confidence:  float
+    ts: int
+    symbol: str
+    variant: str
+    live_direction: str
+    live_confidence: float
     shadow_direction: str
     shadow_confidence: float
-    diverged:         bool
+    diverged: bool
 
     def as_dict(self) -> dict:
         return self.__dict__
@@ -85,10 +85,11 @@ class ShadowRecord:
 @dataclass
 class ABTester:
     """Runs each registered variant on every tick, stores divergences."""
-    variants:  List[Variant]         = field(default_factory=list)
-    log_path:  Optional[Path]        = None
-    _records:  List[ShadowRecord]    = field(default_factory=list)
-    _lock:     Lock                  = field(default_factory=Lock)
+
+    variants: List[Variant] = field(default_factory=list)
+    log_path: Optional[Path] = None
+    _records: List[ShadowRecord] = field(default_factory=list)
+    _lock: Lock = field(default_factory=Lock)
 
     def register(self, name: str, func: Callable) -> None:
         self.variants.append(Variant(name=name, func=func))
@@ -106,14 +107,12 @@ class ABTester:
             except Exception as e:
                 logger.warning("ab_test variant '%s' import failed: %s", spec, e)
 
-    def tick(self, symbol: str, direction: str, confidence: float,
-             features: Optional[Dict] = None) -> None:
+    def tick(self, symbol: str, direction: str, confidence: float, features: Optional[Dict] = None) -> None:
         """Apply every variant; record per-variant divergences only."""
         features = features or {}
         for var in self.variants:
             shadow_dir, shadow_conf = var.apply(symbol, direction, confidence, features)
-            diverged = (shadow_dir != direction
-                        or abs(shadow_conf - confidence) > 0.01)
+            diverged = shadow_dir != direction or abs(shadow_conf - confidence) > 0.01
             rec = ShadowRecord(
                 ts=int(time.time()),
                 symbol=symbol,
@@ -142,8 +141,8 @@ class ABTester:
             sub = [r for r in recs if r.variant == var]
             div = [r for r in sub if r.diverged]
             out[var] = {
-                "total_ticks":    len(sub),
-                "diverged":       len(div),
+                "total_ticks": len(sub),
+                "diverged": len(div),
                 "divergence_pct": (100.0 * len(div) / len(sub)) if sub else 0.0,
             }
         return out
@@ -181,5 +180,4 @@ def welch_t(a: List[float], b: List[float]) -> float:
     return (ma - mb) / denom
 
 
-__all__ = ["Variant", "ShadowRecord", "ABTester",
-           "two_proportion_z", "welch_t"]
+__all__ = ["Variant", "ShadowRecord", "ABTester", "two_proportion_z", "welch_t"]

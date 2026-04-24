@@ -27,6 +27,7 @@ CLI smoke test
 
 Sends one canned message to the configured chat. Confirms creds + network.
 """
+
 from __future__ import annotations
 
 import logging
@@ -40,6 +41,7 @@ from typing import Dict, Iterable, Optional
 
 logger = logging.getLogger("telegram_notifier")
 
+
 # ─── .env loading ──────────────────────────────────────────────────────────
 # We search project root → config/.env → ai_trading_agents/.env. First hit
 # wins, but we don't override anything already set in the real env.
@@ -50,9 +52,7 @@ def _load_env() -> None:
         return
     here = Path(__file__).resolve().parent
     root = here.parent
-    for cand in (root / ".env",
-                 root / "config" / ".env",
-                 here / ".env"):
+    for cand in (root / ".env", root / "config" / ".env", here / ".env"):
         if cand.exists():
             load_dotenv(cand, override=False)
 
@@ -62,11 +62,11 @@ _load_env()
 # ─── HTTP dep ─────────────────────────────────────────────────────────────
 try:
     import requests  # type: ignore
+
     _HAS_REQ = True
 except ImportError:
     _HAS_REQ = False
-    logger.warning("`requests` not installed — Telegram notifications disabled. "
-                   "Install with: pip install requests")
+    logger.warning("`requests` not installed — Telegram notifications disabled. Install with: pip install requests")
 
 
 _TG_API = "https://api.telegram.org/bot{token}/{method}"
@@ -78,14 +78,16 @@ class TelegramNotifier:
     — all failures are swallowed and logged.
     """
 
-    def __init__(self,
-                 token: Optional[str] = None,
-                 chat_id: Optional[str] = None,
-                 enabled: Optional[bool] = None,
-                 min_interval_s: float = 8.0,
-                 timeout_s: float = 5.0):
-        self.token   = (token   or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
-        self.chat_id = (chat_id or os.getenv("TELEGRAM_CHAT_ID",   "")).strip()
+    def __init__(
+        self,
+        token: Optional[str] = None,
+        chat_id: Optional[str] = None,
+        enabled: Optional[bool] = None,
+        min_interval_s: float = 8.0,
+        timeout_s: float = 5.0,
+    ):
+        self.token = (token or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
+        self.chat_id = (chat_id or os.getenv("TELEGRAM_CHAT_ID", "")).strip()
         if enabled is None:
             enabled = os.getenv("TELEGRAM_ENABLED", "false").strip().lower() == "true"
         self.enabled = bool(enabled and self.token and self.chat_id and _HAS_REQ)
@@ -94,18 +96,21 @@ class TelegramNotifier:
 
         # Per-symbol throttle state.
         self._lock = Lock()
-        self._last_dir: Dict[str, str]   = {}   # symbol -> last direction sent
-        self._last_ts:  Dict[str, float] = {}   # symbol -> last send wall-clock
+        self._last_dir: Dict[str, str] = {}  # symbol -> last direction sent
+        self._last_ts: Dict[str, float] = {}  # symbol -> last send wall-clock
 
         if self.enabled:
-            logger.info("Telegram notifier enabled (chat_id=%s, min_interval=%.1fs)",
-                        self.chat_id, self.min_interval_s)
+            logger.info("Telegram notifier enabled (chat_id=%s, min_interval=%.1fs)", self.chat_id, self.min_interval_s)
         else:
             why = []
-            if not _HAS_REQ:           why.append("no requests")
-            if not self.token:         why.append("no token")
-            if not self.chat_id:       why.append("no chat_id")
-            if enabled is False:       why.append("env disabled")
+            if not _HAS_REQ:
+                why.append("no requests")
+            if not self.token:
+                why.append("no token")
+            if not self.chat_id:
+                why.append("no chat_id")
+            if enabled is False:
+                why.append("env disabled")
             logger.info("Telegram notifier disabled (%s).", ", ".join(why) or "unknown")
 
     # ─── low-level send ───────────────────────────────────────────────────
@@ -124,23 +129,24 @@ class TelegramNotifier:
             r = requests.post(url, json=payload, timeout=self.timeout_s)
             if r.status_code == 200 and r.json().get("ok"):
                 return True
-            logger.warning("Telegram send failed: %s %s",
-                           r.status_code, r.text[:200])
+            logger.warning("Telegram send failed: %s %s", r.status_code, r.text[:200])
             return False
         except Exception as e:
             logger.warning("Telegram send error: %s", e)
             return False
 
     # ─── high-level: signal alert with throttling ─────────────────────────
-    def notify_signal(self,
-                      symbol: str,
-                      direction: str,
-                      confidence: float,
-                      *,
-                      model: str = "rule",
-                      agent_dir: str = "NONE",
-                      reasons: Optional[Iterable[str]] = None,
-                      force: bool = False) -> bool:
+    def notify_signal(
+        self,
+        symbol: str,
+        direction: str,
+        confidence: float,
+        *,
+        model: str = "rule",
+        agent_dir: str = "NONE",
+        reasons: Optional[Iterable[str]] = None,
+        force: bool = False,
+    ) -> bool:
         """
         Fire a Telegram alert for a signal. Throttled:
           * Skipped if direction == last sent direction for this symbol
@@ -164,20 +170,20 @@ class TelegramNotifier:
         now = time.monotonic()
         with self._lock:
             last_dir = self._last_dir.get(symbol)
-            last_ts  = self._last_ts.get(symbol, 0.0)
+            last_ts = self._last_ts.get(symbol, 0.0)
             if not force:
                 if last_dir == direction:
                     return False
                 if (now - last_ts) < self.min_interval_s:
                     return False
             self._last_dir[symbol] = direction
-            self._last_ts[symbol]  = now
+            self._last_ts[symbol] = now
 
         emoji = "📈" if direction == "BUY" else "📉" if direction == "SELL" else "⏸️"
         ts_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         lines = [
             f"<b>{emoji} {symbol} {direction}</b>",
-            f"Confidence: <b>{confidence*100:.1f}%</b>",
+            f"Confidence: <b>{confidence * 100:.1f}%</b>",
             f"Model: <code>{model}</code>  |  Agents: <code>{agent_dir}</code>",
         ]
         if reasons:
@@ -246,8 +252,9 @@ def _cli() -> int:
     if args[0] == "signal" and len(args) >= 3:
         sym, direction = args[1], args[2]
         conf = float(args[3]) if len(args) >= 4 else 0.62
-        ok = n.notify_signal(sym, direction, conf, model="cli", agent_dir=direction.upper(),
-                             reasons=["CLI smoke test"], force=True)
+        ok = n.notify_signal(
+            sym, direction, conf, model="cli", agent_dir=direction.upper(), reasons=["CLI smoke test"], force=True
+        )
         print("[OK] Signal sent." if ok else "[X] Send failed.")
         return 0 if ok else 1
 

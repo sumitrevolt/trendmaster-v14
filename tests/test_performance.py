@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.performance."""
+
 from __future__ import annotations
 
 import time
@@ -6,26 +7,35 @@ import time
 import pytest
 
 from ai_trading_agents.performance import (
-    PerfMetrics, by_symbol, by_team, calibration, compute,
-    heatmap_day_of_week, heatmap_hour_of_day, snapshot,
+    PerfMetrics,
+    by_symbol,
+    by_team,
+    calibration,
+    compute,
+    heatmap_day_of_week,
+    heatmap_hour_of_day,
+    snapshot,
 )
 
 
 def _make_trades(n=50, seed=7):
     """Deterministic synthetic trade list."""
     import random
+
     rng = random.Random(seed)
     now = int(time.time())
     trades = []
     symbols = ["XAUUSD", "EURUSD", "GBPJPY"]
     for i in range(n):
         pnl = rng.choice([-2.0, -1.0, 0.5, 1.5, 3.0, -0.5, 2.0])
-        trades.append({
-            "ts": now - (n - i) * 3600,
-            "symbol": rng.choice(symbols),
-            "pnl": pnl,
-            "r_mult": pnl,
-        })
+        trades.append(
+            {
+                "ts": now - (n - i) * 3600,
+                "symbol": rng.choice(symbols),
+                "pnl": pnl,
+                "r_mult": pnl,
+            }
+        )
     return trades
 
 
@@ -55,8 +65,10 @@ def test_by_symbol_buckets():
 
 def test_by_team():
     trades = _make_trades(60)
+
     def team(s):
         return "METALS" if s == "XAUUSD" else "FOREX"
+
     bt = by_team(trades, team)
     assert "METALS" in bt or "FOREX" in bt
 

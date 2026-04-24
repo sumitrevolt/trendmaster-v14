@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.meta_labeler."""
+
 from __future__ import annotations
 
 import os
@@ -40,7 +41,10 @@ def test_train_on_balanced_dataset():
     # Make y weakly dependent on one feature — should be learnable.
     y = (X[:, 0] + 0.2 * side > 0).astype(int)
     lab = MetaLabeler.train(
-        X, y, side, feature_order=[f"f{i}" for i in range(f)],
+        X,
+        y,
+        side,
+        feature_order=[f"f{i}" for i in range(f)],
     )
     assert lab.trained is True
     assert lab.model is not None
@@ -54,7 +58,7 @@ def test_predict_returns_bounded_scale():
     side = rng.choice([-1.0, 1.0], size=300)
     y = (X[:, 0] > 0).astype(int)
     lab = MetaLabeler.train(X, y, side, feature_order=list("abcd"))
-    feats = {"a": 5.0, "b": 0.0, "c": 0.0, "d": 0.0}   # strong positive signal
+    feats = {"a": 5.0, "b": 0.0, "c": 0.0, "d": 0.0}  # strong positive signal
     pred = lab.predict(feats, "BUY")
     assert 0.0 <= pred.p_win <= 1.0
     # Scale must respect max_scale (default 1.5).
@@ -92,8 +96,7 @@ def test_threshold_gates_acting():
     X = rng.normal(size=(100, 3))
     side = rng.choice([-1.0, 1.0], size=100)
     y = (rng.random(100) < 0.5).astype(int)  # essentially random labels
-    lab = MetaLabeler.train(X, y, side,
-                            feature_order=list("abc"), cfg=cfg)
+    lab = MetaLabeler.train(X, y, side, feature_order=list("abc"), cfg=cfg)
     # With random labels the learned p_win is near 0.5 — threshold=0.9 ⇒ act=False.
     pred = lab.predict({"a": 0.0, "b": 0.0, "c": 0.0}, "BUY")
     assert pred.act is False
@@ -103,13 +106,13 @@ def test_threshold_gates_acting():
 def test_cpcv_integration_produces_oof_metrics():
     # Run train() with the CPCV splitter from tools/cpcv.py.
     from tools.cpcv import CPCVSplit
+
     rng = np.random.default_rng(3)
     X = rng.normal(size=(200, 4))
     side = rng.choice([-1.0, 1.0], size=200)
     y = (X[:, 0] + 0.3 * side > 0).astype(int)
     cv = CPCVSplit(n_groups=5, n_test=1, embargo_bars=2)
-    lab = MetaLabeler.train(X, y, side,
-                            feature_order=list("abcd"), cv_splitter=cv)
+    lab = MetaLabeler.train(X, y, side, feature_order=list("abcd"), cv_splitter=cv)
     # AUC should be computable on the pooled OOF predictions.
     assert "auc_roc" in lab.metrics
     # Better than random-ish.

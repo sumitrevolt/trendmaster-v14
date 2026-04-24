@@ -26,6 +26,7 @@ This module provides:
 
 No external deps. Pure stdlib.
 """
+
 from __future__ import annotations
 
 import gzip
@@ -44,11 +45,11 @@ logger = logging.getLogger("ops_maintenance")
 
 @dataclass
 class MaintenanceReport:
-    ts:              int              = 0
-    rotated:         List[str]        = field(default_factory=list)
-    snapshots:       List[str]        = field(default_factory=list)
-    pruned_events:   int              = 0
-    errors:          List[str]        = field(default_factory=list)
+    ts: int = 0
+    rotated: List[str] = field(default_factory=list)
+    snapshots: List[str] = field(default_factory=list)
+    pruned_events: int = 0
+    errors: List[str] = field(default_factory=list)
 
     def as_dict(self) -> dict:
         return self.__dict__
@@ -57,11 +58,13 @@ class MaintenanceReport:
 # ======================================================================
 # Log rotation
 # ======================================================================
-def rotate_logs(log_dir: Path,
-                max_mb: float = 10.0,
-                keep_count: int = 7,
-                compress: bool = True,
-                patterns: Optional[List[str]] = None) -> List[str]:
+def rotate_logs(
+    log_dir: Path,
+    max_mb: float = 10.0,
+    keep_count: int = 7,
+    compress: bool = True,
+    patterns: Optional[List[str]] = None,
+) -> List[str]:
     """Rotate any log file > `max_mb`. Keeps `.1`, `.2`, ... up to
     `keep_count`. Older archives deleted. `.gz` suffix when compress=True.
 
@@ -124,9 +127,7 @@ def rotate_logs(log_dir: Path,
 # ======================================================================
 # State snapshots
 # ======================================================================
-def snapshot_state(source_path: Path,
-                   dest_dir: Path,
-                   keep_days: int = 14) -> Optional[str]:
+def snapshot_state(source_path: Path, dest_dir: Path, keep_days: int = 14) -> Optional[str]:
     """Copy the brain state file to dest_dir/brain_state_YYYY-MM-DD.json.
     Prune entries older than `keep_days`.
     """
@@ -153,9 +154,7 @@ def snapshot_state(source_path: Path,
     return str(dest)
 
 
-def snapshot_models(models_dir: Path,
-                    dest_dir: Path,
-                    keep_versions: int = 5) -> List[str]:
+def snapshot_models(models_dir: Path, dest_dir: Path, keep_versions: int = 5) -> List[str]:
     """Copy all ml_models/*.pkl + registry.json into a dated subfolder."""
     models_dir = Path(models_dir)
     dest_dir = Path(dest_dir)
@@ -186,9 +185,7 @@ def snapshot_models(models_dir: Path,
 # ======================================================================
 # Event log vacuum
 # ======================================================================
-def vacuum_events(events_path: Path,
-                  max_lines: int = 500_000,
-                  max_age_days: int = 60) -> int:
+def vacuum_events(events_path: Path, max_lines: int = 500_000, max_age_days: int = 60) -> int:
     """Prune the JSONL event log if too large or too old.
 
     Keeps the TAIL — most recent events — because those are the ones
@@ -240,15 +237,13 @@ def run_all(project_root: Optional[Path] = None) -> MaintenanceReport:
     except Exception as e:
         report.errors.append(f"rotate_logs: {e!r}")
     try:
-        snap = snapshot_state(root / "logs" / "brain_state.json",
-                               root / "logs" / "state_backups")
+        snap = snapshot_state(root / "logs" / "brain_state.json", root / "logs" / "state_backups")
         if snap:
             report.snapshots.append(snap)
     except Exception as e:
         report.errors.append(f"snapshot_state: {e!r}")
     try:
-        snaps = snapshot_models(root / "ai_trading_agents" / "ml_models",
-                                 root / "logs" / "model_backups")
+        snaps = snapshot_models(root / "ai_trading_agents" / "ml_models", root / "logs" / "model_backups")
         report.snapshots.extend(snaps)
     except Exception as e:
         report.errors.append(f"snapshot_models: {e!r}")
@@ -262,6 +257,9 @@ def run_all(project_root: Optional[Path] = None) -> MaintenanceReport:
 
 __all__ = [
     "MaintenanceReport",
-    "rotate_logs", "snapshot_state", "snapshot_models",
-    "vacuum_events", "run_all",
+    "rotate_logs",
+    "snapshot_state",
+    "snapshot_models",
+    "vacuum_events",
+    "run_all",
 ]

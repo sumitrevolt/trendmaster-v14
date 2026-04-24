@@ -1,14 +1,18 @@
 """Trigger manual training by sending a chat message via WebSocket."""
+
 import asyncio
 import json
 import sys
-sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 
 async def send():
     try:
         import websockets
     except ImportError:
         import subprocess
+
         subprocess.run(["pip", "install", "websockets", "--quiet"])
         import websockets
 
@@ -29,5 +33,6 @@ async def send():
             print("Timeout - done listening")
         except Exception as e:
             print(f"Done: {e}")
+
 
 asyncio.run(send())

@@ -8,6 +8,7 @@ Covers the six behaviors specified in the R11 spec:
   5. available_permit respects max_age (expiry)
   6. consume marks used; used permits don't match again
 """
+
 from __future__ import annotations
 
 import time
@@ -24,25 +25,25 @@ from ai_trading_agents.reentry_tracker import ReentryPermit, ReentryTracker
 # ---------------------------------------------------------------------------
 def _base_cfg() -> Dict[str, Any]:
     return {
-        "enabled":          True,
+        "enabled": True,
         "cooldown_minutes": 30,
-        "size_mult":        0.7,
-        "max_reentries":    1,
+        "size_mult": 0.7,
+        "max_reentries": 1,
         "require_same_direction": True,
-        "max_age_minutes":  180,
-        "alert_telegram":   False,
+        "max_age_minutes": 180,
+        "alert_telegram": False,
     }
 
 
-def _make_sl_result(deal_id: int, symbol: str = "EURUSD",
-                    pnl: float = -10.0, r_mult: float = -1.0,
-                    ts: int | None = None) -> Dict[str, Any]:
+def _make_sl_result(
+    deal_id: int, symbol: str = "EURUSD", pnl: float = -10.0, r_mult: float = -1.0, ts: int | None = None
+) -> Dict[str, Any]:
     """Build a trade_tracker-shaped recent_results entry that counts as an SL hit."""
     return {
-        "ts":      int(ts if ts is not None else time.time()),
-        "symbol":  symbol,
-        "pnl":     float(pnl),
-        "r_mult":  float(r_mult),
+        "ts": int(ts if ts is not None else time.time()),
+        "symbol": symbol,
+        "pnl": float(pnl),
+        "r_mult": float(r_mult),
         "deal_id": int(deal_id),
     }
 
@@ -85,7 +86,7 @@ def test_scan_skips_scratch_losses(state_with_buy_direction):
     state = state_with_buy_direction
     state["recent_results"] = [
         _make_sl_result(deal_id=2001, r_mult=-0.4, pnl=-4.0),  # scratch
-        _make_sl_result(deal_id=2002, r_mult=-1.0, pnl=-10.0), # real SL
+        _make_sl_result(deal_id=2002, r_mult=-1.0, pnl=-10.0),  # real SL
     ]
     minted = t.scan_for_sl_hits(state)
     assert len(minted) == 1
@@ -149,8 +150,7 @@ def test_available_permit_respects_cooldown(state_with_buy_direction):
     t.scan_for_sl_hits(state)
     assert t.available_permit("EURUSD", "BUY", now_ts=now, state=state) is None
     # After cooldown passes, permit becomes available.
-    assert t.available_permit("EURUSD", "BUY", now_ts=now + 35 * 60,
-                              state=state) is not None
+    assert t.available_permit("EURUSD", "BUY", now_ts=now + 35 * 60, state=state) is not None
 
 
 def test_available_permit_respects_max_age(state_with_buy_direction):
@@ -165,8 +165,7 @@ def test_available_permit_respects_max_age(state_with_buy_direction):
     # Within age window: available.
     assert t.available_permit("EURUSD", "BUY", now_ts=now, state=state) is not None
     # Past expiry: gone.
-    assert t.available_permit("EURUSD", "BUY", now_ts=now + 120 * 60,
-                              state=state) is None
+    assert t.available_permit("EURUSD", "BUY", now_ts=now + 120 * 60, state=state) is None
 
 
 def test_available_permit_respects_max_reentries(state_with_buy_direction):
@@ -197,7 +196,7 @@ def test_available_permit_require_same_direction(state_with_buy_direction):
     cfg["cooldown_minutes"] = 0
     t = ReentryTracker(cfg)
     now = int(time.time())
-    state = state_with_buy_direction    # stamps BUY
+    state = state_with_buy_direction  # stamps BUY
     state["recent_results"] = [_make_sl_result(deal_id=9001, ts=now - 60)]
     t.scan_for_sl_hits(state)
     # BUY signal matches — should find permit.
@@ -223,7 +222,7 @@ def test_available_permit_wrong_symbol(state_with_buy_direction):
 def test_consume_marks_used_and_blocks_reuse(state_with_buy_direction):
     cfg = _base_cfg()
     cfg["cooldown_minutes"] = 0
-    cfg["max_reentries"] = 5       # high cap so only `used` blocks the reuse
+    cfg["max_reentries"] = 5  # high cap so only `used` blocks the reuse
     t = ReentryTracker(cfg)
     now = int(time.time())
     state = state_with_buy_direction

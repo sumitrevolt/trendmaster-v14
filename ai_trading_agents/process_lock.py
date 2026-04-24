@@ -19,6 +19,7 @@ Usage
             return
         run_forever()
 """
+
 from __future__ import annotations
 
 import logging
@@ -41,16 +42,15 @@ def _pid_alive(pid: int) -> bool:
     if os.name == "nt":
         try:
             import ctypes
+
             PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
             STILL_ACTIVE = 259
-            h = ctypes.windll.kernel32.OpenProcess(
-                PROCESS_QUERY_LIMITED_INFORMATION, 0, pid)
+            h = ctypes.windll.kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid)
             if not h:
                 return False
             try:
                 exit_code = ctypes.c_ulong()
-                ok = ctypes.windll.kernel32.GetExitCodeProcess(
-                    h, ctypes.byref(exit_code))
+                ok = ctypes.windll.kernel32.GetExitCodeProcess(h, ctypes.byref(exit_code))
                 if not ok:
                     return False
                 return exit_code.value == STILL_ACTIVE
@@ -99,9 +99,10 @@ class SingleInstanceLock:
                 self.holder_pid = prior
                 self.acquired = False
                 logger.error(
-                    "Another %s instance is already running (PID=%d). "
-                    "Lock file: %s. Refusing to start a second brain.",
-                    self.name, prior, self.lock_path,
+                    "Another %s instance is already running (PID=%d). Lock file: %s. Refusing to start a second brain.",
+                    self.name,
+                    prior,
+                    self.lock_path,
                 )
                 return self
             # Stale — steal it.
@@ -116,8 +117,9 @@ class SingleInstanceLock:
             self.acquired = False
             self._fh.close()
             self._fh = None
-            logger.error("Could not acquire OS lock on %s. Another instance "
-                         "may be racing us. Refusing to start.", self.lock_path)
+            logger.error(
+                "Could not acquire OS lock on %s. Another instance may be racing us. Refusing to start.", self.lock_path
+            )
             return self
 
         self._fh.write(str(os.getpid()))
@@ -127,8 +129,7 @@ class SingleInstanceLock:
         except OSError:
             pass
         self.acquired = True
-        logger.info("Acquired %s lock (pid=%d, file=%s)",
-                    self.name, os.getpid(), self.lock_path)
+        logger.info("Acquired %s lock (pid=%d, file=%s)", self.name, os.getpid(), self.lock_path)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -160,6 +161,7 @@ class SingleInstanceLock:
         if os.name == "nt":
             try:
                 import msvcrt
+
                 # LK_NBLCK = non-blocking exclusive lock on first byte.
                 msvcrt.locking(fh.fileno(), msvcrt.LK_NBLCK, 1)
                 return True
@@ -167,6 +169,7 @@ class SingleInstanceLock:
                 return False
         try:
             import fcntl
+
             fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             return True
         except (OSError, ImportError):
@@ -176,12 +179,14 @@ class SingleInstanceLock:
         if os.name == "nt":
             try:
                 import msvcrt
+
                 msvcrt.locking(fh.fileno(), msvcrt.LK_UNLCK, 1)
             except OSError:
                 pass
             return
         try:
             import fcntl
+
             fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
         except (OSError, ImportError):
             pass

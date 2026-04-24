@@ -1,4 +1,5 @@
 """Unit tests for tools.stress_test."""
+
 from __future__ import annotations
 
 import pytest
@@ -64,6 +65,7 @@ def test_run_all_produces_report():
 
 def test_report_as_dict_serializable():
     import json
+
     report = run_all(_POSITIVE_HISTORY)
     d = report.as_dict()
     # Must be JSON-round-trippable.

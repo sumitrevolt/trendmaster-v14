@@ -17,6 +17,7 @@ re-run it in CI / locally without broker creds.
 Usage:
     python tools/backtest_profit_filters.py
 """
+
 from __future__ import annotations
 
 import sys
@@ -31,7 +32,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from ai_trading_agents.profit_filters import evaluate_all  # noqa: E402
-from ai_trading_agents.multi_agent import vote_all          # noqa: E402
+from ai_trading_agents.multi_agent import vote_all  # noqa: E402
 
 
 # ---------------------------------------------------------------------
@@ -42,48 +43,53 @@ from ai_trading_agents.multi_agent import vote_all          # noqa: E402
 # ---------------------------------------------------------------------
 def make_series(seed: int = 7, n_days: int = 60) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
-    bars_per_day = 24 * 12     # M5 = 288 bars / day
+    bars_per_day = 24 * 12  # M5 = 288 bars / day
     n = bars_per_day * n_days
-    ts = pd.date_range(datetime(2026, 1, 1, tzinfo=timezone.utc),
-                       periods=n, freq="5min")
+    ts = pd.date_range(datetime(2026, 1, 1, tzinfo=timezone.utc), periods=n, freq="5min")
 
     # Build returns block by block: 60% trend, 30% chop, 10% spike.
     out = []
     for d in range(n_days):
         roll = rng.random()
-        if roll < 0.60:                          # trend day (clean direction)
+        if roll < 0.60:  # trend day (clean direction)
             mu = rng.choice([0.05, -0.05])
             sd = 0.20
-        elif roll < 0.90:                        # chop day (zero drift, low vol)
+        elif roll < 0.90:  # chop day (zero drift, low vol)
             mu, sd = 0.0, 0.10
-        else:                                    # spike day (fat tail)
+        else:  # spike day (fat tail)
             mu, sd = 0.0, 1.20
         out.append(rng.normal(mu, sd, size=bars_per_day))
     rets = np.concatenate(out)
-    close = 1900 + np.cumsum(rets)               # gold-ish baseline
-    high  = close + rng.uniform(0.05, 0.45, size=n)
-    low   = close - rng.uniform(0.05, 0.45, size=n)
+    close = 1900 + np.cumsum(rets)  # gold-ish baseline
+    high = close + rng.uniform(0.05, 0.45, size=n)
+    low = close - rng.uniform(0.05, 0.45, size=n)
     open_ = close - rng.normal(0, 0.10, size=n)
-    vol   = rng.integers(50, 800, size=n)
+    vol = rng.integers(50, 800, size=n)
     return pd.DataFrame(
-        {"open": open_, "high": high, "low": low,
-         "close": close, "volume": vol},
+        {"open": open_, "high": high, "low": low, "close": close, "volume": vol},
         index=ts,
     )
 
 
 def resample(df: pd.DataFrame, minutes: int) -> pd.DataFrame:
-    return df.resample(f"{minutes}min").agg({
-        "open": "first", "high": "max", "low": "min",
-        "close": "last", "volume": "sum",
-    }).dropna()
+    return (
+        df.resample(f"{minutes}min")
+        .agg(
+            {
+                "open": "first",
+                "high": "max",
+                "low": "min",
+                "close": "last",
+                "volume": "sum",
+            }
+        )
+        .dropna()
+    )
 
 
 def atr14(df: pd.DataFrame, n: int = 14) -> pd.Series:
     h, l, c = df["high"], df["low"], df["close"]
-    tr = pd.concat(
-        [(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1
-    ).max(axis=1)
+    tr = pd.concat([(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
     return tr.rolling(n).mean()
 
 
@@ -94,30 +100,30 @@ def atr14(df: pd.DataFrame, n: int = 14) -> pd.Series:
 # This is the standard "fixed RR" walk-forward model used in backtesting
 # papers — simple, transparent, no curve-fitting.
 # ---------------------------------------------------------------------
-def trade_result(df5: pd.DataFrame, idx: int, direction: int,
-                 sl_atr: float = 1.0, tp_atr: float = 2.0,
-                 horizon: int = 12) -> float:
+def trade_result(
+    df5: pd.DataFrame, idx: int, direction: int, sl_atr: float = 1.0, tp_atr: float = 2.0, horizon: int = 12
+) -> float:
     if direction == 0:
         return 0.0
     if idx + horizon >= len(df5):
         return 0.0
     entry = df5["close"].iloc[idx]
-    a     = atr14(df5).iloc[idx]
+    a = atr14(df5).iloc[idx]
     if not np.isfinite(a) or a == 0:
         return 0.0
-    win_dist  = tp_atr * a
+    win_dist = tp_atr * a
     loss_dist = sl_atr * a
-    seg = df5.iloc[idx + 1: idx + 1 + horizon]
+    seg = df5.iloc[idx + 1 : idx + 1 + horizon]
     for _, row in seg.iterrows():
-        move_up   = row["high"] - entry
+        move_up = row["high"] - entry
         move_down = entry - row["low"]
         if direction > 0:
             if move_down >= loss_dist:
                 return -1.0
-            if move_up   >= win_dist:
+            if move_up >= win_dist:
                 return +tp_atr / sl_atr
         else:
-            if move_up   >= loss_dist:
+            if move_up >= loss_dist:
                 return -1.0
             if move_down >= win_dist:
                 return +tp_atr / sl_atr
@@ -127,8 +133,7 @@ def trade_result(df5: pd.DataFrame, idx: int, direction: int,
 # ---------------------------------------------------------------------
 # Run a single configuration end-to-end and emit summary stats.
 # ---------------------------------------------------------------------
-def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str,
-                 spread_jitter: bool = True) -> dict:
+def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str, spread_jitter: bool = True) -> dict:
     df30 = resample(df5, 30)
     df1h = resample(df5, 60)
     df4h = resample(df5, 240)
@@ -136,8 +141,8 @@ def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str,
     rng = np.random.default_rng(123)
     results: list[float] = []
     equity = 1000.0
-    peak   = equity
-    dd     = 0.0
+    peak = equity
+    dd = 0.0
     trades = 0
     skipped = 0
     skip_reasons: dict[str, int] = {}
@@ -149,7 +154,7 @@ def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str,
     for h1_idx, ts in enumerate(df1h.index):
         if h1_idx < 50:
             continue
-        if h1_idx % 4 != 0:                  # decide every 4h to keep runtime sane
+        if h1_idx % 4 != 0:  # decide every 4h to keep runtime sane
             continue
 
         # Roll start-of-day equity for the profit-lock gate.
@@ -160,8 +165,8 @@ def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str,
         # Resample windows up to ts for the agent vote.
         frames = {
             "M30": df30.loc[:ts].iloc[-200:],
-            "H1":  df1h.loc[:ts].iloc[-200:],
-            "H4":  df4h.loc[:ts].iloc[-200:],
+            "H1": df1h.loc[:ts].iloc[-200:],
+            "H4": df4h.loc[:ts].iloc[-200:],
         }
         if min(len(v) for v in frames.values()) < 60:
             continue
@@ -183,7 +188,7 @@ def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str,
             gate = evaluate_all(
                 spread_price=spread,
                 atr_price=cur_atr,
-                atr_series=h1_atr.iloc[max(0, h1_idx - 200): h1_idx + 1],
+                atr_series=h1_atr.iloc[max(0, h1_idx - 200) : h1_idx + 1],
                 equity_now=equity,
                 equity_start_of_day=sod_equity,
                 recent_results=results[-10:],
@@ -199,7 +204,7 @@ def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str,
 
         r = trade_result(df5, m5_idx, direction)
         # Risk one unit of equity per trade (simplified — same for both arms).
-        pnl = r * 10.0          # $10 per 1R unit
+        pnl = r * 10.0  # $10 per 1R unit
         equity += pnl
         results.append(pnl)
         trades += 1
@@ -209,29 +214,31 @@ def run_strategy(df5: pd.DataFrame, *, use_gates: bool, label: str,
     wins = sum(1 for x in results if x > 0)
     losses = sum(1 for x in results if x < 0)
     win_rate = wins / max(trades, 1) * 100.0
-    avg_r = (sum(results) / max(trades, 1)) / 10.0   # back to R units
+    avg_r = (sum(results) / max(trades, 1)) / 10.0  # back to R units
     total_r = sum(results) / 10.0
     return {
-        "label":       label,
-        "trades":      trades,
-        "skipped":     skipped,
-        "win_rate_%":  round(win_rate, 1),
-        "avg_R":       round(avg_r, 3),
-        "total_R":     round(total_r, 2),
-        "final_$":     round(equity, 2),
-        "max_dd_%":    round(dd, 2),
-        "wins":        wins,
-        "losses":      losses,
+        "label": label,
+        "trades": trades,
+        "skipped": skipped,
+        "win_rate_%": round(win_rate, 1),
+        "avg_R": round(avg_r, 3),
+        "total_R": round(total_r, 2),
+        "final_$": round(equity, 2),
+        "max_dd_%": round(dd, 2),
+        "wins": wins,
+        "losses": losses,
         "skip_reasons": skip_reasons,
     }
 
 
 def fmt_row(r: dict) -> str:
-    return (f"{r['label']:<24s} trades={r['trades']:<4d} "
-            f"skipped={r['skipped']:<4d} "
-            f"WR={r['win_rate_%']:>5.1f}% "
-            f"avgR={r['avg_R']:+.3f} totalR={r['total_R']:+7.2f} "
-            f"final=${r['final_$']:>7.2f} maxDD={r['max_dd_%']:>5.2f}%")
+    return (
+        f"{r['label']:<24s} trades={r['trades']:<4d} "
+        f"skipped={r['skipped']:<4d} "
+        f"WR={r['win_rate_%']:>5.1f}% "
+        f"avgR={r['avg_R']:+.3f} totalR={r['total_R']:+7.2f} "
+        f"final=${r['final_$']:>7.2f} maxDD={r['max_dd_%']:>5.2f}%"
+    )
 
 
 def main():
@@ -239,15 +246,16 @@ def main():
     print("  PROFIT-FILTER A/B BACKTEST  —  60 days synthetic M5 x 3 seeds (XAUUSD-like)")
     print("=" * 96)
 
-    seeds   = [7, 19, 41]
+    seeds = [7, 19, 41]
     base_runs, gated_runs = [], []
     for s in seeds:
         df5 = make_series(seed=s, n_days=60)
         b = run_strategy(df5, use_gates=False, label=f"base.s{s}")
-        g = run_strategy(df5, use_gates=True,  label=f"gate.s{s}")
+        g = run_strategy(df5, use_gates=True, label=f"gate.s{s}")
         print(f"  seed={s}: {fmt_row(b)}")
         print(f"  seed={s}: {fmt_row(g)}")
-        base_runs.append(b); gated_runs.append(g)
+        base_runs.append(b)
+        gated_runs.append(g)
 
     def avg(runs, key):
         vals = [r[key] for r in runs]
@@ -255,19 +263,19 @@ def main():
 
     def agg(runs, label):
         return {
-            "label":      label,
-            "trades":     int(avg(runs, "trades")),
-            "skipped":    int(avg(runs, "skipped")),
+            "label": label,
+            "trades": int(avg(runs, "trades")),
+            "skipped": int(avg(runs, "skipped")),
             "win_rate_%": round(avg(runs, "win_rate_%"), 1),
-            "avg_R":      round(avg(runs, "avg_R"), 3),
-            "total_R":    round(avg(runs, "total_R"), 2),
-            "final_$":    round(avg(runs, "final_$"), 2),
-            "max_dd_%":   round(avg(runs, "max_dd_%"), 2),
-            "wins":       int(avg(runs, "wins")),
-            "losses":     int(avg(runs, "losses")),
+            "avg_R": round(avg(runs, "avg_R"), 3),
+            "total_R": round(avg(runs, "total_R"), 2),
+            "final_$": round(avg(runs, "final_$"), 2),
+            "max_dd_%": round(avg(runs, "max_dd_%"), 2),
+            "wins": int(avg(runs, "wins")),
+            "losses": int(avg(runs, "losses")),
         }
 
-    base  = agg(base_runs,  "baseline (no gates)")
+    base = agg(base_runs, "baseline (no gates)")
     gated = agg(gated_runs, "v14 + profit gates")
     print(fmt_row(base))
     print(fmt_row(gated))
@@ -288,9 +296,9 @@ def main():
     print(f"   total R over period       {gated['total_R'] - base['total_R']:+.2f} R")
     print(f"   max drawdown              {gated['max_dd_%'] - base['max_dd_%']:+.2f} pp")
     print(f"   trades fired              {gated['trades'] - base['trades']:+d}")
-    if gated['avg_R'] > base['avg_R']:
+    if gated["avg_R"] > base["avg_R"]:
         print("RESULT: gated arm has HIGHER expectancy per trade.")
-    elif gated['avg_R'] == base['avg_R']:
+    elif gated["avg_R"] == base["avg_R"]:
         print("RESULT: same expectancy, fewer trades = bounded screen-time risk.")
     else:
         print("RESULT: lower expectancy on synthetic data; tune thresholds.")

@@ -27,15 +27,15 @@ try:
 except Exception as e:
     print(f"Warning: could not load .env: {e}")
 
-LOGIN    = int(os.getenv("MT5_LOGIN",    "0"))
+LOGIN = int(os.getenv("MT5_LOGIN", "0"))
 PASSWORD = os.getenv("MT5_PASSWORD", "")
-SERVER   = os.getenv("MT5_SERVER",   "OctaFX-Demo")
+SERVER = os.getenv("MT5_SERVER", "OctaFX-Demo")
 
-print(f"\n{'='*55}")
+print(f"\n{'=' * 55}")
 print(f"  MT5 DIRECT TRADE TEST")
 print(f"  Account : {LOGIN}")
 print(f"  Server  : {SERVER}")
-print(f"{'='*55}\n")
+print(f"{'=' * 55}\n")
 
 # ── Import MT5 ───────────────────────────────────────────────────────
 try:
@@ -92,11 +92,11 @@ print(f"✅  {SYMBOL} — Bid: {tick.bid} | Ask: {tick.ask} | Spread: {round(tic
 # ── Build order ───────────────────────────────────────────────────────
 print(f"\nStep 3 — Placing 0.01 lot BUY order on {SYMBOL}...")
 
-digits   = sym.digits
-price    = tick.ask
-sl       = round(price - 5.0, digits)   # SL = 5 dollars below entry
-tp       = round(price + 10.0, digits)  # TP = 10 dollars above entry
-lots     = 0.01
+digits = sym.digits
+price = tick.ask
+sl = round(price - 5.0, digits)  # SL = 5 dollars below entry
+tp = round(price + 10.0, digits)  # TP = 10 dollars above entry
+lots = 0.01
 
 # Filling mode
 fm = sym.filling_mode
@@ -108,17 +108,17 @@ else:
     filling = mt5.ORDER_FILLING_RETURN
 
 request = {
-    "action":       mt5.TRADE_ACTION_DEAL,
-    "symbol":       SYMBOL,
-    "volume":       lots,
-    "type":         mt5.ORDER_TYPE_BUY,
-    "price":        price,
-    "sl":           sl,
-    "tp":           tp,
-    "deviation":    20,
-    "magic":        234001,
-    "comment":      "TEST_TRADE",
-    "type_time":    mt5.ORDER_TIME_GTC,
+    "action": mt5.TRADE_ACTION_DEAL,
+    "symbol": SYMBOL,
+    "volume": lots,
+    "type": mt5.ORDER_TYPE_BUY,
+    "price": price,
+    "sl": sl,
+    "tp": tp,
+    "deviation": 20,
+    "magic": 234001,
+    "comment": "TEST_TRADE",
+    "type_time": mt5.ORDER_TIME_GTC,
     "type_filling": filling,
 }
 
@@ -164,4 +164,4 @@ else:
     print(f"    Hint: {hint}")
 
 mt5.shutdown()
-print(f"\n{'='*55}\n")
+print(f"\n{'=' * 55}\n")

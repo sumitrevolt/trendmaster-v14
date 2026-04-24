@@ -1,4 +1,5 @@
 """Unit tests for tools.cpcv."""
+
 from __future__ import annotations
 
 import numpy as np

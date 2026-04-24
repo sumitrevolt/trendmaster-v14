@@ -31,6 +31,7 @@ Result: 5 × 5 × 5 × 2 = 250 configs per symbol, 4,750 configs total.
 Keeps runtime under ~15 min on a 50K bars set because each backtest
 iteration is a tight numpy loop.
 """
+
 from __future__ import annotations
 
 import json
@@ -46,11 +47,25 @@ from tools.backtest_filtered import FilterConfig, backtest_1to3
 
 
 SYMBOLS = [
-    "XAUUSD", "XAGUSD",
-    "GBPJPY", "USDCAD", "USDCHF", "EURUSD", "GBPUSD", "AUDUSD",
-    "USDJPY", "NZDUSD", "EURJPY", "EURGBP", "AUDJPY", "CADJPY",
-    "BTCUSD", "ETHUSD",
-    "XTIUSD", "XBRUSD", "XNGUSD",
+    "XAUUSD",
+    "XAGUSD",
+    "GBPJPY",
+    "USDCAD",
+    "USDCHF",
+    "EURUSD",
+    "GBPUSD",
+    "AUDUSD",
+    "USDJPY",
+    "NZDUSD",
+    "EURJPY",
+    "EURGBP",
+    "AUDJPY",
+    "CADJPY",
+    "BTCUSD",
+    "ETHUSD",
+    "XTIUSD",
+    "XBRUSD",
+    "XNGUSD",
 ]
 
 SL_VALUES = [1.0, 1.5, 2.0]
@@ -64,7 +79,7 @@ def score_config(r) -> float:
         return -1e9
     if r.expectancy <= 0:
         return r.expectancy
-    return r.expectancy * (r.trades ** 0.5) * (1.0 + r.win_rate)
+    return r.expectancy * (r.trades**0.5) * (1.0 + r.win_rate)
 
 
 def optimize_symbol(csv_path: Path, symbol: str) -> Dict:
@@ -80,7 +95,7 @@ def optimize_symbol(csv_path: Path, symbol: str) -> Dict:
         return {"symbol": symbol, "error": f"only {len(df)} bars"}
 
     best_overall = None
-    best_1to3 = None          # best with tp/sl >= 2.8
+    best_1to3 = None  # best with tp/sl >= 2.8
     all_results: List = []
 
     for sl in SL_VALUES:
@@ -93,16 +108,16 @@ def optimize_symbol(csv_path: Path, symbol: str) -> Dict:
                     continue
                 s = score_config(r)
                 row = {
-                    "sl":          sl,
-                    "tp":          tp,
-                    "rr":          round(rr, 2),
-                    "adx":         adx,
-                    "trades":      r.trades,
-                    "win_rate":    round(r.win_rate, 4),
-                    "expectancy":  round(r.expectancy, 4),
-                    "gross_r":     round(r.gross_r, 2),
-                    "sharpe":      round(r.sharpe, 3),
-                    "score":       round(s, 3),
+                    "sl": sl,
+                    "tp": tp,
+                    "rr": round(rr, 2),
+                    "adx": adx,
+                    "trades": r.trades,
+                    "win_rate": round(r.win_rate, 4),
+                    "expectancy": round(r.expectancy, 4),
+                    "gross_r": round(r.gross_r, 2),
+                    "sharpe": round(r.sharpe, 3),
+                    "score": round(s, 3),
                 }
                 all_results.append(row)
                 if best_overall is None or s > best_overall["score"]:
@@ -113,11 +128,11 @@ def optimize_symbol(csv_path: Path, symbol: str) -> Dict:
                         best_1to3 = row
 
     return {
-        "symbol":        symbol,
-        "n_configs":     len(all_results),
-        "best_overall":  best_overall,
-        "best_1to3":     best_1to3,
-        "all_results":   all_results,
+        "symbol": symbol,
+        "n_configs": len(all_results),
+        "best_overall": best_overall,
+        "best_1to3": best_1to3,
+        "all_results": all_results,
     }
 
 
@@ -129,13 +144,13 @@ def main():
 
     summary = {}
     total = len(SYMBOLS)
-    print(f"Optimizing {total} symbols across "
-          f"{len(SL_VALUES)*len(TP_VALUES)*len(ADX_VALUES)} configs each...")
+    print(f"Optimizing {total} symbols across {len(SL_VALUES) * len(TP_VALUES) * len(ADX_VALUES)} configs each...")
     print()
     print(f"{'symbol':8s} {'BEST overall':55s}  {'BEST 1:3 RR':55s}")
     print("-" * 130)
     sys.stdout.flush()
     import time
+
     for idx, sym in enumerate(SYMBOLS, 1):
         csv = data_dir / f"{sym.lower()}_m5_history.csv"
         if not csv.exists():
@@ -151,14 +166,18 @@ def main():
             continue
         bo = out["best_overall"]
         b13 = out["best_1to3"] or {}
-        left = (f"SL={bo['sl']} TP={bo['tp']} ADX={bo['adx']} "
-                f"WR={bo['win_rate']*100:.1f}% "
-                f"exp={bo['expectancy']:+.3f} n={bo['trades']}")
+        left = (
+            f"SL={bo['sl']} TP={bo['tp']} ADX={bo['adx']} "
+            f"WR={bo['win_rate'] * 100:.1f}% "
+            f"exp={bo['expectancy']:+.3f} n={bo['trades']}"
+        )
         right = ""
         if b13:
-            right = (f"SL={b13['sl']} TP={b13['tp']} ADX={b13['adx']} "
-                     f"WR={b13['win_rate']*100:.1f}% "
-                     f"exp={b13['expectancy']:+.3f} n={b13['trades']}")
+            right = (
+                f"SL={b13['sl']} TP={b13['tp']} ADX={b13['adx']} "
+                f"WR={b13['win_rate'] * 100:.1f}% "
+                f"exp={b13['expectancy']:+.3f} n={b13['trades']}"
+            )
         else:
             right = "(no profitable 1:3 config)"
         print(f"{sym:8s} {left:55s}  {right:55s}   [{dt:.1f}s, {idx}/{total}]")
@@ -172,12 +191,12 @@ def main():
     # Generate per-pair settings dict.
     lines = [
         '"""Auto-generated per-symbol optimal EA/brain parameters.',
-        '',
-        'Generated by tools/optimize_per_pair.py — DO NOT EDIT BY HAND.',
-        'Re-generate after each data refresh or symbol addition.',
+        "",
+        "Generated by tools/optimize_per_pair.py — DO NOT EDIT BY HAND.",
+        "Re-generate after each data refresh or symbol addition.",
         '"""',
-        '',
-        'PAIR_PARAMS = {',
+        "",
+        "PAIR_PARAMS = {",
     ]
     for sym in SYMBOLS:
         out = summary.get(sym, {})
@@ -224,7 +243,7 @@ def main():
         if pick:
             md_lines.append(
                 f"| {sym} | {pick['sl']} | {pick['tp']} | 1:{pick['rr']} | "
-                f"{pick['adx']} | {pick['trades']} | {pick['win_rate']*100:.1f}% | "
+                f"{pick['adx']} | {pick['trades']} | {pick['win_rate'] * 100:.1f}% | "
                 f"{pick['expectancy']:+.3f} | {pick['gross_r']:+.1f} | "
                 f"{pick['sharpe']:+.2f} |"
             )

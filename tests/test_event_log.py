@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.event_log (JSONL append-only)."""
+
 from __future__ import annotations
 
 import json
@@ -10,10 +11,8 @@ from ai_trading_agents.event_log import Event, EventLog
 
 def test_append_and_read_roundtrip(tmp_path):
     log = EventLog(path=tmp_path / "evt.jsonl", flush_every_s=0)
-    log.append(kind="signal", symbol="EURUSD",
-               payload={"direction": "BUY", "conf": 0.72})
-    log.append(kind="fill", symbol="EURUSD",
-               payload={"price": 1.1003, "lots": 0.01})
+    log.append(kind="signal", symbol="EURUSD", payload={"direction": "BUY", "conf": 0.72})
+    log.append(kind="fill", symbol="EURUSD", payload={"price": 1.1003, "lots": 0.01})
     log.flush()
     # Read back via helper.
     rows = log.read_since(0)
@@ -25,7 +24,7 @@ def test_append_and_read_roundtrip(tmp_path):
 def test_kind_filter_applies(tmp_path):
     log = EventLog(path=tmp_path / "evt.jsonl", flush_every_s=0)
     log.append("signal", "X", {"a": 1})
-    log.append("fill",   "X", {"b": 2})
+    log.append("fill", "X", {"b": 2})
     log.append("signal", "X", {"a": 3})
     log.flush()
     only_signals = log.read_since(0, kinds=["signal"])
@@ -42,8 +41,7 @@ def test_since_ts_filter(tmp_path):
 
 
 def test_buffered_writes_eventually_flush(tmp_path):
-    log = EventLog(path=tmp_path / "evt.jsonl",
-                   buffer_max=3, flush_every_s=0)
+    log = EventLog(path=tmp_path / "evt.jsonl", buffer_max=3, flush_every_s=0)
     for i in range(10):
         log.append("signal", "X", {"n": i})
     log.flush()
@@ -52,8 +50,7 @@ def test_buffered_writes_eventually_flush(tmp_path):
 
 
 def test_event_line_is_valid_json():
-    ev = Event(ts=123, kind="signal", symbol="X",
-               payload={"a": 1}, corr_id="c1")
+    ev = Event(ts=123, kind="signal", symbol="X", payload={"a": 1}, corr_id="c1")
     line = ev.as_line()
     obj = json.loads(line)
     assert obj["k"] == "signal"

@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.metrics."""
+
 from __future__ import annotations
 
 import re
@@ -15,14 +16,19 @@ def _fresh_registry():
     # Re-bind the pre-declared handles so imports inside tests still
     # point at the fresh registry.
     m.tick_latency = m._REGISTRY.histogram(
-        "trendmaster_tick_latency_seconds", "test", labelnames=("symbol",),
+        "trendmaster_tick_latency_seconds",
+        "test",
+        labelnames=("symbol",),
     )
     m.signal_writes = m._REGISTRY.counter(
-        "trendmaster_signal_writes_total", "test",
+        "trendmaster_signal_writes_total",
+        "test",
         labelnames=("symbol", "direction"),
     )
     m.veto_total = m._REGISTRY.counter(
-        "trendmaster_veto_total", "test", labelnames=("symbol", "reason"),
+        "trendmaster_veto_total",
+        "test",
+        labelnames=("symbol", "reason"),
     )
 
 
@@ -40,9 +46,9 @@ def test_counter_increments():
     assert "trendmaster_signal_writes_total" in text
     # XAUUSD-BUY should be 3, XAUUSD-SELL should be 1.
     buy_line = [
-        l for l in text.splitlines()
-        if "trendmaster_signal_writes_total" in l
-        and 'symbol="XAUUSD"' in l and 'direction="BUY"' in l
+        l
+        for l in text.splitlines()
+        if "trendmaster_signal_writes_total" in l and 'symbol="XAUUSD"' in l and 'direction="BUY"' in l
     ]
     assert len(buy_line) == 1
     assert buy_line[0].endswith(" 3")
@@ -57,10 +63,7 @@ def test_histogram_emits_buckets_sum_count():
     assert "trendmaster_tick_latency_seconds_sum" in text
     assert "trendmaster_tick_latency_seconds_count" in text
     # Count matches observations.
-    count_line = [
-        l for l in text.splitlines()
-        if l.startswith("trendmaster_tick_latency_seconds_count")
-    ]
+    count_line = [l for l in text.splitlines() if l.startswith("trendmaster_tick_latency_seconds_count")]
     assert any(l.endswith(" 4") for l in count_line)
 
 
@@ -75,7 +78,7 @@ def test_label_escaping():
     text = m.render_text()
     # The rendered line must be a valid Prometheus label value
     # (quotes escaped as \").
-    assert r'\"review\"' in text
+    assert r"\"review\"" in text
 
 
 def test_render_is_deterministic_shape():
@@ -84,9 +87,10 @@ def test_render_is_deterministic_shape():
     # HELP/TYPE/metric triples appear for every declared metric.
     hits = re.findall(
         r"^# HELP\s+(\S+)\s+.*\n# TYPE\s+\1\s+(counter|gauge|histogram)",
-        text, flags=re.MULTILINE,
+        text,
+        flags=re.MULTILINE,
     )
-    assert len(hits) >= 2    # at least uptime + signal_writes
+    assert len(hits) >= 2  # at least uptime + signal_writes
 
 
 def test_nan_inf_ignored_in_histogram():
@@ -94,6 +98,5 @@ def test_nan_inf_ignored_in_histogram():
     m.tick_latency.labels(symbol="XAUUSD").observe(float("inf"))
     m.tick_latency.labels(symbol="XAUUSD").observe(0.05)
     text = m.render_text()
-    lines = [l for l in text.splitlines()
-             if l.startswith("trendmaster_tick_latency_seconds_count")]
+    lines = [l for l in text.splitlines() if l.startswith("trendmaster_tick_latency_seconds_count")]
     assert any(l.endswith(" 1") for l in lines)

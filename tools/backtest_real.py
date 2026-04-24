@@ -13,6 +13,7 @@ live tick/ATR context and are listed as "cannot-backtest".
 Only stdlib.  Run from project root:
     python3 tools/backtest_real.py
 """
+
 from __future__ import annotations
 
 import json
@@ -193,25 +194,24 @@ def fmt(v: float, pct: bool = False) -> str:
     if v == float("inf"):
         return "inf"
     if pct:
-        return f"{v*100:.2f}%"
+        return f"{v * 100:.2f}%"
     return f"{v:.4f}" if abs(v) < 10 else f"{v:.2f}"
 
 
-def render_report(baseline: Dict[str, Any], gated: Dict[str, Any],
-                  n_trades_source: int, n_events: int) -> str:
+def render_report(baseline: Dict[str, Any], gated: Dict[str, Any], n_trades_source: int, n_events: int) -> str:
     rows = [
-        ("total_trades",           str(baseline["total_trades"]),             str(gated["total_trades"])),
-        ("wins",                   str(baseline["wins"]),                     str(gated["wins"])),
-        ("losses",                 str(baseline["losses"]),                   str(gated["losses"])),
-        ("win_rate",               fmt(baseline["win_rate"], pct=True),       fmt(gated["win_rate"], pct=True)),
-        ("avg_win ($)",            fmt(baseline["avg_win"]),                  fmt(gated["avg_win"])),
-        ("avg_loss ($)",           fmt(baseline["avg_loss"]),                 fmt(gated["avg_loss"])),
+        ("total_trades", str(baseline["total_trades"]), str(gated["total_trades"])),
+        ("wins", str(baseline["wins"]), str(gated["wins"])),
+        ("losses", str(baseline["losses"]), str(gated["losses"])),
+        ("win_rate", fmt(baseline["win_rate"], pct=True), fmt(gated["win_rate"], pct=True)),
+        ("avg_win ($)", fmt(baseline["avg_win"]), fmt(gated["avg_win"])),
+        ("avg_loss ($)", fmt(baseline["avg_loss"]), fmt(gated["avg_loss"])),
         ("expectancy / trade ($)", fmt(baseline["expectancy_per_trade_usd"]), fmt(gated["expectancy_per_trade_usd"])),
-        ("expectancy / trade (R)", fmt(baseline["expectancy_per_trade_R"]),   fmt(gated["expectancy_per_trade_R"])),
-        ("total_pnl ($)",          fmt(baseline["total_pnl_usd"]),            fmt(gated["total_pnl_usd"])),
-        ("max_drawdown ($)",       fmt(baseline["max_drawdown_usd"]),         fmt(gated["max_drawdown_usd"])),
-        ("profit_factor",          fmt(baseline["profit_factor"]),            fmt(gated["profit_factor"])),
-        ("sharpe / trade",         fmt(baseline["sharpe_per_trade"]),         fmt(gated["sharpe_per_trade"])),
+        ("expectancy / trade (R)", fmt(baseline["expectancy_per_trade_R"]), fmt(gated["expectancy_per_trade_R"])),
+        ("total_pnl ($)", fmt(baseline["total_pnl_usd"]), fmt(gated["total_pnl_usd"])),
+        ("max_drawdown ($)", fmt(baseline["max_drawdown_usd"]), fmt(gated["max_drawdown_usd"])),
+        ("profit_factor", fmt(baseline["profit_factor"]), fmt(gated["profit_factor"])),
+        ("sharpe / trade", fmt(baseline["sharpe_per_trade"]), fmt(gated["sharpe_per_trade"])),
     ]
     lines = [
         "# TrendMaster v14 - Real-Data Backtest",
@@ -228,9 +228,13 @@ def render_report(baseline: Dict[str, Any], gated: Dict[str, Any],
     for name, a, b in rows:
         lines.append(f"| {name} | {a} | {b} |")
 
-    lines += ["", "## Cost breakdown per symbol", "",
-              "| symbol | arm | trades | total_cost_usd | per_trade_usd |",
-              "| --- | --- | ---: | ---: | ---: |"]
+    lines += [
+        "",
+        "## Cost breakdown per symbol",
+        "",
+        "| symbol | arm | trades | total_cost_usd | per_trade_usd |",
+        "| --- | --- | ---: | ---: | ---: |",
+    ]
     for arm in (baseline, gated):
         for sym in sorted(arm["trades_by_symbol"].keys()):
             n = arm["trades_by_symbol"][sym]
@@ -277,9 +281,7 @@ def main() -> None:
     gated = evaluate(gated_trades, "gated")
 
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    report = render_report(baseline, gated,
-                           n_trades_source=len(trades),
-                           n_events=len(events))
+    report = render_report(baseline, gated, n_trades_source=len(trades), n_events=len(events))
     REPORT_PATH.write_text(report, encoding="utf-8")
 
     delta_r = gated["expectancy_per_trade_R"] - baseline["expectancy_per_trade_R"]

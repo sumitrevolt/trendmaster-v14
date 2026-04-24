@@ -33,6 +33,7 @@ No `structlog` dependency — pure stdlib. Adds ~90 LoC. If structlog is
 installed we do NOT override it (`get_logger()` still returns a stdlib
 logger either way) — the two co-exist.
 """
+
 from __future__ import annotations
 
 import json
@@ -83,23 +84,39 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         payload: Dict[str, Any] = {
-            "ts":     _iso_utc(record.created),
-            "level":  record.levelname,
+            "ts": _iso_utc(record.created),
+            "level": record.levelname,
             "logger": record.name,
             "module": f"{record.module}:{record.lineno}",
-            "msg":    record.getMessage(),
+            "msg": record.getMessage(),
         }
         # Pull any `extra=` fields the caller attached. stdlib logging
         # stores them as attributes on the record, flattened — we copy
         # non-reserved ones only.
         _reserved = {
-            "name", "msg", "args", "levelname", "levelno", "pathname",
-            "filename", "module", "exc_info", "exc_text", "stack_info",
-            "lineno", "funcName", "created", "msecs", "relativeCreated",
-            "thread", "threadName", "processName", "process", "message",
+            "name",
+            "msg",
+            "args",
+            "levelname",
+            "levelno",
+            "pathname",
+            "filename",
+            "module",
+            "exc_info",
+            "exc_text",
+            "stack_info",
+            "lineno",
+            "funcName",
+            "created",
+            "msecs",
+            "relativeCreated",
+            "thread",
+            "threadName",
+            "processName",
+            "process",
+            "message",
         }
-        extras = {k: v for k, v in record.__dict__.items()
-                  if k not in _reserved and not k.startswith("_")}
+        extras = {k: v for k, v in record.__dict__.items() if k not in _reserved and not k.startswith("_")}
         if extras:
             payload["extra"] = extras
         ctx = current_context()
@@ -107,15 +124,13 @@ class JsonFormatter(logging.Formatter):
             payload["ctx"] = ctx
         if record.exc_info:
             payload["exc"] = self.formatException(record.exc_info)
-        return json.dumps(payload, default=_default_serializer,
-                          separators=(",", ":"), ensure_ascii=False)
+        return json.dumps(payload, default=_default_serializer, separators=(",", ":"), ensure_ascii=False)
 
 
 def _iso_utc(created: float) -> str:
     t = time.gmtime(created)
     ms = int((created - int(created)) * 1000)
-    return f"{t.tm_year:04d}-{t.tm_mon:02d}-{t.tm_mday:02d}T" \
-           f"{t.tm_hour:02d}:{t.tm_min:02d}:{t.tm_sec:02d}.{ms:03d}Z"
+    return f"{t.tm_year:04d}-{t.tm_mon:02d}-{t.tm_mday:02d}T{t.tm_hour:02d}:{t.tm_min:02d}:{t.tm_sec:02d}.{ms:03d}Z"
 
 
 def _default_serializer(obj):
@@ -162,5 +177,8 @@ def _level_from_env() -> int:
 
 
 __all__ = [
-    "JsonFormatter", "bind_context", "current_context", "configure",
+    "JsonFormatter",
+    "bind_context",
+    "current_context",
+    "configure",
 ]

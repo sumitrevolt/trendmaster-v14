@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.regime_hmm."""
+
 from __future__ import annotations
 
 import numpy as np

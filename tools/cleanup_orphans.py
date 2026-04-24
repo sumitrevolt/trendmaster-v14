@@ -42,7 +42,7 @@ def get_orphaned_positions(symbol_filter=None, max_age_hours=24):
 
     orphans = []
     now = datetime.now()
-    magic = getattr(settings, 'ORDER', {}).get('magic_number', 234000)
+    magic = getattr(settings, "ORDER", {}).get("magic_number", 234000)
     # Also match AI_SWARM_AGENT trades (magic 234001)
     allowed_magics = {magic, 234000, 234001}
 
@@ -60,21 +60,23 @@ def get_orphaned_positions(symbol_filter=None, max_age_hours=24):
         age_hours = (now - open_time).total_seconds() / 3600
 
         if age_hours > max_age_hours:
-            orphans.append({
-                'ticket': pos.ticket,
-                'symbol': pos.symbol,
-                'type': 'BUY' if pos.type == 0 else 'SELL',
-                'volume': pos.volume,
-                'open_price': pos.price_open,
-                'current_price': pos.price_current,
-                'profit': pos.profit,
-                'swap': pos.swap,
-                'open_time': open_time.strftime('%Y-%m-%d %H:%M'),
-                'age_hours': round(age_hours, 1),
-                'age_days': round(age_hours / 24, 1),
-                'magic': pos.magic,
-                'comment': pos.comment,
-            })
+            orphans.append(
+                {
+                    "ticket": pos.ticket,
+                    "symbol": pos.symbol,
+                    "type": "BUY" if pos.type == 0 else "SELL",
+                    "volume": pos.volume,
+                    "open_price": pos.price_open,
+                    "current_price": pos.price_current,
+                    "profit": pos.profit,
+                    "swap": pos.swap,
+                    "open_time": open_time.strftime("%Y-%m-%d %H:%M"),
+                    "age_hours": round(age_hours, 1),
+                    "age_days": round(age_hours / 24, 1),
+                    "magic": pos.magic,
+                    "comment": pos.comment,
+                }
+            )
 
     return orphans
 
@@ -82,7 +84,7 @@ def get_orphaned_positions(symbol_filter=None, max_age_hours=24):
 def close_position(ticket, symbol, volume, pos_type):
     """Close a specific position by ticket."""
     # Determine close action (reverse of open)
-    if pos_type == 'BUY':
+    if pos_type == "BUY":
         action = mt5.ORDER_TYPE_SELL
     else:
         action = mt5.ORDER_TYPE_BUY
@@ -97,28 +99,28 @@ def close_position(ticket, symbol, volume, pos_type):
     # OctaFX: filling_mode=1 means FOK only, filling_mode=2 means IOC, etc.
     fm = sym_info.filling_mode
     if fm == 1:
-        filling_mode = mt5.ORDER_FILLING_FOK      # Bit 0 = FOK
+        filling_mode = mt5.ORDER_FILLING_FOK  # Bit 0 = FOK
     elif fm == 2:
-        filling_mode = mt5.ORDER_FILLING_IOC       # Bit 1 = IOC
+        filling_mode = mt5.ORDER_FILLING_IOC  # Bit 1 = IOC
     elif fm & 2:
         filling_mode = mt5.ORDER_FILLING_IOC
     elif fm & 4:
         filling_mode = mt5.ORDER_FILLING_RETURN
     else:
-        filling_mode = mt5.ORDER_FILLING_FOK       # Default to FOK
+        filling_mode = mt5.ORDER_FILLING_FOK  # Default to FOK
 
     request = {
-        'action': mt5.TRADE_ACTION_DEAL,
-        'symbol': symbol,
-        'volume': volume,
-        'type': action,
-        'position': ticket,
-        'price': price,
-        'deviation': 20,
-        'magic': 234000,
-        'comment': 'orphan_cleanup',
-        'type_time': mt5.ORDER_TIME_GTC,
-        'type_filling': filling_mode,
+        "action": mt5.TRADE_ACTION_DEAL,
+        "symbol": symbol,
+        "volume": volume,
+        "type": action,
+        "position": ticket,
+        "price": price,
+        "deviation": 20,
+        "magic": 234000,
+        "comment": "orphan_cleanup",
+        "type_time": mt5.ORDER_TIME_GTC,
+        "type_filling": filling_mode,
     }
 
     result = mt5.order_send(request)
@@ -131,10 +133,10 @@ def close_position(ticket, symbol, volume, pos_type):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Close orphaned trades in MT5')
-    parser.add_argument('--close', action='store_true', help='Actually close trades (default: dry run)')
-    parser.add_argument('--symbol', type=str, default=None, help='Filter by symbol (e.g., XAUUSD)')
-    parser.add_argument('--max-age', type=int, default=24, help='Max age in hours (default: 24)')
+    parser = argparse.ArgumentParser(description="Close orphaned trades in MT5")
+    parser.add_argument("--close", action="store_true", help="Actually close trades (default: dry run)")
+    parser.add_argument("--symbol", type=str, default=None, help="Filter by symbol (e.g., XAUUSD)")
+    parser.add_argument("--max-age", type=int, default=24, help="Max age in hours (default: 24)")
     args = parser.parse_args()
 
     print("=" * 70)
@@ -167,12 +169,14 @@ def main():
     total_profit = 0
     total_swap = 0
     print(f"Found {len(orphans)} orphaned positions:\n")
-    print(f"{'Ticket':>10} {'Symbol':>8} {'Type':>5} {'Vol':>6} {'Open Price':>12} {'Current':>12} {'P&L':>10} {'Swap':>8} {'Age':>8}")
+    print(
+        f"{'Ticket':>10} {'Symbol':>8} {'Type':>5} {'Vol':>6} {'Open Price':>12} {'Current':>12} {'P&L':>10} {'Swap':>8} {'Age':>8}"
+    )
     print("-" * 95)
 
     for o in orphans:
-        total_profit += o['profit']
-        total_swap += o['swap']
+        total_profit += o["profit"]
+        total_swap += o["swap"]
         pnl_str = f"${o['profit']:.2f}"
         swap_str = f"${o['swap']:.2f}"
         print(
@@ -185,8 +189,7 @@ def main():
     print("-" * 95)
     total_pnl_str = f"${total_profit:.2f}"
     total_swap_str = f"${total_swap:.2f}"
-    print(f"{'TOTAL':>10} {'':>8} {'':>5} {'':>6} {'':>12} {'':>12} "
-          f"{total_pnl_str:>10} {total_swap_str:>8}")
+    print(f"{'TOTAL':>10} {'':>8} {'':>5} {'':>6} {'':>12} {'':>12} {total_pnl_str:>10} {total_swap_str:>8}")
     print()
 
     if not args.close:
@@ -199,7 +202,7 @@ def main():
         closed = 0
         failed = 0
         for o in orphans:
-            success, msg = close_position(o['ticket'], o['symbol'], o['volume'], o['type'])
+            success, msg = close_position(o["ticket"], o["symbol"], o["volume"], o["type"])
             if success:
                 closed += 1
                 print(f"  CLOSED: {msg}")
@@ -213,5 +216,5 @@ def main():
     mt5.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -15,6 +15,7 @@ outputs/, .venv/, and script entry-files).
 Run:
     python tools/code_health_audit.py
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -115,9 +116,7 @@ def main() -> int:
     live_qns = {f["qn"] for f in live_funcs}
 
     # TESTED_BY edges keyed by target (tested func)
-    cur.execute(
-        "SELECT source_qualified, target_qualified FROM edges WHERE kind='TESTED_BY'"
-    )
+    cur.execute("SELECT source_qualified, target_qualified FROM edges WHERE kind='TESTED_BY'")
     tested_by: dict[str, list[str]] = {}
     for src, tgt in cur.fetchall():
         # TESTED_BY: source is the test, target is the tested function
@@ -125,9 +124,7 @@ def main() -> int:
         tested_by.setdefault(tgt, []).append(src)
 
     # CALLS edges — count incoming
-    cur.execute(
-        "SELECT source_qualified, target_qualified FROM edges WHERE kind='CALLS'"
-    )
+    cur.execute("SELECT source_qualified, target_qualified FROM edges WHERE kind='CALLS'")
     in_calls: Counter[str] = Counter()
     out_calls: Counter[str] = Counter()
     for src, tgt in cur.fetchall():
@@ -135,11 +132,7 @@ def main() -> int:
         out_calls[src] += 1
 
     # 1) Untested live functions
-    untested = [
-        f
-        for f in live_funcs
-        if not tested_by.get(f["qn"]) and f["name"] not in ENTRY_POINT_NAMES
-    ]
+    untested = [f for f in live_funcs if not tested_by.get(f["qn"]) and f["name"] not in ENTRY_POINT_NAMES]
 
     # 2) Dead code candidates: live, not entry point, no incoming calls,
     #    not tested, not a method whose class is referenced elsewhere.
@@ -157,9 +150,7 @@ def main() -> int:
     hotspots = sorted(live_funcs, key=lambda f: f["loc"], reverse=True)[:20]
 
     # 4) Highest fan-in (most called)
-    fan_in = [
-        (f, in_calls.get(f["qn"], 0)) for f in live_funcs if in_calls.get(f["qn"], 0)
-    ]
+    fan_in = [(f, in_calls.get(f["qn"], 0)) for f in live_funcs if in_calls.get(f["qn"], 0)]
     fan_in.sort(key=lambda x: x[1], reverse=True)
     top_fanin = fan_in[:20]
 
@@ -167,9 +158,7 @@ def main() -> int:
     summary = {
         "total live functions": len(live_funcs),
         "untested": len(untested),
-        "tested coverage": (
-            f"{(len(live_funcs) - len(untested)) / max(1, len(live_funcs)) * 100:.1f}%"
-        ),
+        "tested coverage": (f"{(len(live_funcs) - len(untested)) / max(1, len(live_funcs)) * 100:.1f}%"),
         "dead-code candidates": len(dead),
     }
 
@@ -200,10 +189,7 @@ def main() -> int:
     lines.append("| LOC | Function | File:line |")
     lines.append("|----:|----------|-----------|")
     for f in untested_by_loc:
-        lines.append(
-            f"| {f['loc']} | `{f['name']}` | "
-            f"`{short_path(f['path'])}`:{f['start']} |"
-        )
+        lines.append(f"| {f['loc']} | `{f['name']}` | `{short_path(f['path'])}`:{f['start']} |")
     lines.append("")
 
     lines.append("## 2. Dead-code candidates")
@@ -221,9 +207,7 @@ def main() -> int:
     lines.append("| Function | File:line | LOC |")
     lines.append("|----------|-----------|----:|")
     for f in dead_sorted[:25]:
-        lines.append(
-            f"| `{f['name']}` | `{short_path(f['path'])}`:{f['start']} | {f['loc']} |"
-        )
+        lines.append(f"| `{f['name']}` | `{short_path(f['path'])}`:{f['start']} | {f['loc']} |")
     lines.append("")
 
     lines.append("## 3. Complexity hotspots (top 20 by LOC)")
@@ -238,10 +222,7 @@ def main() -> int:
     for f in hotspots:
         tested = "yes" if tested_by.get(f["qn"]) else "no"
         callers = in_calls.get(f["qn"], 0)
-        lines.append(
-            f"| {f['loc']} | `{f['name']}` | `{short_path(f['path'])}`:"
-            f"{f['start']} | {tested} | {callers} |"
-        )
+        lines.append(f"| {f['loc']} | `{f['name']}` | `{short_path(f['path'])}`:{f['start']} | {tested} | {callers} |")
     lines.append("")
 
     lines.append("## 4. Change-risk nodes (top 20 by fan-in)")
@@ -256,10 +237,7 @@ def main() -> int:
     lines.append("|-------:|----------|-----------|:-------:|")
     for f, n in top_fanin:
         tested = "yes" if tested_by.get(f["qn"]) else "no"
-        lines.append(
-            f"| {n} | `{f['name']}` | `{short_path(f['path'])}`:"
-            f"{f['start']} | {tested} |"
-        )
+        lines.append(f"| {n} | `{f['name']}` | `{short_path(f['path'])}`:{f['start']} | {tested} |")
     lines.append("")
 
     lines.append("## Methodology notes")
@@ -270,7 +248,7 @@ def main() -> int:
         "via `python-igraph`."
     )
     lines.append(
-        "- \"Live\" scope: files under `ai_trading_agents/` and `tools/`. "
+        '- "Live" scope: files under `ai_trading_agents/` and `tools/`. '
         "`archive/`, `tests/`, `outputs/`, and `.venv/` are excluded."
     )
     lines.append(

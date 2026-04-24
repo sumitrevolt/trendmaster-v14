@@ -3,14 +3,15 @@ Inject the v14 EA <expert> block into MT5's active chart profile,
 write a standalone .tpl template, and make sure common.ini has
 AutoTrading (Experts Enabled) switched on.
 """
+
 from __future__ import annotations
 import shutil, sys, re, time
 from pathlib import Path
 
 DATA_PATH = Path(r"C:\Users\Ratanshila\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075")
-CHART_FILE   = DATA_PATH / "MQL5" / "Profiles" / "Charts" / "Default" / "chart01.chr"
+CHART_FILE = DATA_PATH / "MQL5" / "Profiles" / "Charts" / "Default" / "chart01.chr"
 TEMPLATE_TGT = DATA_PATH / "MQL5" / "Profiles" / "Templates" / "TrendMaster_v14.tpl"
-COMMON_INI   = DATA_PATH / "config" / "common.ini"
+COMMON_INI = DATA_PATH / "config" / "common.ini"
 
 ROOT = Path(__file__).resolve().parent.parent
 EXPERT_BLOCK_SRC = ROOT / "tools" / "trendmaster_v14_expert_block.txt"
@@ -47,16 +48,7 @@ def inject_expert_into_chart(chart_text: str, expert_block: str) -> str:
 
 def make_standalone_tpl(expert_block: str) -> str:
     """Minimal template that re-applies just the EA on any chart."""
-    return (
-        "<chart>\n"
-        "id=1\n"
-        + expert_block + "\n"
-        + "<window>\n"
-        "height=100\n"
-        "objects=0\n"
-        "</window>\n"
-        "</chart>\n"
-    )
+    return "<chart>\nid=1\n" + expert_block + "\n" + "<window>\nheight=100\nobjects=0\n</window>\n</chart>\n"
 
 
 def ensure_autotrading(ini_text: str) -> str:
@@ -105,7 +97,11 @@ def main() -> int:
     bk = backup(CHART_FILE)
     print(f"[OK] chart backup: {bk.name}  ({bk.stat().st_size} bytes)")
 
-    raw = CHART_FILE.read_text(encoding="utf-16le") if CHART_FILE.read_bytes()[:2] == b"\xff\xfe" else CHART_FILE.read_text(encoding="ascii")
+    raw = (
+        CHART_FILE.read_text(encoding="utf-16le")
+        if CHART_FILE.read_bytes()[:2] == b"\xff\xfe"
+        else CHART_FILE.read_text(encoding="ascii")
+    )
     new = inject_expert_into_chart(raw, expert)
     # Preserve original encoding
     if CHART_FILE.read_bytes()[:2] == b"\xff\xfe":
@@ -113,8 +109,7 @@ def main() -> int:
     else:
         CHART_FILE.write_text(new, encoding="ascii")
     print(f"[OK] injected <expert> block into {CHART_FILE.name}")
-    print(f"      new size: {CHART_FILE.stat().st_size} bytes "
-          f"(was {bk.stat().st_size})")
+    print(f"      new size: {CHART_FILE.stat().st_size} bytes (was {bk.stat().st_size})")
 
     # ---- 3. common.ini — ensure Experts Enabled=1 ---------------------
     if COMMON_INI.exists():

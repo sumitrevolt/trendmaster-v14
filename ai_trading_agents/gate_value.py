@@ -34,6 +34,7 @@ Usage
     report = analyze(window_days=30)
     print(report.human())
 """
+
 from __future__ import annotations
 
 import json
@@ -49,12 +50,12 @@ logger = logging.getLogger("gate_value")
 
 @dataclass
 class GateAttribution:
-    gate:              str
-    vetoes:            int   = 0
-    saved_usd:         float = 0.0
-    cost_usd:          float = 0.0   # positive; how much the veto cost you
-    net:               float = 0.0   # saved - cost
-    avg_per_veto:      float = 0.0
+    gate: str
+    vetoes: int = 0
+    saved_usd: float = 0.0
+    cost_usd: float = 0.0  # positive; how much the veto cost you
+    net: float = 0.0  # saved - cost
+    avg_per_veto: float = 0.0
 
     def as_dict(self) -> dict:
         return self.__dict__
@@ -62,32 +63,30 @@ class GateAttribution:
 
 @dataclass
 class GateValueReport:
-    by_gate:   Dict[str, GateAttribution] = field(default_factory=dict)
-    total_vetoes:  int   = 0
-    total_saved:   float = 0.0
-    total_cost:    float = 0.0
-    window_days:   int   = 30
-    lookahead_bars: int  = 12
+    by_gate: Dict[str, GateAttribution] = field(default_factory=dict)
+    total_vetoes: int = 0
+    total_saved: float = 0.0
+    total_cost: float = 0.0
+    window_days: int = 30
+    lookahead_bars: int = 12
 
     def as_dict(self) -> dict:
         return {
-            "window_days":    self.window_days,
+            "window_days": self.window_days,
             "lookahead_bars": self.lookahead_bars,
-            "total_vetoes":   self.total_vetoes,
-            "total_saved":    round(self.total_saved, 2),
-            "total_cost":     round(self.total_cost, 2),
-            "by_gate":        {k: v.as_dict() for k, v in self.by_gate.items()},
+            "total_vetoes": self.total_vetoes,
+            "total_saved": round(self.total_saved, 2),
+            "total_cost": round(self.total_cost, 2),
+            "by_gate": {k: v.as_dict() for k, v in self.by_gate.items()},
         }
 
     def human(self) -> str:
-        lines = [f"Gate Value Report  (window={self.window_days}d, "
-                 f"lookahead={self.lookahead_bars}bars)"]
+        lines = [f"Gate Value Report  (window={self.window_days}d, lookahead={self.lookahead_bars}bars)"]
         lines.append(f"  total vetoes: {self.total_vetoes}")
         lines.append(f"  total saved : ${self.total_saved:+,.2f}")
         lines.append(f"  total cost  : ${self.total_cost:+,.2f}")
         lines.append("")
-        lines.append(f"  {'gate':20s}  {'vetoes':>7s}  {'saved $':>10s}  "
-                     f"{'cost $':>10s}  {'net $':>10s}  {'avg':>8s}")
+        lines.append(f"  {'gate':20s}  {'vetoes':>7s}  {'saved $':>10s}  {'cost $':>10s}  {'net $':>10s}  {'avg':>8s}")
         sorted_gates = sorted(self.by_gate.values(), key=lambda g: -g.net)
         for g in sorted_gates:
             lines.append(
@@ -130,11 +129,13 @@ def _proxy_pnl(features: Dict, direction: str, risk_usd: float = 1.50) -> float:
     return 0.0
 
 
-def analyze(events_path: Optional[Path] = None,
-            window_days: int = 30,
-            lookahead_bars: int = 12,
-            risk_per_trade_usd: float = 1.50,
-            assumed_win_rate: float = 0.50) -> GateValueReport:
+def analyze(
+    events_path: Optional[Path] = None,
+    window_days: int = 30,
+    lookahead_bars: int = 12,
+    risk_per_trade_usd: float = 1.50,
+    assumed_win_rate: float = 0.50,
+) -> GateValueReport:
     """Simpler attribution: each veto is scored using the recent-trades
     actual expectancy. Assumes every vetoed trade would have had the
     same expected P&L as the pool — a reasonable null hypothesis.
@@ -157,6 +158,7 @@ def analyze(events_path: Optional[Path] = None,
             state = json.loads(state_path.read_text(encoding="utf-8"))
             results = state.get("recent_results", []) or []
             from ai_trading_agents.trade_tracker import pnl_of
+
             cutoff_ts = int(time.time() - window_days * 86400)
             recent = []
             for r in results:

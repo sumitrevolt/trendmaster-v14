@@ -19,6 +19,7 @@ Usage
 Or wrap the existing .bat scripts by pointing them at `python main.py
 supervise` instead of launching the brain directly.
 """
+
 from __future__ import annotations
 
 import json
@@ -70,8 +71,8 @@ class ManagedProcess:
     name: str
     cmd: List[str]
     pid_file: Path
-    log_out:  Path
-    log_err:  Path
+    log_out: Path
+    log_err: Path
     popen: Optional[subprocess.Popen] = None
     restarts: int = 0
 
@@ -84,10 +85,7 @@ class ManagedProcess:
         self.log_out.parent.mkdir(parents=True, exist_ok=True)
         out = open(self.log_out, "ab")
         err = open(self.log_err, "ab")
-        self.popen = subprocess.Popen(self.cmd,
-                                      cwd=str(_ROOT),
-                                      stdout=out,
-                                      stderr=err)
+        self.popen = subprocess.Popen(self.cmd, cwd=str(_ROOT), stdout=out, stderr=err)
         self.pid_file.write_text(str(self.popen.pid), encoding="ascii")
         logger.info("started %s pid=%d cmd=%s", self.name, self.popen.pid, self.cmd)
 
@@ -131,8 +129,7 @@ class Supervisor:
             log_out=LOGS / "dashboard.out",
             log_err=LOGS / "dashboard.err",
         )
-        return cls(procs=[brain, dash],
-                   health_url="http://localhost:8000/healthz")
+        return cls(procs=[brain, dash], health_url="http://localhost:8000/healthz")
 
     def _backoff(self, restarts: int) -> float:
         return float(min(120, 2 ** max(1, restarts)))
@@ -150,9 +147,12 @@ class Supervisor:
 
         def _sig(_signum, _frame):
             stop["flag"] = True
+
         for s in (signal.SIGINT, signal.SIGTERM):
-            try: signal.signal(s, _sig)
-            except Exception: pass
+            try:
+                signal.signal(s, _sig)
+            except Exception:
+                pass
 
         try:
             while not stop["flag"]:
@@ -162,8 +162,7 @@ class Supervisor:
                         continue
                     wait = self._backoff(p.restarts)
                     next_n = p.restarts + 1
-                    logger.warning("process %s exited — restarting in %.1fs "
-                                   "(restart #%d)", p.name, wait, next_n)
+                    logger.warning("process %s exited — restarting in %.1fs (restart #%d)", p.name, wait, next_n)
                     # Push an alert on EVERY restart for the brain (it's the
                     # critical one). Dashboard restarts are noisy so we only
                     # alert on the brain — keeps the phone signal:noise ratio
@@ -171,10 +170,12 @@ class Supervisor:
                     if p.name == "brain":
                         _tg_alert(
                             f"TrendMaster v14 {p.name} CRASHED",
-                            (f"Process exited unexpectedly.\n"
-                             f"Restart #<code>{next_n}</code> in "
-                             f"<code>{wait:.0f}s</code>\n"
-                             f"Logs: <code>{p.log_err.name}</code>"),
+                            (
+                                f"Process exited unexpectedly.\n"
+                                f"Restart #<code>{next_n}</code> in "
+                                f"<code>{wait:.0f}s</code>\n"
+                                f"Logs: <code>{p.log_err.name}</code>"
+                            ),
                             emoji="🔴",
                         )
                     time.sleep(wait)
@@ -183,8 +184,10 @@ class Supervisor:
                     if p.name == "brain":
                         _tg_alert(
                             f"TrendMaster v14 {p.name} RESTARTED",
-                            (f"Restart #<code>{p.restarts}</code> back online "
-                             f"(pid=<code>{p.popen.pid if p.popen else '?'}</code>)"),
+                            (
+                                f"Restart #<code>{p.restarts}</code> back online "
+                                f"(pid=<code>{p.popen.pid if p.popen else '?'}</code>)"
+                            ),
                             emoji="🟡",
                         )
                 self._heartbeat()
@@ -200,20 +203,21 @@ class Supervisor:
     def _heartbeat(self) -> None:
         snap = {
             "ts": int(time.time()),
-            "procs": [{"name": p.name,
-                       "alive": p.is_alive(),
-                       "restarts": p.restarts,
-                       "pid": (p.popen.pid if p.popen else None)}
-                      for p in self.procs],
+            "procs": [
+                {
+                    "name": p.name,
+                    "alive": p.is_alive(),
+                    "restarts": p.restarts,
+                    "pid": (p.popen.pid if p.popen else None),
+                }
+                for p in self.procs
+            ],
             "health": probe_health(self.health_url),
         }
-        (LOGS / "supervisor.log").open("a", encoding="utf-8").write(
-            json.dumps(snap) + "\n"
-        )
+        (LOGS / "supervisor.log").open("a", encoding="utf-8").write(json.dumps(snap) + "\n")
 
 
-def probe_health(url: str = "http://localhost:8000/healthz",
-                 timeout: float = 2.0) -> bool:
+def probe_health(url: str = "http://localhost:8000/healthz", timeout: float = 2.0) -> bool:
     try:
         with urlopen(url, timeout=timeout) as r:
             if r.status != 200:
@@ -225,8 +229,7 @@ def probe_health(url: str = "http://localhost:8000/healthz",
 
 
 def main() -> int:
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(name)s %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
     Supervisor.default().run_forever()
     return 0
 

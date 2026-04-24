@@ -27,6 +27,7 @@ Contents
 Designed as a pure function — `generate_report(state, trades, ...)`
 returns a dict. The output-path writers and Telegram push are separate.
 """
+
 from __future__ import annotations
 
 import json
@@ -42,19 +43,18 @@ logger = logging.getLogger("daily_digest")
 
 @dataclass
 class ActionItem:
-    severity: str   # "info" | "warn" | "critical"
-    title:    str
-    detail:   str
+    severity: str  # "info" | "warn" | "critical"
+    title: str
+    detail: str
 
     def as_dict(self) -> dict:
         return asdict(self)
 
 
-def generate_report(state: Dict[str, Any],
-                    project_root: Optional[Path] = None,
-                    team_of_fn=None) -> Dict[str, Any]:
+def generate_report(state: Dict[str, Any], project_root: Optional[Path] = None, team_of_fn=None) -> Dict[str, Any]:
     """Build the full digest dict. Caller renders Markdown / sends TG."""
     from ai_trading_agents import performance as perf_mod
+
     try:
         from ai_trading_agents import portfolio_risk as pr_mod
     except Exception:
@@ -85,13 +85,13 @@ def generate_report(state: Dict[str, Any],
         try:
             det = drift_mod.get_detector("pnl")
             drift_status = {
-                "total_observations":  det.state.total_observations,
-                "window_size":         det.state.current_window_size,
-                "drift_count":         det.state.drift_count,
-                "warning_count":       det.state.warning_count,
-                "mean":                round(det.state.mean, 4),
-                "variance":            round(det.state.variance, 4),
-                "last_drift_at":       det.state.last_drift_at,
+                "total_observations": det.state.total_observations,
+                "window_size": det.state.current_window_size,
+                "drift_count": det.state.drift_count,
+                "warning_count": det.state.warning_count,
+                "mean": round(det.state.mean, 4),
+                "variance": round(det.state.variance, 4),
+                "last_drift_at": det.state.last_drift_at,
             }
         except Exception:
             pass
@@ -99,17 +99,20 @@ def generate_report(state: Dict[str, Any],
     # 4. Open positions — read from MT5 if possible.
     open_positions: List[Dict] = []
     try:
-        import MetaTrader5 as mt5   # type: ignore
+        import MetaTrader5 as mt5  # type: ignore
+
         pos = mt5.positions_get()
         if pos:
             for p in pos:
-                open_positions.append({
-                    "symbol": str(getattr(p, "symbol", "")),
-                    "type":   int(getattr(p, "type", 0)),
-                    "volume": float(getattr(p, "volume", 0.0)),
-                    "price_open": float(getattr(p, "price_open", 0.0)),
-                    "profit":     float(getattr(p, "profit", 0.0)),
-                })
+                open_positions.append(
+                    {
+                        "symbol": str(getattr(p, "symbol", "")),
+                        "type": int(getattr(p, "type", 0)),
+                        "volume": float(getattr(p, "volume", 0.0)),
+                        "price_open": float(getattr(p, "price_open", 0.0)),
+                        "profit": float(getattr(p, "profit", 0.0)),
+                    }
+                )
     except Exception:
         pass
 
@@ -117,46 +120,59 @@ def generate_report(state: Dict[str, Any],
     actions: List[ActionItem] = []
     dd_lock = int(state.get("drawdown_lockout_until", 0) or 0)
     if dd_lock > int(time.time()):
-        actions.append(ActionItem("critical", "Drawdown lockout active",
-                                   f"until {datetime.fromtimestamp(dd_lock, tz=timezone.utc).isoformat()}"))
+        actions.append(
+            ActionItem(
+                "critical",
+                "Drawdown lockout active",
+                f"until {datetime.fromtimestamp(dd_lock, tz=timezone.utc).isoformat()}",
+            )
+        )
     halted = bool(state.get("halted") or state.get("trading_paused"))
     if halted:
-        actions.append(ActionItem("warn", "Trading halted",
-                                   "/resume to re-enable"))
+        actions.append(ActionItem("warn", "Trading halted", "/resume to re-enable"))
     w30 = perf.get("windows", {}).get("30d", {})
     if w30.get("n_trades", 0) > 0 and w30.get("sharpe", 0.0) < 0:
-        actions.append(ActionItem(
-            "warn", "30d Sharpe is negative",
-            f"sharpe={w30.get('sharpe',0):.2f} — review recent strategy changes",
-        ))
+        actions.append(
+            ActionItem(
+                "warn",
+                "30d Sharpe is negative",
+                f"sharpe={w30.get('sharpe', 0):.2f} — review recent strategy changes",
+            )
+        )
     if w30.get("n_trades", 0) > 20 and w30.get("win_rate", 1.0) < 0.45:
-        actions.append(ActionItem(
-            "warn", "30d win rate below 45%",
-            f"win_rate={w30.get('win_rate',0):.1%} — consider tighter confidence floor",
-        ))
+        actions.append(
+            ActionItem(
+                "warn",
+                "30d win rate below 45%",
+                f"win_rate={w30.get('win_rate', 0):.1%} — consider tighter confidence floor",
+            )
+        )
     if drift_status.get("drift_count", 0) > 3:
-        actions.append(ActionItem(
-            "warn", "Multiple drift flags in window",
-            f"count={drift_status.get('drift_count')} — consider retraining",
-        ))
+        actions.append(
+            ActionItem(
+                "warn",
+                "Multiple drift flags in window",
+                f"count={drift_status.get('drift_count')} — consider retraining",
+            )
+        )
 
     return {
-        "date":             today_str,
-        "generated_at":     now_utc.isoformat(),
-        "performance":      perf,
-        "var_cvar":         var_snap,
-        "drift_status":     drift_status,
-        "open_positions":   open_positions,
+        "date": today_str,
+        "generated_at": now_utc.isoformat(),
+        "performance": perf,
+        "var_cvar": var_snap,
+        "drift_status": drift_status,
+        "open_positions": open_positions,
         "state_summary": {
-            "halted":               bool(state.get("halted")),
-            "trading_paused":       bool(state.get("trading_paused")),
-            "restart_count":        int(state.get("restart_count", 0)),
-            "start_of_day_equity":  float(state.get("start_of_day_equity", 0.0) or 0.0),
+            "halted": bool(state.get("halted")),
+            "trading_paused": bool(state.get("trading_paused")),
+            "restart_count": int(state.get("restart_count", 0)),
+            "start_of_day_equity": float(state.get("start_of_day_equity", 0.0) or 0.0),
             "drawdown_lockout_until": dd_lock,
             "daily_drawdown_peak_eq": float(state.get("daily_drawdown_peak_eq", 0.0) or 0.0),
-            "cooldown_until_ts":    int(state.get("cooldown_until_ts", 0) or 0),
+            "cooldown_until_ts": int(state.get("cooldown_until_ts", 0) or 0),
         },
-        "action_items":     [a.as_dict() for a in actions],
+        "action_items": [a.as_dict() for a in actions],
     }
 
 
@@ -177,13 +193,13 @@ def to_markdown(digest: Dict[str, Any]) -> str:
     for w in ("7d", "30d", "90d", "all"):
         m = win.get(w, {})
         lines.append(
-            f"| {w:6s} | {m.get('n_trades',0):6d} | "
-            f"{m.get('win_rate',0)*100:4.1f}% | "
-            f"{m.get('total_pnl',0):+10.2f} | "
-            f"{m.get('sharpe',0):+6.2f} | "
-            f"{m.get('sortino',0):+6.2f} | "
-            f"{m.get('max_drawdown',0):6.2f} | "
-            f"{m.get('expectancy',0):+9.3f} |"
+            f"| {w:6s} | {m.get('n_trades', 0):6d} | "
+            f"{m.get('win_rate', 0) * 100:4.1f}% | "
+            f"{m.get('total_pnl', 0):+10.2f} | "
+            f"{m.get('sharpe', 0):+6.2f} | "
+            f"{m.get('sortino', 0):+6.2f} | "
+            f"{m.get('max_drawdown', 0):6.2f} | "
+            f"{m.get('expectancy', 0):+9.3f} |"
         )
     lines.append("")
 
@@ -194,44 +210,47 @@ def to_markdown(digest: Dict[str, Any]) -> str:
         worst = items[-3:][::-1]
         lines.append("## Top 3 symbols (30d)")
         for sym, m in best:
-            lines.append(f"- **{sym}** — PnL {m.get('total_pnl',0):+.2f}, "
-                         f"n={m.get('n_trades',0)}, WR={m.get('win_rate',0)*100:.1f}%")
+            lines.append(
+                f"- **{sym}** — PnL {m.get('total_pnl', 0):+.2f}, "
+                f"n={m.get('n_trades', 0)}, WR={m.get('win_rate', 0) * 100:.1f}%"
+            )
         lines.append("")
         lines.append("## Bottom 3 symbols (30d)")
         for sym, m in worst:
-            lines.append(f"- **{sym}** — PnL {m.get('total_pnl',0):+.2f}, "
-                         f"n={m.get('n_trades',0)}, WR={m.get('win_rate',0)*100:.1f}%")
+            lines.append(
+                f"- **{sym}** — PnL {m.get('total_pnl', 0):+.2f}, "
+                f"n={m.get('n_trades', 0)}, WR={m.get('win_rate', 0) * 100:.1f}%"
+            )
         lines.append("")
 
     vc = digest.get("var_cvar", {})
     if vc and "historical" in vc:
         h = vc["historical"]
         lines.append("## Portfolio risk (95%)")
-        lines.append(f"- historical VaR: **${h.get('var',0):.2f}**  CVaR: **${h.get('cvar',0):.2f}**")
+        lines.append(f"- historical VaR: **${h.get('var', 0):.2f}**  CVaR: **${h.get('cvar', 0):.2f}**")
         if "parametric" in vc:
             pa = vc["parametric"]
-            lines.append(f"- parametric VaR: ${pa.get('var',0):.2f}  CVaR: ${pa.get('cvar',0):.2f}")
+            lines.append(f"- parametric VaR: ${pa.get('var', 0):.2f}  CVaR: ${pa.get('cvar', 0):.2f}")
         if "cornish_fisher" in vc:
             cf = vc["cornish_fisher"]
-            lines.append(f"- Cornish-Fisher VaR: ${cf.get('var',0):.2f}  CVaR: ${cf.get('cvar',0):.2f}")
+            lines.append(f"- Cornish-Fisher VaR: ${cf.get('var', 0):.2f}  CVaR: ${cf.get('cvar', 0):.2f}")
         lines.append("")
 
     d = digest.get("drift_status", {})
     if d:
         lines.append("## Drift detector")
-        lines.append(f"- total obs: `{d.get('total_observations',0)}`  "
-                     f"window: `{d.get('window_size',0)}`")
-        lines.append(f"- drift count: `{d.get('drift_count',0)}`  "
-                     f"warnings: `{d.get('warning_count',0)}`")
-        lines.append(f"- mean/var: `{d.get('mean',0):.4f}` / `{d.get('variance',0):.4f}`")
+        lines.append(f"- total obs: `{d.get('total_observations', 0)}`  window: `{d.get('window_size', 0)}`")
+        lines.append(f"- drift count: `{d.get('drift_count', 0)}`  warnings: `{d.get('warning_count', 0)}`")
+        lines.append(f"- mean/var: `{d.get('mean', 0):.4f}` / `{d.get('variance', 0):.4f}`")
         lines.append("")
 
     op = digest.get("open_positions", [])
     lines.append(f"## Open positions: {len(op)}")
     for o in op[:8]:
         side = "BUY" if o.get("type") == 0 else "SELL"
-        lines.append(f"- {o.get('symbol')} {side} {o.get('volume'):.2f} "
-                     f"@ {o.get('price_open'):.5f}  PnL {o.get('profit'):+.2f}")
+        lines.append(
+            f"- {o.get('symbol')} {side} {o.get('volume'):.2f} @ {o.get('price_open'):.5f}  PnL {o.get('profit'):+.2f}"
+        )
     lines.append("")
 
     ai = digest.get("action_items", [])
@@ -256,38 +275,35 @@ def to_telegram(digest: Dict[str, Any]) -> str:
         f"<b>📋 Daily Digest — {digest.get('date')}</b>",
         "",
         "<b>30-day</b>  "
-        f"n=<code>{w30.get('n_trades',0)}</code>  "
-        f"WR=<code>{w30.get('win_rate',0)*100:.1f}%</code>  "
-        f"PnL=<code>{w30.get('total_pnl',0):+.2f}</code>  "
-        f"Sharpe=<code>{w30.get('sharpe',0):+.2f}</code>  "
-        f"MDD=<code>{w30.get('max_drawdown',0):.2f}</code>",
+        f"n=<code>{w30.get('n_trades', 0)}</code>  "
+        f"WR=<code>{w30.get('win_rate', 0) * 100:.1f}%</code>  "
+        f"PnL=<code>{w30.get('total_pnl', 0):+.2f}</code>  "
+        f"Sharpe=<code>{w30.get('sharpe', 0):+.2f}</code>  "
+        f"MDD=<code>{w30.get('max_drawdown', 0):.2f}</code>",
         "",
-        f"<b>95% VaR</b>=<code>${h.get('var',0):.2f}</code>  "
-        f"<b>CVaR</b>=<code>${h.get('cvar',0):.2f}</code>  "
-        f"<b>drift</b>=<code>{d.get('drift_count',0)}</code>",
+        f"<b>95% VaR</b>=<code>${h.get('var', 0):.2f}</code>  "
+        f"<b>CVaR</b>=<code>${h.get('cvar', 0):.2f}</code>  "
+        f"<b>drift</b>=<code>{d.get('drift_count', 0)}</code>",
     ]
     top = list(digest.get("performance", {}).get("by_symbol_30d", {}).items())
     if top:
         best = top[:3]
         worst = top[-3:][::-1]
         lines.append("")
-        lines.append("<b>Top:</b> " + ", ".join(
-            f"{s} {m.get('total_pnl',0):+.2f}" for s, m in best))
-        lines.append("<b>Bot:</b> " + ", ".join(
-            f"{s} {m.get('total_pnl',0):+.2f}" for s, m in worst))
+        lines.append("<b>Top:</b> " + ", ".join(f"{s} {m.get('total_pnl', 0):+.2f}" for s, m in best))
+        lines.append("<b>Bot:</b> " + ", ".join(f"{s} {m.get('total_pnl', 0):+.2f}" for s, m in worst))
     if ai:
         lines.append("")
         lines.append(f"<b>⚠ {len(ai)} action items:</b>")
         for a in ai[:4]:
-            lines.append(f" • [{a.get('severity','')}] {a.get('title')}")
+            lines.append(f" • [{a.get('severity', '')}] {a.get('title')}")
     return "\n".join(lines)
 
 
 # ======================================================================
 # Writers
 # ======================================================================
-def write_daily(digest: Dict[str, Any],
-                reports_dir: Path) -> Dict[str, str]:
+def write_daily(digest: Dict[str, Any], reports_dir: Path) -> Dict[str, str]:
     """Write JSON + Markdown to `reports/`. Returns paths."""
     reports_dir = Path(reports_dir)
     reports_dir.mkdir(parents=True, exist_ok=True)
@@ -303,9 +319,12 @@ def push_telegram(digest: Dict[str, Any]) -> bool:
     """Best-effort Telegram push. Never raises."""
     try:
         from ai_trading_agents.telegram_notifier import get_notifier
+
         msg = to_telegram(digest)
         get_notifier().notify_alert(
-            "TrendMaster v14 daily digest", msg, emoji="📋",
+            "TrendMaster v14 daily digest",
+            msg,
+            emoji="📋",
         )
         return True
     except Exception as e:
@@ -314,6 +333,10 @@ def push_telegram(digest: Dict[str, Any]) -> bool:
 
 
 __all__ = [
-    "ActionItem", "generate_report", "to_markdown", "to_telegram",
-    "write_daily", "push_telegram",
+    "ActionItem",
+    "generate_report",
+    "to_markdown",
+    "to_telegram",
+    "write_daily",
+    "push_telegram",
 ]

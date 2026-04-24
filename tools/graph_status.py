@@ -7,6 +7,7 @@ Reads .code-review-graph/graph.db relative to the project root and prints
 schema/build metadata, node/edge/flow counts, and highlights the archive/
 share (a common exclusion candidate).
 """
+
 from __future__ import annotations
 
 import os
@@ -36,51 +37,36 @@ def main() -> int:
         print(f"schema_version : {meta.get('schema_version')}")
         print(f"last_build_type: {meta.get('last_build_type')}")
         print(f"last_updated   : {meta.get('last_updated')}")
-        print(
-            f"postprocess    : {meta.get('last_postprocessed_at')}  "
-            f"(level={meta.get('postprocess_level')})"
-        )
+        print(f"postprocess    : {meta.get('last_postprocessed_at')}  (level={meta.get('postprocess_level')})")
         print()
 
         print("--- node counts by kind ---")
-        for kind, n in cur.execute(
-            "SELECT kind, COUNT(*) FROM nodes GROUP BY kind ORDER BY 2 DESC"
-        ):
+        for kind, n in cur.execute("SELECT kind, COUNT(*) FROM nodes GROUP BY kind ORDER BY 2 DESC"):
             print(f"  {kind:<10} {n:>6}")
 
         print("--- edge counts by kind ---")
-        for kind, n in cur.execute(
-            "SELECT kind, COUNT(*) FROM edges GROUP BY kind ORDER BY 2 DESC"
-        ):
+        for kind, n in cur.execute("SELECT kind, COUNT(*) FROM edges GROUP BY kind ORDER BY 2 DESC"):
             print(f"  {kind:<15} {n:>6}")
 
         print("--- totals ---")
         total_nodes = cur.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
         total_edges = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
         total_flows = cur.execute("SELECT COUNT(*) FROM flows").fetchone()[0]
-        total_files = cur.execute(
-            "SELECT COUNT(DISTINCT file_path) FROM nodes WHERE file_path IS NOT NULL"
-        ).fetchone()[0]
+        total_files = cur.execute("SELECT COUNT(DISTINCT file_path) FROM nodes WHERE file_path IS NOT NULL").fetchone()[
+            0
+        ]
         print(f"  files : {total_files}")
         print(f"  nodes : {total_nodes}")
         print(f"  edges : {total_edges}")
         print(f"  flows : {total_flows}")
 
-        archive_nodes = cur.execute(
-            "SELECT COUNT(*) FROM nodes WHERE file_path LIKE '%archive%'"
-        ).fetchone()[0]
+        archive_nodes = cur.execute("SELECT COUNT(*) FROM nodes WHERE file_path LIKE '%archive%'").fetchone()[0]
         if total_nodes:
             pct = archive_nodes / total_nodes * 100
             label = "OK" if archive_nodes == 0 else "WARN"
-            print(
-                f"  archive share: {archive_nodes}/{total_nodes} nodes "
-                f"({pct:.1f}%)  [{label}]"
-            )
+            print(f"  archive share: {archive_nodes}/{total_nodes} nodes ({pct:.1f}%)  [{label}]")
             if archive_nodes:
-                print(
-                    "    -> archive/** should be in .code-review-graphignore; "
-                    "run rebuild_graph.cmd to purge."
-                )
+                print("    -> archive/** should be in .code-review-graphignore; run rebuild_graph.cmd to purge.")
 
     return 0
 

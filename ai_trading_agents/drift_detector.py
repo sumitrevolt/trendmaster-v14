@@ -35,6 +35,7 @@ Design
 - No side-effects at construction — safe to import even when drift
   detection is disabled.
 """
+
 from __future__ import annotations
 
 import logging
@@ -59,9 +60,10 @@ class ADWINConfig:
     max_buckets: per-bucket cap in the exponential histogram. 5 is
         the published default; raise to 8 for noisier streams.
     """
-    delta:        float = 0.002
-    min_window:   int   = 32
-    max_buckets:  int   = 5
+
+    delta: float = 0.002
+    min_window: int = 32
+    max_buckets: int = 5
     # Two-sided: also flag if variance blows up, not just mean shift.
     flag_variance: bool = True
 
@@ -69,13 +71,14 @@ class ADWINConfig:
 @dataclass
 class ADWINState:
     """Internal state — exposed for dashboard / /drift command."""
-    total_observations:  int = 0
+
+    total_observations: int = 0
     current_window_size: int = 0
-    mean:                float = 0.0
-    variance:            float = 0.0
-    last_drift_at:       int = 0     # observation index
-    drift_count:         int = 0
-    warning_count:       int = 0
+    mean: float = 0.0
+    variance: float = 0.0
+    last_drift_at: int = 0  # observation index
+    drift_count: int = 0
+    warning_count: int = 0
 
 
 class ADWIN:
@@ -259,12 +262,14 @@ def feed_recent_results(results: List) -> Tuple[bool, bool]:
     try:
         from ai_trading_agents.trade_tracker import pnl_of
     except Exception:
+
         def pnl_of(entry):
             if isinstance(entry, (int, float)):
                 return float(entry)
             if isinstance(entry, dict):
                 return float(entry.get("pnl", 0.0) or 0.0)
             return 0.0
+
     det = get_detector("pnl")
     return det.update(pnl_of(results[-1]))
 

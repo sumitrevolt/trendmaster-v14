@@ -41,6 +41,7 @@ Usage
 
 Pure Python + numpy. No sklearn requirement — we manually check shapes.
 """
+
 from __future__ import annotations
 
 import itertools
@@ -78,11 +79,12 @@ class CPCVSplit:
         Bars to drop after each test group — prevents leakage via
         autocorrelation across the boundary. 0 to disable.
     """
-    n_groups:              int  = 6
-    n_test:                int  = 2
-    label_times:           Optional[Sequence] = None
-    label_horizon_bars:    int  = 0
-    embargo_bars:          int  = 0
+
+    n_groups: int = 6
+    n_test: int = 2
+    label_times: Optional[Sequence] = None
+    label_horizon_bars: int = 0
+    embargo_bars: int = 0
 
     def __post_init__(self):
         if self.n_groups < 2:
@@ -96,8 +98,7 @@ class CPCVSplit:
         edges = np.linspace(0, n, self.n_groups + 1, dtype=int)
         return [np.arange(edges[i], edges[i + 1]) for i in range(self.n_groups)]
 
-    def _apply_embargo(self, train: np.ndarray, test: np.ndarray,
-                        n_total: int) -> np.ndarray:
+    def _apply_embargo(self, train: np.ndarray, test: np.ndarray, n_total: int) -> np.ndarray:
         if self.embargo_bars <= 0:
             return train
         to_drop = set()
@@ -122,10 +123,7 @@ class CPCVSplit:
             test_end = float(lt[test[-1]])
             # Keep training rows whose label window ends BEFORE test_start
             # or starts AFTER test_end.
-            return np.array([
-                i for i in train
-                if float(lt[i]) < test_start or float(lt[i]) > test_end
-            ], dtype=int)
+            return np.array([i for i in train if float(lt[i]) < test_start or float(lt[i]) > test_end], dtype=int)
 
         # Fallback: drop the last `label_horizon_bars` rows of any
         # training fold that sits immediately before the test window.
@@ -133,8 +131,7 @@ class CPCVSplit:
             return train
         first_test = int(test[0])
         cutoff = first_test - self.label_horizon_bars
-        return np.array([i for i in train if i < cutoff or i >= int(test[-1])],
-                        dtype=int)
+        return np.array([i for i in train if i < cutoff or i >= int(test[-1])], dtype=int)
 
     # ──────────────────────────────────────────────────────────────────
     def split(self, X, y=None) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
@@ -166,11 +163,11 @@ class CPCVSplit:
     def get_n_splits(self, X=None, y=None, groups=None) -> int:
         # sklearn-compat hook.
         from math import comb
+
         return comb(self.n_groups, self.n_test)
 
 
-def purged_walk_forward(n: int, n_splits: int = 5,
-                        embargo: int = 10) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+def purged_walk_forward(n: int, n_splits: int = 5, embargo: int = 10) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
     """Simpler alternative — anchored walk-forward with embargo gap.
 
     For datasets too small for CPCV, a plain rolling train/test split

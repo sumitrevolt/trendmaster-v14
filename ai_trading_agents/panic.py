@@ -51,6 +51,7 @@ Not wired into the Telegram listener yet. To enable:
 The above snippet lives in the report, NOT pre-wired in the brain —
 operators must opt in explicitly.
 """
+
 from __future__ import annotations
 
 import logging
@@ -62,6 +63,7 @@ logger = logging.getLogger("panic")
 
 try:
     import MetaTrader5 as mt5  # type: ignore
+
     _HAS_MT5 = True
 except Exception:
     _HAS_MT5 = False
@@ -69,12 +71,12 @@ except Exception:
 
 @dataclass
 class FlattenResult:
-    attempted:  int = 0
-    closed:     int = 0
-    failed:     int = 0
-    dry_run:    bool = False
+    attempted: int = 0
+    closed: int = 0
+    failed: int = 0
+    dry_run: bool = False
     per_symbol: Dict[str, Dict] = field(default_factory=dict)
-    notes:      List[str]       = field(default_factory=list)
+    notes: List[str] = field(default_factory=list)
 
     @property
     def success(self) -> bool:
@@ -82,13 +84,13 @@ class FlattenResult:
 
     def as_dict(self) -> dict:
         return {
-            "attempted":  self.attempted,
-            "closed":     self.closed,
-            "failed":     self.failed,
-            "dry_run":    self.dry_run,
+            "attempted": self.attempted,
+            "closed": self.closed,
+            "failed": self.failed,
+            "dry_run": self.dry_run,
             "per_symbol": self.per_symbol,
-            "notes":      self.notes,
-            "success":    self.success,
+            "notes": self.notes,
+            "success": self.success,
         }
 
     @property
@@ -97,14 +99,13 @@ class FlattenResult:
         if self.dry_run:
             lines = [f"(dry-run) would close {self.attempted} position(s):"]
         else:
-            lines = [f"Flatten summary: closed {self.closed}/"
-                     f"{self.attempted}, {self.failed} failed."]
+            lines = [f"Flatten summary: closed {self.closed}/{self.attempted}, {self.failed} failed."]
         for sym, info in self.per_symbol.items():
             lines.append(
-                f"  • {sym}: {info.get('action','?')} "
-                f"lots={info.get('lots',0.0):.2f} "
+                f"  • {sym}: {info.get('action', '?')} "
+                f"lots={info.get('lots', 0.0):.2f} "
                 f"{'OK' if info.get('ok') else 'FAIL'} "
-                f"{info.get('note','')}"
+                f"{info.get('note', '')}"
             )
         if self.notes:
             lines.append("Notes: " + "; ".join(self.notes))
@@ -142,26 +143,23 @@ def flatten_all_positions(
         return result
 
     # Filter by magic.
-    candidates = [
-        p for p in positions
-        if magic_filter is None or int(getattr(p, "magic", 0) or 0) == int(magic_filter)
-    ]
+    candidates = [p for p in positions if magic_filter is None or int(getattr(p, "magic", 0) or 0) == int(magic_filter)]
     result.attempted = len(candidates)
 
     for p in candidates:
         sym = str(getattr(p, "symbol", "") or "")
         vol = float(getattr(p, "volume", 0.0) or 0.0)
-        ptype = int(getattr(p, "type", 0))   # 0 BUY, 1 SELL
+        ptype = int(getattr(p, "type", 0))  # 0 BUY, 1 SELL
         ticket = int(getattr(p, "ticket", 0))
         side = "sell" if ptype == 0 else "buy"
 
         # Record intent regardless of dry-run / error.
         info: Dict = {
-            "ticket":  ticket,
-            "action":  f"close-{side}",
-            "lots":    vol,
-            "ok":      None,
-            "note":    "",
+            "ticket": ticket,
+            "action": f"close-{side}",
+            "lots": vol,
+            "ok": None,
+            "note": "",
         }
 
         if dry_run:
@@ -184,17 +182,16 @@ def flatten_all_positions(
                     continue
                 price = float(tick.bid if ptype == 0 else tick.ask)
                 request = {
-                    "action":       mt5.TRADE_ACTION_DEAL,
-                    "position":     ticket,
-                    "symbol":       sym,
-                    "volume":       vol,
-                    "type":         mt5.ORDER_TYPE_SELL if ptype == 0
-                                    else mt5.ORDER_TYPE_BUY,
-                    "price":        price,
-                    "deviation":    int(deviation),
-                    "magic":        int(magic_filter) if magic_filter else 0,
-                    "comment":      str(comment)[:31],
-                    "type_time":    mt5.ORDER_TIME_GTC,
+                    "action": mt5.TRADE_ACTION_DEAL,
+                    "position": ticket,
+                    "symbol": sym,
+                    "volume": vol,
+                    "type": mt5.ORDER_TYPE_SELL if ptype == 0 else mt5.ORDER_TYPE_BUY,
+                    "price": price,
+                    "deviation": int(deviation),
+                    "magic": int(magic_filter) if magic_filter else 0,
+                    "comment": str(comment)[:31],
+                    "type_time": mt5.ORDER_TIME_GTC,
                     "type_filling": mt5.ORDER_FILLING_IOC,
                 }
                 res = mt5.order_send(request)
@@ -207,7 +204,7 @@ def flatten_all_positions(
                     ok = True
                     info["note"] = f"retcode={retcode}"
                     break
-                last_err = f"retcode={retcode} comment={getattr(res,'comment','')}"
+                last_err = f"retcode={retcode} comment={getattr(res, 'comment', '')}"
                 time.sleep(retry_backoff_s * (attempt + 1))
             except Exception as e:
                 last_err = f"{type(e).__name__}: {e}"

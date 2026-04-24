@@ -1,4 +1,5 @@
 """Unit tests for tools/model_registry.py — no lightgbm required."""
+
 from __future__ import annotations
 
 import json
@@ -11,6 +12,7 @@ from tools import model_registry as R
 
 class _FakeBooster:
     """Duck-types lightgbm.Booster.save_model for registry tests."""
+
     def __init__(self, payload: str = "mdl"):
         self.payload = payload
 
@@ -21,12 +23,11 @@ class _FakeBooster:
 @pytest.fixture(autouse=True)
 def _redirect(tmp_path, monkeypatch):
     monkeypatch.setattr(R, "MODELS", tmp_path / "models")
-    monkeypatch.setattr(R, "INDEX",  tmp_path / "models" / "index.json")
+    monkeypatch.setattr(R, "INDEX", tmp_path / "models" / "index.json")
 
 
 def test_register_and_list():
-    p = R.register_model("EURUSD", _FakeBooster("v1"),
-                         {"note": "first"})
+    p = R.register_model("EURUSD", _FakeBooster("v1"), {"note": "first"})
     assert p.exists()
     assert p.read_text() == "v1"
     vers = R.list_versions("EURUSD")

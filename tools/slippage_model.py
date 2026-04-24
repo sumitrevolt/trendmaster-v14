@@ -40,6 +40,7 @@ References
 - Interactive Brokers: Slippage in Model Backtesting whitepaper.
 - LuxAlgo: Backtesting Limitations — slippage and liquidity.
 """
+
 from __future__ import annotations
 
 import logging
@@ -55,41 +56,42 @@ logger = logging.getLogger("slippage_model")
 # `max_spread_pips` values; use those as the ceiling and roughly halve
 # for a "normal session" median.
 DEFAULT_OCTAFX_PROFILE: Dict[str, Dict[str, float]] = {
-    "XAUUSD":  {"spread_pips_median":  20.0, "spread_pips_p95": 40.0,  "commission_per_lot": 0.0},
-    "XAGUSD":  {"spread_pips_median":  15.0, "spread_pips_p95": 30.0,  "commission_per_lot": 0.0},
-
-    "EURUSD":  {"spread_pips_median":   0.8, "spread_pips_p95":  2.5,  "commission_per_lot": 0.0},
-    "GBPUSD":  {"spread_pips_median":   1.2, "spread_pips_p95":  3.5,  "commission_per_lot": 0.0},
-    "USDJPY":  {"spread_pips_median":   0.9, "spread_pips_p95":  2.8,  "commission_per_lot": 0.0},
-    "USDCAD":  {"spread_pips_median":   1.5, "spread_pips_p95":  4.0,  "commission_per_lot": 0.0},
-    "USDCHF":  {"spread_pips_median":   1.8, "spread_pips_p95":  4.5,  "commission_per_lot": 0.0},
-    "AUDUSD":  {"spread_pips_median":   1.3, "spread_pips_p95":  3.5,  "commission_per_lot": 0.0},
-    "NZDUSD":  {"spread_pips_median":   1.8, "spread_pips_p95":  4.5,  "commission_per_lot": 0.0},
-    "EURJPY":  {"spread_pips_median":   1.5, "spread_pips_p95":  4.0,  "commission_per_lot": 0.0},
-    "EURGBP":  {"spread_pips_median":   1.5, "spread_pips_p95":  4.5,  "commission_per_lot": 0.0},
-    "GBPJPY":  {"spread_pips_median":   2.8, "spread_pips_p95":  6.5,  "commission_per_lot": 0.0},
-    "AUDJPY":  {"spread_pips_median":   1.8, "spread_pips_p95":  4.5,  "commission_per_lot": 0.0},
-    "CADJPY":  {"spread_pips_median":   2.2, "spread_pips_p95":  5.5,  "commission_per_lot": 0.0},
-
-    "BTCUSD":  {"spread_pips_median":  40.0, "spread_pips_p95": 100.0, "commission_per_lot": 0.0},
-    "ETHUSD":  {"spread_pips_median":  30.0, "spread_pips_p95":  80.0, "commission_per_lot": 0.0},
-
-    "XTIUSD":  {"spread_pips_median":  25.0, "spread_pips_p95":  60.0, "commission_per_lot": 0.0},
-    "XBRUSD":  {"spread_pips_median":  25.0, "spread_pips_p95":  60.0, "commission_per_lot": 0.0},
-    "XNGUSD":  {"spread_pips_median":  35.0, "spread_pips_p95":  70.0, "commission_per_lot": 0.0},
+    "XAUUSD": {"spread_pips_median": 20.0, "spread_pips_p95": 40.0, "commission_per_lot": 0.0},
+    "XAGUSD": {"spread_pips_median": 15.0, "spread_pips_p95": 30.0, "commission_per_lot": 0.0},
+    "EURUSD": {"spread_pips_median": 0.8, "spread_pips_p95": 2.5, "commission_per_lot": 0.0},
+    "GBPUSD": {"spread_pips_median": 1.2, "spread_pips_p95": 3.5, "commission_per_lot": 0.0},
+    "USDJPY": {"spread_pips_median": 0.9, "spread_pips_p95": 2.8, "commission_per_lot": 0.0},
+    "USDCAD": {"spread_pips_median": 1.5, "spread_pips_p95": 4.0, "commission_per_lot": 0.0},
+    "USDCHF": {"spread_pips_median": 1.8, "spread_pips_p95": 4.5, "commission_per_lot": 0.0},
+    "AUDUSD": {"spread_pips_median": 1.3, "spread_pips_p95": 3.5, "commission_per_lot": 0.0},
+    "NZDUSD": {"spread_pips_median": 1.8, "spread_pips_p95": 4.5, "commission_per_lot": 0.0},
+    "EURJPY": {"spread_pips_median": 1.5, "spread_pips_p95": 4.0, "commission_per_lot": 0.0},
+    "EURGBP": {"spread_pips_median": 1.5, "spread_pips_p95": 4.5, "commission_per_lot": 0.0},
+    "GBPJPY": {"spread_pips_median": 2.8, "spread_pips_p95": 6.5, "commission_per_lot": 0.0},
+    "AUDJPY": {"spread_pips_median": 1.8, "spread_pips_p95": 4.5, "commission_per_lot": 0.0},
+    "CADJPY": {"spread_pips_median": 2.2, "spread_pips_p95": 5.5, "commission_per_lot": 0.0},
+    "BTCUSD": {"spread_pips_median": 40.0, "spread_pips_p95": 100.0, "commission_per_lot": 0.0},
+    "ETHUSD": {"spread_pips_median": 30.0, "spread_pips_p95": 80.0, "commission_per_lot": 0.0},
+    "XTIUSD": {"spread_pips_median": 25.0, "spread_pips_p95": 60.0, "commission_per_lot": 0.0},
+    "XBRUSD": {"spread_pips_median": 25.0, "spread_pips_p95": 60.0, "commission_per_lot": 0.0},
+    "XNGUSD": {"spread_pips_median": 35.0, "spread_pips_p95": 70.0, "commission_per_lot": 0.0},
 }
 
 
 # Per-symbol pip size & pip value (account=USD) — used when a broker
 # doesn't supply these at the Python level. Close enough for backtests.
 _PIP_SIZE = {
-    "XAUUSD": 0.1,  "XAGUSD": 0.01,
-    "BTCUSD": 1.0,  "ETHUSD": 0.1,
-    "XTIUSD": 0.01, "XBRUSD": 0.01, "XNGUSD": 0.001,
+    "XAUUSD": 0.1,
+    "XAGUSD": 0.01,
+    "BTCUSD": 1.0,
+    "ETHUSD": 0.1,
+    "XTIUSD": 0.01,
+    "XBRUSD": 0.01,
+    "XNGUSD": 0.001,
 }
 
-_DEFAULT_PIP = 0.0001           # forex default (major)
-_JPY_PIP    = 0.01              # JPY crosses
+_DEFAULT_PIP = 0.0001  # forex default (major)
+_JPY_PIP = 0.01  # JPY crosses
 
 
 def _pip_size(symbol: str) -> float:
@@ -105,24 +107,27 @@ def _pip_value_usd_per_lot(symbol: str, price: float) -> float:
     for backtest cost estimates; real execution should read MT5's
     `symbol_info().trade_tick_value`."""
     pip = _pip_size(symbol)
-    if symbol.startswith("XAU"):      return pip * 100.0         # gold: 100 oz/lot
-    if symbol.startswith("XAG"):      return pip * 5000.0        # silver: 5000 oz/lot
-    if symbol in ("BTCUSD", "ETHUSD"): return pip * 1.0          # crypto: per coin
+    if symbol.startswith("XAU"):
+        return pip * 100.0  # gold: 100 oz/lot
+    if symbol.startswith("XAG"):
+        return pip * 5000.0  # silver: 5000 oz/lot
+    if symbol in ("BTCUSD", "ETHUSD"):
+        return pip * 1.0  # crypto: per coin
     if symbol.endswith("JPY"):
-        return (pip / price) * 100_000.0 if price > 0 else 9.0   # ~$9.00
+        return (pip / price) * 100_000.0 if price > 0 else 9.0  # ~$9.00
     # Major forex:
     return pip * 100_000.0 / (price if price > 0 else 1.0) * (price or 1.0)
 
 
 @dataclass
 class Fill:
-    side:            str          # "buy" | "sell"
+    side: str  # "buy" | "sell"
     requested_price: float
-    filled_price:    float
-    lots:            float
+    filled_price: float
+    lots: float
     spread_cost_usd: float
-    commission_usd:  float
-    slippage_usd:    float
+    commission_usd: float
+    slippage_usd: float
 
     @property
     def total_cost_usd(self) -> float:
@@ -130,28 +135,27 @@ class Fill:
 
     def as_dict(self) -> dict:
         return {
-            "side":            self.side,
+            "side": self.side,
             "requested_price": self.requested_price,
-            "filled_price":    self.filled_price,
-            "lots":            self.lots,
+            "filled_price": self.filled_price,
+            "lots": self.lots,
             "spread_cost_usd": round(self.spread_cost_usd, 4),
-            "commission_usd":  round(self.commission_usd, 4),
-            "slippage_usd":    round(self.slippage_usd, 4),
-            "total_cost_usd":  round(self.total_cost_usd, 4),
+            "commission_usd": round(self.commission_usd, 4),
+            "slippage_usd": round(self.slippage_usd, 4),
+            "total_cost_usd": round(self.total_cost_usd, 4),
         }
 
 
 @dataclass
 class CostModel:
-    profile:       Dict[str, Dict[str, float]] = field(default_factory=lambda: dict(DEFAULT_OCTAFX_PROFILE))
-    style:         str   = "spread_linear"      # | "flat" | "sqrt_impact"
+    profile: Dict[str, Dict[str, float]] = field(default_factory=lambda: dict(DEFAULT_OCTAFX_PROFILE))
+    style: str = "spread_linear"  # | "flat" | "sqrt_impact"
     flat_cost_usd: float = 0.80
-    slippage_pips: float = 0.5                  # constant random-side slip
+    slippage_pips: float = 0.5  # constant random-side slip
     # For sqrt_impact — parameterise per symbol if desired.
-    impact_k:      float = 0.1
+    impact_k: float = 0.1
 
-    def fill(self, symbol: str, side: str, price: float, lots: float,
-             use_p95_spread: bool = False) -> Fill:
+    def fill(self, symbol: str, side: str, price: float, lots: float, use_p95_spread: bool = False) -> Fill:
         """Return a Fill with side-aware spread handling.
 
         side == "buy"  ⇒ we pay the ask  (requested + half-spread)

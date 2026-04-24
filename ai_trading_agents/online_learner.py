@@ -24,6 +24,7 @@ Enable via `ONLINE_LEARNER.enabled=True`. When a closed deal lands in
 is_win)`. Predictions (used as a secondary "freshness" score alongside
 the batch LGBM) are gated behind `ONLINE_LEARNER.predict_active=True`.
 """
+
 from __future__ import annotations
 
 import logging
@@ -41,6 +42,7 @@ try:
     from river import preprocessing as _river_pp  # type: ignore
     from river import compose as _river_compose  # type: ignore
     from river import metrics as _river_metrics  # type: ignore
+
     _HAS_RIVER = True
 except Exception:
     _HAS_RIVER = False
@@ -52,11 +54,12 @@ except Exception:
 @dataclass
 class _ManualSGDLogReg:
     """One-pass stochastic gradient logistic regression with L2."""
-    lr:           float = 0.05
-    l2:           float = 1e-4
-    _weights:     Dict[str, float] = field(default_factory=dict)
-    _bias:        float = 0.0
-    _seen:        int   = 0
+
+    lr: float = 0.05
+    l2: float = 1e-4
+    _weights: Dict[str, float] = field(default_factory=dict)
+    _bias: float = 0.0
+    _seen: int = 0
 
     def _z(self, x: Dict[str, float]) -> float:
         return self._bias + sum(self._weights.get(k, 0.0) * v for k, v in x.items())
@@ -85,11 +88,11 @@ class _ManualSGDLogReg:
 # ======================================================================
 @dataclass
 class OnlineLearner:
-    team:        str   = "DEFAULT"
-    model:       Any   = None
-    _lock:       Lock  = field(default_factory=Lock)
-    _seen:       int   = 0
-    _backend:    str   = ""
+    team: str = "DEFAULT"
+    model: Any = None
+    _lock: Lock = field(default_factory=Lock)
+    _seen: int = 0
+    _backend: str = ""
 
     def __post_init__(self):
         if self.model is None:
@@ -121,15 +124,16 @@ class OnlineLearner:
     def predict_proba(self, features: Dict[str, float]) -> float:
         with self._lock:
             try:
-                return float(self.model.predict_proba_one(features)[1]
-                             if hasattr(self.model, "predict_proba_one")
-                             else self.model.predict_proba(features))
+                return float(
+                    self.model.predict_proba_one(features)[1]
+                    if hasattr(self.model, "predict_proba_one")
+                    else self.model.predict_proba(features)
+                )
             except Exception as e:
                 logger.debug("predict failed for %s: %s", self.team, e)
                 return 0.5
 
-    def predict_is_win(self, features: Dict[str, float],
-                       threshold: float = 0.55) -> Tuple[bool, float]:
+    def predict_is_win(self, features: Dict[str, float], threshold: float = 0.55) -> Tuple[bool, float]:
         p = self.predict_proba(features)
         return p >= threshold, p
 
@@ -138,12 +142,15 @@ class OnlineLearner:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
         with open(p, "wb") as f:
-            pickle.dump({
-                "team":     self.team,
-                "backend":  self._backend,
-                "seen":     self._seen,
-                "model":    self.model,
-            }, f)
+            pickle.dump(
+                {
+                    "team": self.team,
+                    "backend": self._backend,
+                    "seen": self._seen,
+                    "model": self.model,
+                },
+                f,
+            )
 
     @classmethod
     def load(cls, path: str) -> "OnlineLearner":

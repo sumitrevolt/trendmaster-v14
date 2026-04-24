@@ -4,6 +4,7 @@ We feed synthetic OHLCV with known regime characteristics (strong uptrend,
 strong downtrend, choppy sideways) and assert that compute_confirmations
 and ea_would_enter respond as the EA's gate would.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -20,11 +21,26 @@ from ai_trading_agents.ea_confirmations import (
 
 
 _EXPECTED_COLUMNS = {
-    "trend_dir", "c1_trend", "c2_vola", "c3_momo", "agreed",
-    "atr", "ema_fast", "ema_slow", "ema_trend", "adx",
-    "bb_upper", "bb_mid", "bb_lower", "bb_width_med",
-    "macd_main", "macd_sig", "macd_hist", "macd_hist_prev",
-    "st_line", "st_dir",
+    "trend_dir",
+    "c1_trend",
+    "c2_vola",
+    "c3_momo",
+    "agreed",
+    "atr",
+    "ema_fast",
+    "ema_slow",
+    "ema_trend",
+    "adx",
+    "bb_upper",
+    "bb_mid",
+    "bb_lower",
+    "bb_width_med",
+    "macd_main",
+    "macd_sig",
+    "macd_hist",
+    "macd_hist_prev",
+    "st_line",
+    "st_dir",
 }
 
 
@@ -37,11 +53,9 @@ def _make_ohlcv(n: int, drift: float, vol: float, seed: int) -> pd.DataFrame:
     low = close - rng.uniform(0.10, 1.00, size=n)
     open_ = close - rng.normal(0.0, 0.20, size=n)
     vol_arr = rng.integers(100, 1000, size=n)
-    idx = pd.date_range(datetime(2026, 1, 1, tzinfo=timezone.utc),
-                        periods=n, freq="5min")
+    idx = pd.date_range(datetime(2026, 1, 1, tzinfo=timezone.utc), periods=n, freq="5min")
     return pd.DataFrame(
-        {"open": open_, "high": high, "low": low,
-         "close": close, "volume": vol_arr},
+        {"open": open_, "high": high, "low": low, "close": close, "volume": vol_arr},
         index=idx,
     )
 

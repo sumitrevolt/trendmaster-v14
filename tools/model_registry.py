@@ -1,4 +1,4 @@
-"""
+r"""
 tools/model_registry.py - versioned LightGBM model storage.
 
 Layout
@@ -11,6 +11,7 @@ Layout
     |   \- latest.json
     \- index.json
 """
+
 from __future__ import annotations
 
 import json
@@ -23,7 +24,7 @@ from typing import Any, List, Optional
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
 MODELS = _ROOT / "models"
-INDEX  = MODELS / "index.json"
+INDEX = MODELS / "index.json"
 
 logger = logging.getLogger("model_registry")
 
@@ -59,13 +60,13 @@ def register_model(symbol: str, booster: Any, metadata: dict) -> Path:
         ver = f"{base}-{i}"
 
     model_path = sym_dir / f"{ver}.lgb"
-    meta_path  = sym_dir / f"{ver}.json"
+    meta_path = sym_dir / f"{ver}.json"
     booster.save_model(str(model_path))
     metadata = dict(metadata, symbol=symbol, version=ver, created_utc=ver)
     meta_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
     shutil.copy2(model_path, sym_dir / "latest.lgb")
-    shutil.copy2(meta_path,  sym_dir / "latest.json")
+    shutil.copy2(meta_path, sym_dir / "latest.json")
 
     idx = _load_index()
     idx.setdefault(symbol, []).append(ver)
@@ -104,6 +105,9 @@ def rollback_to(symbol: str, version: str) -> bool:
 
 
 __all__ = [
-    "register_model", "list_versions", "latest_model_path",
-    "latest_metadata", "rollback_to",
+    "register_model",
+    "list_versions",
+    "latest_model_path",
+    "latest_metadata",
+    "rollback_to",
 ]

@@ -19,6 +19,7 @@ All gates are individually toggleable via config/settings.py
 PROFIT_OPTIMIZER block — so a paranoid user can ship them off-by-default
 and turn them on one by one after backtesting.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -36,12 +37,12 @@ import pandas as pd
 class FilterDecision:
     allow: bool
     reason: str
-    score_adjust: float = 0.0   # optional confidence nudge for the brain
+    score_adjust: float = 0.0  # optional confidence nudge for the brain
 
     def as_dict(self) -> dict:
         return {
-            "allow":        self.allow,
-            "reason":       self.reason,
+            "allow": self.allow,
+            "reason": self.reason,
             "score_adjust": round(self.score_adjust, 3),
         }
 
@@ -49,9 +50,7 @@ class FilterDecision:
 # =====================================================================
 # 1. SPREAD GUARD
 # =====================================================================
-def spread_guard(spread_price: float,
-                 atr_price: float,
-                 max_ratio: float = 0.25) -> FilterDecision:
+def spread_guard(spread_price: float, atr_price: float, max_ratio: float = 0.25) -> FilterDecision:
     """
     Block trade if current spread > max_ratio * ATR.
 
@@ -74,16 +73,13 @@ def spread_guard(spread_price: float,
         )
     # Tiny score boost when spread is *very* tight — a free quality signal.
     boost = 0.05 if ratio < (max_ratio * 0.5) else 0.0
-    return FilterDecision(True, f"spread/ATR={ratio:.2f} ok",
-                          score_adjust=boost)
+    return FilterDecision(True, f"spread/ATR={ratio:.2f} ok", score_adjust=boost)
 
 
 # =====================================================================
 # 2. VOLATILITY REGIME FILTER
 # =====================================================================
-def volatility_regime(atr_series: pd.Series,
-                      min_pct: float = 0.20,
-                      max_pct: float = 0.95) -> FilterDecision:
+def volatility_regime(atr_series: pd.Series, min_pct: float = 0.20, max_pct: float = 0.95) -> FilterDecision:
     """
     Block trade when current ATR is in the bottom `min_pct` quantile
     (dead market — RR doesn't develop) OR above `max_pct` quantile
@@ -97,30 +93,26 @@ def volatility_regime(atr_series: pd.Series,
         return FilterDecision(True, "regime n/a (insufficient ATR samples)")
     cur = float(a.iloc[-1])
     low_thr = float(a.quantile(min_pct))
-    hi_thr  = float(a.quantile(max_pct))
+    hi_thr = float(a.quantile(max_pct))
     if cur < low_thr:
-        return FilterDecision(False,
-                              f"dead market: ATR {cur:.5f} < q{int(min_pct*100)} {low_thr:.5f}",
-                              score_adjust=-0.05)
+        return FilterDecision(
+            False, f"dead market: ATR {cur:.5f} < q{int(min_pct * 100)} {low_thr:.5f}", score_adjust=-0.05
+        )
     if cur > hi_thr:
-        return FilterDecision(False,
-                              f"spike regime: ATR {cur:.5f} > q{int(max_pct*100)} {hi_thr:.5f}",
-                              score_adjust=-0.05)
+        return FilterDecision(
+            False, f"spike regime: ATR {cur:.5f} > q{int(max_pct * 100)} {hi_thr:.5f}", score_adjust=-0.05
+        )
     # Sweet spot bonus when ATR sits in the upper-middle band — clean trend conditions.
-    mid_low  = float(a.quantile(0.45))
+    mid_low = float(a.quantile(0.45))
     mid_high = float(a.quantile(0.85))
     boost = 0.05 if mid_low <= cur <= mid_high else 0.0
-    return FilterDecision(True,
-                          f"regime ok: ATR {cur:.5f} in band",
-                          score_adjust=boost)
+    return FilterDecision(True, f"regime ok: ATR {cur:.5f} in band", score_adjust=boost)
 
 
 # =====================================================================
 # 3. DAILY PROFIT LOCK (a.k.a. "stop trading after target")
 # =====================================================================
-def daily_profit_lock(equity_now: float,
-                      equity_start_of_day: float,
-                      target_pct: float = 2.0) -> FilterDecision:
+def daily_profit_lock(equity_now: float, equity_start_of_day: float, target_pct: float = 2.0) -> FilterDecision:
     """
     Block any new trade when the account has hit `target_pct` for the day.
 
@@ -142,9 +134,9 @@ def daily_profit_lock(equity_now: float,
 # =====================================================================
 # 4. LOSS-STREAK COOLDOWN
 # =====================================================================
-def loss_streak_cooldown(recent_results: Iterable,
-                         max_consec_losses: int = 3,
-                         cooldown_active: bool = False) -> FilterDecision:
+def loss_streak_cooldown(
+    recent_results: Iterable, max_consec_losses: int = 3, cooldown_active: bool = False
+) -> FilterDecision:
     """
     Block trades for the rest of the cooldown window after N consecutive
     losing trades. `recent_results` is an iterable of trade results — each
@@ -199,11 +191,13 @@ def loss_streak_cooldown(recent_results: Iterable,
 # =====================================================================
 # 4b. DAILY-LOSS LIMIT (max-drawdown circuit breaker)
 # =====================================================================
-def daily_loss_limit(equity_now: float,
-                     equity_start_of_day: float,
-                     max_loss_pct: float = 3.0,
-                     intraday_dd_pct: Optional[float] = None,
-                     equity_peak_today: float = 0.0) -> FilterDecision:
+def daily_loss_limit(
+    equity_now: float,
+    equity_start_of_day: float,
+    max_loss_pct: float = 3.0,
+    intraday_dd_pct: Optional[float] = None,
+    equity_peak_today: float = 0.0,
+) -> FilterDecision:
     """
     Circuit breaker that blocks all new entries once the account hits an
     intraday drawdown threshold. Two thresholds, both optional:
@@ -247,8 +241,7 @@ def daily_loss_limit(equity_now: float,
         if dd_pct <= -abs(intraday_dd_pct):
             return FilterDecision(
                 False,
-                f"intraday drawdown {dd_pct:.2f}% from peak "
-                f"{equity_peak_today:.2f} ≤ -{abs(intraday_dd_pct):.2f}%",
+                f"intraday drawdown {dd_pct:.2f}% from peak {equity_peak_today:.2f} ≤ -{abs(intraday_dd_pct):.2f}%",
                 score_adjust=-0.15,
             )
 
@@ -278,11 +271,12 @@ import json as _json
 from pathlib import Path as _Path
 
 _NEWS_CACHE: dict = {"loaded_ts": 0.0, "events": []}
-_NEWS_CACHE_TTL_S = 600.0   # re-read calendar at most every 10 min
+_NEWS_CACHE_TTL_S = 600.0  # re-read calendar at most every 10 min
 
 
 def _load_news_calendar(path: Optional[_Path] = None) -> list:
     import time as _time
+
     now = _time.time()
     if (now - _NEWS_CACHE["loaded_ts"]) < _NEWS_CACHE_TTL_S and _NEWS_CACHE["events"]:
         return _NEWS_CACHE["events"]
@@ -300,11 +294,13 @@ def _load_news_calendar(path: Optional[_Path] = None) -> list:
                         ev_ts = datetime.fromisoformat(ts_str)
                         if ev_ts.tzinfo is None:
                             ev_ts = ev_ts.replace(tzinfo=timezone.utc)
-                        events.append({
-                            "ts":     ev_ts,
-                            "event":  ev.get("event", ""),
-                            "impact": (ev.get("impact") or "").lower(),
-                        })
+                        events.append(
+                            {
+                                "ts": ev_ts,
+                                "event": ev.get("event", ""),
+                                "impact": (ev.get("impact") or "").lower(),
+                            }
+                        )
                     except (ValueError, TypeError):
                         continue
     except (OSError, _json.JSONDecodeError):
@@ -314,10 +310,12 @@ def _load_news_calendar(path: Optional[_Path] = None) -> list:
     return events
 
 
-def news_blackout(now_utc: Optional[datetime] = None,
-                  window_minutes: int = 30,
-                  impacts: Iterable[str] = ("high",),
-                  calendar_path: Optional[_Path] = None) -> FilterDecision:
+def news_blackout(
+    now_utc: Optional[datetime] = None,
+    window_minutes: int = 30,
+    impacts: Iterable[str] = ("high",),
+    calendar_path: Optional[_Path] = None,
+) -> FilterDecision:
     """
     Block trades inside ±`window_minutes` of any high-impact news event.
     Fails OPEN (allow=True) when the calendar file is missing — a paranoid
@@ -337,8 +335,7 @@ def news_blackout(now_utc: Optional[datetime] = None,
             mins = int(delta // 60)
             return FilterDecision(
                 False,
-                f"news blackout: {ev['event']} ({ev['impact']}) "
-                f"in ±{window_minutes}m (now {mins}m away)",
+                f"news blackout: {ev['event']} ({ev['impact']}) in ±{window_minutes}m (now {mins}m away)",
                 score_adjust=-0.10,
             )
     return FilterDecision(True, "no news event in blackout window")
@@ -347,8 +344,7 @@ def news_blackout(now_utc: Optional[datetime] = None,
 # =====================================================================
 # 6. SESSION TIME FILTER (cheap, high-payoff)
 # =====================================================================
-def session_window(now_utc: Optional[datetime] = None,
-                   best_hours: Iterable[int] = range(7, 21)) -> FilterDecision:
+def session_window(now_utc: Optional[datetime] = None, best_hours: Iterable[int] = range(7, 21)) -> FilterDecision:
     """
     Block trades outside the configured London/NY hours. Asian-session
     chop hits backtests harder than people expect — easy filter to add.
@@ -357,10 +353,9 @@ def session_window(now_utc: Optional[datetime] = None,
     h = now.hour
     best = list(best_hours)
     if h in best:
-        peak = list(range(12, 16))   # London-NY overlap
+        peak = list(range(12, 16))  # London-NY overlap
         boost = 0.03 if h in peak else 0.0
-        return FilterDecision(True, f"hour {h} UTC in best window",
-                              score_adjust=boost)
+        return FilterDecision(True, f"hour {h} UTC in best window", score_adjust=boost)
     return FilterDecision(False, f"hour {h} UTC outside best window {best[0]}-{best[-1]}")
 
 
@@ -375,23 +370,27 @@ class CombinedDecision:
     detail: dict
 
     def as_dict(self) -> dict:
-        return {"allow": self.allow,
-                "reasons": self.reasons,
-                "score_adjust": round(self.score_adjust, 3),
-                "detail": self.detail}
+        return {
+            "allow": self.allow,
+            "reasons": self.reasons,
+            "score_adjust": round(self.score_adjust, 3),
+            "detail": self.detail,
+        }
 
 
-def evaluate_all(*,
-                 spread_price: float,
-                 atr_price: float,
-                 atr_series: pd.Series,
-                 equity_now: float,
-                 equity_start_of_day: float,
-                 recent_results: Iterable,
-                 cooldown_active: bool = False,
-                 equity_peak_today: float = 0.0,
-                 now_utc: Optional[datetime] = None,
-                 cfg: Optional[dict] = None) -> CombinedDecision:
+def evaluate_all(
+    *,
+    spread_price: float,
+    atr_price: float,
+    atr_series: pd.Series,
+    equity_now: float,
+    equity_start_of_day: float,
+    recent_results: Iterable,
+    cooldown_active: bool = False,
+    equity_peak_today: float = 0.0,
+    now_utc: Optional[datetime] = None,
+    cfg: Optional[dict] = None,
+) -> CombinedDecision:
     """
     Run every gate; the trade is allowed only if **all** gates that are
     enabled in `cfg` return allow=True.
@@ -401,7 +400,8 @@ def evaluate_all(*,
 
     if cfg.get("spread_guard", True):
         gates["spread"] = spread_guard(
-            spread_price, atr_price,
+            spread_price,
+            atr_price,
             max_ratio=float(cfg.get("max_spread_atr_ratio", 0.25)),
         )
     if cfg.get("vol_regime", True):
@@ -412,7 +412,8 @@ def evaluate_all(*,
         )
     if cfg.get("profit_lock", True):
         gates["profit_lock"] = daily_profit_lock(
-            equity_now, equity_start_of_day,
+            equity_now,
+            equity_start_of_day,
             target_pct=float(cfg.get("daily_profit_target_pct", 2.0)),
         )
     if cfg.get("loss_cooldown", True):
@@ -423,7 +424,8 @@ def evaluate_all(*,
         )
     if cfg.get("daily_loss_limit", True):
         gates["daily_dd"] = daily_loss_limit(
-            equity_now, equity_start_of_day,
+            equity_now,
+            equity_start_of_day,
             max_loss_pct=float(cfg.get("daily_max_loss_pct", 3.0)),
             intraday_dd_pct=cfg.get("intraday_dd_pct"),  # may be None
             equity_peak_today=float(equity_peak_today or 0.0),
@@ -445,15 +447,20 @@ def evaluate_all(*,
     if not reasons:
         reasons = [f"{name}: ok" for name in gates]
     score_adjust = sum(g.score_adjust for g in gates.values())
-    return CombinedDecision(allow=allow,
-                            reasons=reasons,
-                            score_adjust=score_adjust,
-                            detail={k: v.as_dict() for k, v in gates.items()})
+    return CombinedDecision(
+        allow=allow, reasons=reasons, score_adjust=score_adjust, detail={k: v.as_dict() for k, v in gates.items()}
+    )
 
 
 __all__ = [
-    "FilterDecision", "CombinedDecision",
-    "spread_guard", "volatility_regime",
-    "daily_profit_lock", "loss_streak_cooldown", "daily_loss_limit",
-    "session_window", "news_blackout", "evaluate_all",
+    "FilterDecision",
+    "CombinedDecision",
+    "spread_guard",
+    "volatility_regime",
+    "daily_profit_lock",
+    "loss_streak_cooldown",
+    "daily_loss_limit",
+    "session_window",
+    "news_blackout",
+    "evaluate_all",
 ]

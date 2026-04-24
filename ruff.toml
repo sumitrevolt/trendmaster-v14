@@ -1,0 +1,57 @@
+# Ruff configuration for TrendMaster v14.
+#
+# Authoritative config — both local pre-commit (.pre-commit-config.yaml)
+# and CI (.github/workflows/ci.yml) run ruff against this file. Keep
+# them in sync; if you loosen a rule here, both pass.
+#
+# The codebase predates strict linting; we start lenient and tighten
+# over time rather than forcing a mass refactor on production trading
+# code.
+
+line-length = 120
+target-version = "py310"
+
+# Skip dirs that aren't source we own / care about.
+extend-exclude = [
+    ".code-review-graph",
+    ".venv",
+    "venv",
+    "archive",           # legacy Python not used by v14 runtime
+    "outputs",           # scratch / runtime helpers
+    "docs/wiki",         # auto-generated markdown
+    "build",
+    "dist",
+]
+
+[lint]
+# Default set (E/F/W) plus no extras. Explicit so upgrades of ruff that
+# flip-on new rules-by-default don't silently break CI.
+select = ["E", "F", "W"]
+
+# Rules we tolerate in legacy code. Each has a comment with the
+# rationale so we can revisit individually.
+ignore = [
+    "E401",  # multiple-imports-on-one-line  (cosmetic)
+    "E402",  # module-import-not-at-top-of-file  (deliberate in MT5 scripts that must gate imports after sys.path tweaks)
+    "E701",  # multiple-statements-on-one-line-colon  (legacy brain.py patterns)
+    "E702",  # multiple-statements-on-one-line-semicolon
+    "E722",  # bare-except  (one case in legacy mail poller; TODO: narrow)
+    "E741",  # ambiguous-variable-name  (uses of `l`, `I`, `O` in indicator loops)
+    "F401",  # unused-import  (side-effect imports for MT5/pandas-ta extensions)
+    "F403",  # undefined-local-with-import-star  (one star-import in a legacy shim)
+    "F541",  # f-string-missing-placeholders  (common in logger.info(f"...")); cleanup candidate but not worth breaking CI today
+    "F841",  # unused-variable  (sometimes intentional in try/except capture)
+    "E501",  # line-too-long  (legacy files have 140-char lines; format pass handles what it can)
+]
+
+[lint.per-file-ignores]
+# Tests intentionally use naked asserts and fixture names.
+"tests/**" = ["F401"]
+# Setup scripts / one-off helpers may do more import-dancing.
+"tools/_install_crg.bat" = ["E"]
+
+[format]
+# Match what pre-commit's ruff-format applies. No magic trailing commas
+# to avoid diff churn on the existing codebase.
+quote-style = "double"
+indent-style = "space"

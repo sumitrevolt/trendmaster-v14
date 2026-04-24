@@ -1,4 +1,5 @@
 """Unit tests for ai_trading_agents.ops_maintenance."""
+
 from __future__ import annotations
 
 import gzip
@@ -10,8 +11,11 @@ from pathlib import Path
 import pytest
 
 from ai_trading_agents.ops_maintenance import (
-    rotate_logs, snapshot_state, snapshot_models,
-    vacuum_events, run_all,
+    rotate_logs,
+    snapshot_state,
+    snapshot_models,
+    vacuum_events,
+    run_all,
 )
 
 
@@ -26,7 +30,7 @@ def test_rotate_small_file_does_nothing(tmp_path):
 
 def test_rotate_large_file_truncates(tmp_path):
     log = tmp_path / "trend_master_brain.log"
-    log.write_text("A" * (2 * 1024 * 1024))   # 2 MB
+    log.write_text("A" * (2 * 1024 * 1024))  # 2 MB
     rotated = rotate_logs(tmp_path, max_mb=1.0, compress=True)
     assert len(rotated) == 1
     # Original file exists and is truncated.
@@ -75,7 +79,7 @@ def test_snapshot_models_copies_pkls(tmp_path):
 def test_vacuum_events_prunes_old(tmp_path):
     ev = tmp_path / "events.jsonl"
     now = int(time.time())
-    old = now - 120 * 86400   # 120 days ago
+    old = now - 120 * 86400  # 120 days ago
     lines = [json.dumps({"ts": old, "k": "signal"}) + "\n" for _ in range(50)]
     lines += [json.dumps({"ts": now, "k": "signal"}) + "\n" for _ in range(50)]
     ev.write_text("".join(lines))

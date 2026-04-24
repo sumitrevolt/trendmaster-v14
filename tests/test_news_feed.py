@@ -3,6 +3,7 @@
 We don't hit the network in unit tests — merge_events is the core
 logic we care about.
 """
+
 from __future__ import annotations
 
 import json
@@ -18,10 +19,10 @@ from ai_trading_agents.news_feed import (
 
 def test_ff_json_to_event_parses_happy():
     raw = {
-        "title":   "USD Non-Farm Payrolls",
+        "title": "USD Non-Farm Payrolls",
         "country": "USD",
-        "date":    "2026-05-01T12:30:00+00:00",
-        "impact":  "High",
+        "date": "2026-05-01T12:30:00+00:00",
+        "impact": "High",
     }
     out = _ff_json_to_event(raw)
     assert out is not None
@@ -32,12 +33,20 @@ def test_ff_json_to_event_parses_happy():
 
 
 def test_ff_json_to_event_maps_colours():
-    for colour, expected in (("red", "high"), ("Orange", "medium"),
-                             ("Yellow", "low"), ("Holiday", "none"),
-                             ("unknown", "none")):
-        out = _ff_json_to_event({
-            "title": "X", "date": "2026-05-01T00:00:00Z", "impact": colour,
-        })
+    for colour, expected in (
+        ("red", "high"),
+        ("Orange", "medium"),
+        ("Yellow", "low"),
+        ("Holiday", "none"),
+        ("unknown", "none"),
+    ):
+        out = _ff_json_to_event(
+            {
+                "title": "X",
+                "date": "2026-05-01T00:00:00Z",
+                "impact": colour,
+            }
+        )
         assert out is not None
         assert out["impact"] == expected
 
@@ -79,9 +88,12 @@ def test_merge_preserves_header_row(tmp_path):
     ]
     with open(cal, "w", encoding="utf-8") as f:
         json.dump(seed, f)
-    res = merge_events(cal, [
-        {"ts_utc": "2026-05-02T12:30:00Z", "event": "Y", "impact": "high"},
-    ])
+    res = merge_events(
+        cal,
+        [
+            {"ts_utc": "2026-05-02T12:30:00Z", "event": "Y", "impact": "high"},
+        ],
+    )
     with open(cal, "r", encoding="utf-8") as f:
         out = json.load(f)
     assert out[0]["event"] == "__HEADER__"
@@ -105,6 +117,5 @@ def test_merge_sorts_by_ts(tmp_path):
 def test_fetch_result_as_dict_shape():
     r = FetchResult(fetched=5, appended=3, duplicates=2, source_url="x", path_written="y")
     d = r.as_dict()
-    for k in ("fetched", "appended", "duplicates", "filtered_out",
-              "source_url", "path_written", "note"):
+    for k in ("fetched", "appended", "duplicates", "filtered_out", "source_url", "path_written", "note"):
         assert k in d
