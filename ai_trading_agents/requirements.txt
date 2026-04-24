@@ -2,8 +2,8 @@
 # Install: pip install -r requirements.txt
 
 # Web server & real-time dashboard
-fastapi>=0.109.0
-uvicorn[standard]>=0.27.0
+fastapi>=0.136.1
+uvicorn[standard]>=0.46.0
 websockets>=12.0
 
 # MetaTrader 5 (Windows only — MT5 must be installed and running)
@@ -14,7 +14,7 @@ pandas>=3.0.2
 numpy>=2.4.4
 
 # HTTP clients (API calls + AI brain providers)
-aiohttp>=3.9.0
+aiohttp>=3.13.5
 httpx>=0.24.0
 
 # Machine Learning (required for Level 2 ML training in agent_training.py)
