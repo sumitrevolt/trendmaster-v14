@@ -21,4 +21,4 @@ httpx>=0.24.0
 scikit-learn>=1.8.0
 
 # Already in parent project (listed for completeness)
-python-dotenv>=1.0.0
+python-dotenv>=1.2.2
