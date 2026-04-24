@@ -1,0 +1,47 @@
+# Line-ending normalization for the TrendMaster v14 repo.
+#
+# Goal: eliminate the "LF will be replaced by CRLF" warnings on every
+# commit by declaring the authoritative end-of-line policy per file
+# type. Git's "text=auto" handles unknown extensions sensibly.
+#
+# Rule of thumb:
+#   - Code/config that's cross-platform  -> text eol=lf
+#   - Windows-only scripts (cmd/bat/ps1) -> text eol=crlf
+#   - Binary assets                      -> binary
+
+* text=auto eol=lf
+
+# Python / markdown / yaml / toml / shell — LF everywhere. These run
+# on both Windows (dev) and Linux (CI, containers).
+*.py   text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.cfg  text eol=lf
+*.ini  text eol=lf
+*.txt  text eol=lf
+*.json text eol=lf
+*.sh   text eol=lf
+
+# Windows-only scripts — keep CRLF so cmd.exe / PowerShell stay happy.
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+
+# MetaTrader sources — text, but MT5's editor prefers CRLF on Windows.
+*.mq5  text eol=crlf
+*.mqh  text eol=crlf
+
+# Explicit binaries (so Git never tries EOL conversion on them).
+*.db      binary
+*.sqlite  binary
+*.pyc     binary
+*.ex5     binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.pdf     binary
+*.lnk     binary
+*.plugin  binary
