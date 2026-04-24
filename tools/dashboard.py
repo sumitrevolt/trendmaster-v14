@@ -505,150 +505,11 @@ def healthz() -> JSONResponse:
     )
 
 
-# ─── HTML helpers ───────────────────────────────────────────────────────────
-def _fmt_ts(epoch: Any) -> str:
-    try:
-        e = int(epoch)
-        if e <= 0:
-            return "—"
-        return dt.datetime.fromtimestamp(e).strftime("%Y-%m-%d %H:%M:%S")
-    except Exception:
-        return "—"
-
-
-def _fmt_num(v: Any, digits: int = 2) -> str:
-    if v is None:
-        return "—"
-    try:
-        return f"{float(v):.{digits}f}"
-    except Exception:
-        return str(v)
-
-
-def _render_ops_html() -> str:
-    sigs = _signals_payload()
-    pnl_d = _pnl_payload()
-    rst = _restarts_payload()
-
-    # Signals table
-    sig_rows = []
-    for s in sigs:
-        d = s.get("direction") or "—"
-        cls = "ok" if d == "BUY" else ("bad" if d == "SELL" else "warn")
-        sig_rows.append(
-            f"<tr><td>{s.get('symbol', '—')}</td>"
-            f"<td class='{cls}'>{d}</td>"
-            f"<td>{_fmt_num(s.get('confidence'), 3)}</td>"
-            f"<td>{_fmt_ts(s.get('ts'))}</td>"
-            f"<td>{_fmt_num(s.get('age_sec'), 1)}</td></tr>"
-        )
-    sig_html = "".join(sig_rows) or "<tr><td colspan=5 class='warn'>no signal files yet</td></tr>"
-
-    # PnL panel
-    pnl_val = pnl_d.get("pnl")
-    pnl_cls = (
-        "ok"
-        if isinstance(pnl_val, (int, float)) and pnl_val > 0
-        else ("bad" if isinstance(pnl_val, (int, float)) and pnl_val < 0 else "")
-    )
-    pnl_html = (
-        f"<tr><td class='k'>date</td><td>{pnl_d.get('date')}</td></tr>"
-        f"<tr><td class='k'>equity open</td><td>{_fmt_num(pnl_d.get('equity_open'))}</td></tr>"
-        f"<tr><td class='k'>equity now</td><td>{_fmt_num(pnl_d.get('equity_now'))}</td></tr>"
-        f"<tr><td class='k'>P/L</td><td class='{pnl_cls}'>{_fmt_num(pnl_val)} "
-        f"({_fmt_num(pnl_d.get('pnl_pct'), 3)}%)</td></tr>"
-        f"<tr><td class='k'>realized close</td><td>{_fmt_num(pnl_d.get('daily_pnl_close'))}</td></tr>"
-        f"<tr><td class='k'>trades / wins / losses</td>"
-        f"<td>{pnl_d.get('trades_today')} / "
-        f"<span class='ok'>{pnl_d.get('wins_today')}</span> / "
-        f"<span class='bad'>{pnl_d.get('losses_today')}</span></td></tr>"
-        f"<tr><td class='k'>restart count</td><td>{pnl_d.get('restart_count')}</td></tr>"
-    )
-
-    # Restart + kill-switch panel
-    paused = bool(rst.get("trading_paused"))
-    dd_active = bool(rst.get("drawdown_lockout_active"))
-    halt_label = "<span class='bad'>HALTED via /halt</span>" if paused else "<span class='ok'>LIVE</span>"
-    dd_label = (
-        f"<span class='bad'>LOCKED until {_fmt_ts(rst.get('drawdown_lockout_until'))}</span>"
-        if dd_active
-        else "<span class='ok'>clear</span>"
-    )
-    rst_html = (
-        f"<tr><td class='k'>trading state</td><td>{halt_label}</td></tr>"
-        f"<tr><td class='k'>drawdown lockout</td><td>{dd_label}</td></tr>"
-        f"<tr><td class='k'>peak equity (today)</td>"
-        f"<td>{_fmt_num(rst.get('daily_drawdown_peak_eq'))}</td></tr>"
-        f"<tr><td class='k'>restart_count</td><td>{rst.get('restart_count')}</td></tr>"
-        f"<tr><td class='k'>last_started_at</td><td>{_fmt_ts(rst.get('last_started_at'))}</td></tr>"
-        f"<tr><td class='k'>last_saved_at</td><td>{_fmt_ts(rst.get('last_saved_at'))}</td></tr>"
-    )
-
-    return _OPS_HTML.format(
-        ts=dt.datetime.now().isoformat(timespec="seconds"),
-        sig_rows=sig_html,
-        pnl_rows=pnl_html,
-        restart_rows=rst_html,
-    )
-
-
-@app.get("/", response_class=HTMLResponse)
-def home() -> str:
-    return _render_ops_html()
-
-
-_OPS_HTML = r"""<!doctype html>
-<html><head><meta charset="utf-8">
-<meta http-equiv="refresh" content="5">
-<title>TrendMaster v14 ops</title>
-<style>
- body{{background:#0b1020;color:#d6e0ff;font:13px/1.45 ui-monospace,Consolas,monospace;margin:0;padding:16px}}
- h1{{margin:0 0 12px 0;color:#ffd84a;font:600 16px ui-monospace}}
- h2{{margin:0 0 6px 0;color:#8ab4ff;font:600 13px ui-monospace}}
- .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
- .card{{background:#14193a;border:1px solid #2a3464;border-radius:8px;padding:10px 12px}}
- .ok{{color:#52e08a}}.bad{{color:#ff6b6b}}.warn{{color:#ffb347}}
- table{{border-collapse:collapse;width:100%}}
- td,th{{padding:3px 8px;border-bottom:1px solid #2a3464;text-align:left}}
- td.k{{color:#8ab4ff;width:40%}}
- .head{{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}}
- .tag{{background:#2a3464;color:#d6e0ff;border-radius:4px;padding:2px 6px;font-size:11px}}
- .full{{grid-column:1/3}}
- a{{color:#8ab4ff}}
-</style></head>
-<body>
-<div class="head">
-  <h1>TrendMaster v14 — ops view (auto-refresh 5 s)</h1>
-  <span class="tag">{ts}</span>
-</div>
-<div class="grid">
-  <div class="card">
-    <h2>Daily PnL</h2>
-    <table>{pnl_rows}</table>
-  </div>
-  <div class="card">
-    <h2>Restarts</h2>
-    <table>{restart_rows}</table>
-    <p style="margin:8px 0 0;color:#666">JSON: <a href="/restarts">/restarts</a> · <a href="/pnl">/pnl</a> · <a href="/signals">/signals</a> · <a href="/healthz">/healthz</a></p>
-  </div>
-  <div class="card full">
-    <h2>Per-symbol signals</h2>
-    <table>
-      <tr><th>symbol</th><th>direction</th><th>conf</th><th>ts</th><th>age (s)</th></tr>
-      {sig_rows}
-    </table>
-  </div>
-</div>
-</body></html>
-"""
-
-
-# ─── /v2 advanced dashboard ────────────────────────────────────────────────
+# ─── Advanced single dashboard at /  (replaces classic ops view) ──────────
 #
-# Richer operator view added 2026-04-24. Keeps the classic `/` ops view
-# intact for backward compatibility; adds new JSON endpoints + a Chart.js
-# HTML page at /v2. Everything is read-only — can never interfere with a
-# live brain.
+# Single operator view. Read-only — can never interfere with a live brain.
+# Classic HTML-table ops view was removed 2026-04-24; everything merged
+# into the Chart.js-powered page below.
 
 
 def _team_of(symbol: str) -> str:
@@ -870,9 +731,20 @@ _V2_HTML = r"""<!doctype html>
     <table id="tbl-risk"><tbody></tbody></table>
   </div>
 
-  <div class="card span12">
+  <div class="card span6">
+    <h2>Agent activity (vote totals across all symbols)</h2>
+    <canvas id="ch-agents"></canvas>
+  </div>
+
+  <div class="card span6">
     <h2>Signal confidence distribution</h2>
     <canvas id="ch-conf"></canvas>
+  </div>
+
+  <div class="card span12">
+    <h2>Project graph &nbsp;<span class="dim" style="font-size:11px;font-weight:400">— code-review-graph Leiden community viz (2 MB). Drag to pan, scroll to zoom.</span></h2>
+    <iframe id="graph-frame" src="/graph" loading="lazy"
+            style="width:100%;height:640px;border:1px solid #2a3464;border-radius:6px;background:#0b1020"></iframe>
   </div>
 </div>
 
@@ -882,7 +754,7 @@ const colorPL = v => (v>0?"ok":(v<0?"bad":""));
 const VOTE_MAP = {1:{lbl:"BUY",cls:"v-buy"}, "-1":{lbl:"SELL",cls:"v-sell"}, 0:{lbl:"—",cls:"v-none"}};
 function voteChip(v){ const m = VOTE_MAP[v+""] || VOTE_MAP[0]; return `<span class="vote-chip ${m.cls}">${m.lbl}</span>`; }
 
-let chEquity=null, chConf=null;
+let chEquity=null, chConf=null, chAgents=null;
 
 async function j(url){ try{const r=await fetch(url); return await r.json()}catch(e){return null} }
 
@@ -991,6 +863,48 @@ async function refresh(){
       chConf.data.datasets[0].data = buckets; chConf.update("none");
     }
   }
+
+  // Agent activity — stacked bar: per agent, BUY/SELL/NONE counts across all symbols
+  if(ag && ag.rows){
+    const agentNames = ["trend_h4","momentum_h1","timing_m30"];
+    const buys  = agentNames.map(()=>0);
+    const sells = agentNames.map(()=>0);
+    const nones = agentNames.map(()=>0);
+    ag.rows.forEach(r=>{
+      (r.votes||[]).forEach(v=>{
+        const i = agentNames.indexOf(v.name);
+        if(i<0) return;
+        if(v.vote===1) buys[i]++;
+        else if(v.vote===-1) sells[i]++;
+        else nones[i]++;
+      });
+    });
+    const datasets = [
+      {label:"BUY",  data:buys,  backgroundColor:"#52e08a"},
+      {label:"SELL", data:sells, backgroundColor:"#ff6b6b"},
+      {label:"NONE", data:nones, backgroundColor:"#3a3e55"},
+    ];
+    if(!chAgents){
+      const ctx = document.getElementById("ch-agents");
+      chAgents = new Chart(ctx, {
+        type:"bar",
+        data:{labels:agentNames, datasets},
+        options:{
+          animation:false,
+          plugins:{legend:{labels:{color:"#d6e0ff"}}},
+          scales:{
+            x:{stacked:true,ticks:{color:"#8090b8"}},
+            y:{stacked:true,ticks:{color:"#8090b8"},beginAtZero:true}
+          }
+        }
+      });
+    } else {
+      chAgents.data.datasets[0].data = buys;
+      chAgents.data.datasets[1].data = sells;
+      chAgents.data.datasets[2].data = nones;
+      chAgents.update("none");
+    }
+  }
 }
 
 refresh();
@@ -1000,9 +914,33 @@ setInterval(refresh, 2000);
 """
 
 
-@app.get("/v2", response_class=HTMLResponse)
-def dashboard_v2() -> str:
+@app.get("/", response_class=HTMLResponse)
+def home() -> str:
     return _V2_HTML
+
+
+@app.get("/graph", response_class=HTMLResponse)
+def project_graph() -> HTMLResponse:
+    """Serve the code-review-graph interactive HTML from docs/.
+    Rebuilt by `code-review-graph visualize` / `rebuild_graph.cmd` /
+    the daily scheduled task. 2 MB self-contained; safe to embed in an
+    iframe."""
+    p = ROOT / "docs" / "code_review_graph.html"
+    if not p.exists():
+        return HTMLResponse(
+            "<h2 style='color:#ffb347;font-family:monospace'>"
+            "Project graph not built yet. Run "
+            "<code>code-review-graph visualize --mode community --format html</code> "
+            "and copy the output to docs/code_review_graph.html.</h2>",
+            status_code=200,
+        )
+    try:
+        return HTMLResponse(p.read_text(encoding="utf-8", errors="ignore"))
+    except Exception as e:
+        return HTMLResponse(
+            f"<h2 style='color:#ff6b6b;font-family:monospace'>Graph load error: {e!r}</h2>",
+            status_code=500,
+        )
 
 
 if __name__ == "__main__":
