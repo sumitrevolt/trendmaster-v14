@@ -1,7 +1,16 @@
 # TrendMaster v14 — Multi-Market AI Trading System
 
+[![CI](https://github.com/sumitrevolt/trendmaster-v14/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sumitrevolt/trendmaster-v14/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen)](https://pre-commit.com/)
+[![Code review graph](https://img.shields.io/badge/code--review--graph-indexed-orange)](docs/CODE_REVIEW_GRAPH.md)
+
 Python brain + MetaTrader 5 Expert Advisor + multi-timeframe agent bus,
 trading forex / metals / crypto / commodities on an OctaFX demo account.
+
+**Dev quick-links:**
+[Architecture](ARCHITECTURE.md) · [Code health audit](docs/CODE_HEALTH_AUDIT.md) · [Code review graph setup](docs/CODE_REVIEW_GRAPH.md) · [Community wiki](docs/wiki/index.md) · [Risk model](RISK_MODEL.md)
 
 Built-in double-gate architecture: **every trade must pass four
 independent filters** — EA 3-of-3 local confirmation, EA HTF gate

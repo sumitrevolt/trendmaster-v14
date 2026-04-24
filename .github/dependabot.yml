@@ -1,0 +1,55 @@
+# Weekly dependency updates for TrendMaster v14.
+#
+# GitHub Dependabot will open a PR whenever any tracked dependency
+# has a newer version. Free on every GitHub plan. No setup needed
+# beyond this file.
+#
+# Grouping rules below reduce PR noise — pandas/numpy/ta bump
+# together, pytest ecosystem bumps together, GitHub Actions bump
+# together.
+
+version: 2
+
+updates:
+  # Python dependencies declared in requirements.txt.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "python"]
+    groups:
+      data-stack:
+        patterns:
+          - "pandas"
+          - "numpy"
+          - "ta"
+          - "scikit-learn"
+      web-stack:
+        patterns:
+          - "fastapi"
+          - "uvicorn"
+          - "aiohttp"
+          - "requests"
+      test-stack:
+        patterns:
+          - "pytest*"
+          - "coverage*"
+      utilities:
+        patterns:
+          - "python-dotenv"
+          - "schedule"
+          - "colorlog"
+
+  # GitHub Actions used in .github/workflows/*.yml.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "Asia/Kolkata"
+    labels: ["dependencies", "ci"]
