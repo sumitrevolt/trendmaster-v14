@@ -617,10 +617,14 @@ def _equity_curve_payload() -> Dict[str, Any]:
 
 
 def _risk_payload() -> Dict[str, Any]:
-    """Snapshot of risk-manager + portfolio risk if modules are enabled."""
+    """Snapshot of risk-manager + portfolio risk if modules are enabled.
+    Also surfaces MT5 terminal's `trade_allowed` flag — if that's False,
+    no EA can place orders regardless of how good the signals are
+    (common silent failure: user forgot to click the Algo Trading
+    toolbar button)."""
     out: Dict[str, Any] = {}
     state = _read_brain_state()
-    # Current exposure from MT5 if available (read-only)
+    # Current exposure + autotrading status from MT5 if available
     if HAVE_MT5:
         try:
             if mt5.initialize():
@@ -629,6 +633,10 @@ def _risk_payload() -> Dict[str, Any]:
                     out["open_positions"] = len(positions)
                     out["open_volume"] = round(sum(p.volume for p in positions), 2)
                     out["open_profit"] = round(sum(p.profit for p in positions), 2)
+                    term = mt5.terminal_info()
+                    if term is not None:
+                        out["mt5_trade_allowed"] = bool(getattr(term, "trade_allowed", False))
+                        out["mt5_connected"] = bool(getattr(term, "connected", False))
                 finally:
                     mt5.shutdown()
         except Exception:
@@ -690,18 +698,28 @@ _V2_HTML = r"""<!doctype html>
  .tag{background:#2a3464;color:#d6e0ff;border-radius:4px;padding:2px 6px;font-size:11px}
  canvas{max-height:240px}
  a{color:#8ab4ff}
+ .banner{padding:14px 18px;border-radius:8px;margin-bottom:14px;font-weight:600;font-size:14px;
+         display:flex;align-items:center;gap:10px;animation:pulse 2s infinite}
+ .banner-bad{background:#3e1414;border:2px solid #ff6b6b;color:#ffb3b3}
+ .banner-warn{background:#3e3014;border:2px solid #ffb347;color:#ffd47a}
+ @keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
+ details{margin-top:14px}
+ summary{cursor:pointer;color:#8ab4ff;padding:8px;font:600 13px ui-monospace;user-select:none}
+ summary:hover{color:#ffd84a}
 </style></head>
 <body>
 <div class="head">
-  <h1>TrendMaster v14 — Pro view</h1>
+  <h1>TrendMaster v14</h1>
   <span class="tag" id="ts">—</span>
 </div>
+
+<div id="banner" style="display:none"></div>
 
 <div class="grid">
   <div class="card span3 kpi"><div class="l">Trading state</div><div class="v" id="kpi-state">—</div></div>
   <div class="card span3 kpi"><div class="l">P/L today</div><div class="v" id="kpi-pnl">—</div></div>
   <div class="card span3 kpi"><div class="l">Trades (W/L)</div><div class="v" id="kpi-trades">—</div></div>
-  <div class="card span3 kpi"><div class="l">Restart count</div><div class="v" id="kpi-restart">—</div></div>
+  <div class="card span3 kpi"><div class="l">Autotrading</div><div class="v" id="kpi-autotrade">—</div></div>
 
   <div class="card span8">
     <h2>Agent votes per symbol</h2>
@@ -731,22 +749,29 @@ _V2_HTML = r"""<!doctype html>
     <table id="tbl-risk"><tbody></tbody></table>
   </div>
 
-  <div class="card span6">
-    <h2>Agent activity (vote totals across all symbols)</h2>
-    <canvas id="ch-agents"></canvas>
-  </div>
+</div>
 
-  <div class="card span6">
-    <h2>Signal confidence distribution</h2>
-    <canvas id="ch-conf"></canvas>
+<details>
+  <summary>▸ Agent activity + confidence distribution</summary>
+  <div class="grid" style="margin-top:8px">
+    <div class="card span6">
+      <h2>Agent activity (vote totals across all symbols)</h2>
+      <canvas id="ch-agents"></canvas>
+    </div>
+    <div class="card span6">
+      <h2>Signal confidence distribution</h2>
+      <canvas id="ch-conf"></canvas>
+    </div>
   </div>
+</details>
 
-  <div class="card span12">
-    <h2>Project graph &nbsp;<span class="dim" style="font-size:11px;font-weight:400">— code-review-graph Leiden community viz (2 MB). Drag to pan, scroll to zoom.</span></h2>
+<details>
+  <summary>▸ Project graph (code-review-graph Leiden community viz)</summary>
+  <div class="card" style="margin-top:8px">
     <iframe id="graph-frame" src="/graph" loading="lazy"
             style="width:100%;height:640px;border:1px solid #2a3464;border-radius:6px;background:#0b1020"></iframe>
   </div>
-</div>
+</details>
 
 <script>
 const fmt = (v, d=2) => (v===null||v===undefined||Number.isNaN(+v)) ? "—" : (+v).toFixed(d);
@@ -771,13 +796,37 @@ async function refresh(){
     document.getElementById("kpi-state").innerHTML = rst.trading_paused
       ? "<span class='bad'>HALTED</span>"
       : (rst.drawdown_lockout_active ? "<span class='bad'>DD-LOCK</span>" : "<span class='ok'>LIVE</span>");
-    document.getElementById("kpi-restart").textContent = rst.restart_count ?? "—";
   }
   if(pnl){
     const p = pnl.pnl, pp = pnl.pnl_pct;
     document.getElementById("kpi-pnl").innerHTML = `<span class="${colorPL(p)}">${fmt(p)} (${fmt(pp,2)}%)</span>`;
     document.getElementById("kpi-trades").innerHTML =
       `${pnl.trades_today??0} (<span class="ok">${pnl.wins_today??0}</span>/<span class="bad">${pnl.losses_today??0}</span>)`;
+  }
+
+  // Autotrading KPI + urgent banner for common silent-failure modes
+  const bn = document.getElementById("banner");
+  bn.style.display = "none"; bn.className = "";
+  if(risk && "mt5_trade_allowed" in risk){
+    if(risk.mt5_trade_allowed){
+      document.getElementById("kpi-autotrade").innerHTML = "<span class='ok'>ENABLED</span>";
+    } else {
+      document.getElementById("kpi-autotrade").innerHTML = "<span class='bad'>OFF</span>";
+      bn.className = "banner banner-bad";
+      bn.innerHTML = "⛔ <b>MT5 AutoTrading is OFF</b> — no order will be placed regardless of signal quality. Fix: click the <b>Algo Trading</b> toolbar button in MetaTrader 5 (or press <kbd>Ctrl+E</kbd>).";
+      bn.style.display = "flex";
+    }
+  } else {
+    document.getElementById("kpi-autotrade").textContent = "—";
+  }
+  if(rst && rst.trading_paused){
+    bn.className = "banner banner-bad";
+    bn.innerHTML = "🛑 <b>Brain is HALTED</b> — trading paused via /halt. Fix: <code>/resume</code> on Telegram.";
+    bn.style.display = "flex";
+  } else if(rst && rst.drawdown_lockout_active){
+    bn.className = "banner banner-warn";
+    bn.innerHTML = "📉 <b>Drawdown lockout ACTIVE</b> — today's DD breaker has fired. Resumes tomorrow UTC, or after manual override.";
+    bn.style.display = "flex";
   }
 
   // Agent-vote table
