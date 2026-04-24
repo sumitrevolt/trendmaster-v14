@@ -46,7 +46,7 @@ repos:
       # Skips silently if the CLI isn't installed or git diff fails.
       - id: code-review-graph-update
         name: code-review-graph incremental update
-        entry: tools/crg_hook.cmd
+        entry: python tools/crg_hook.py
         language: system
         pass_filenames: false
         always_run: true
