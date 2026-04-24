@@ -73,3 +73,8 @@ Thumbs.db
 mt5_dialog_state.png
 # Added by code-review-graph
 .code-review-graph/
+
+# Auto-generated interactive graph visualization (2 MB, regenerated on
+# every rebuild — don't track). Regenerate with:
+#   code-review-graph visualize --mode community --format html
+docs/code_review_graph.html

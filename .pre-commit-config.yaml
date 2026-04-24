@@ -18,14 +18,6 @@ repos:
       - id: check-added-large-files
         args: ["--maxkb=2000"]
       - id: detect-private-key
-      # Hard guard against committing .env files. The CI job repeats this
-      # but a local pre-commit catches it before the bad commit even leaves
-      # Sumit's machine.
-      - id: forbidden-file
-        name: forbid .env files
-        entry: env files must never be committed (use .env.example instead)
-        language: fail
-        files: '(^|/)\.env$'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.7
@@ -34,10 +26,34 @@ repos:
         args: ["--fix"]
       - id: ruff-format
 
-  # Run the project's pytest suite locally before the commit lands. This
-  # is intentionally quick — heavy backtests run in CI, not here.
+  # Project-local hooks.
   - repo: local
     hooks:
+      # Hard guard against committing .env files. The CI job repeats
+      # this but a local pre-commit catches it before the bad commit
+      # even leaves Sumit's machine. (Must be `local` — the
+      # `forbidden-file` id is NOT part of pre-commit-hooks; it's the
+      # "fail" language pattern.)
+      - id: forbid-env-files
+        name: forbid .env files
+        entry: env files must never be committed (use .env.example instead)
+        language: fail
+        files: '(^|/)\.env$'
+
+      # Keep the code-review-graph DB in sync on every commit, so queries
+      # like detect-changes / get_impact_radius reflect the state being
+      # committed. Non-blocking: a broken CLI must never block a commit.
+      # Skips silently if the CLI isn't installed or git diff fails.
+      - id: code-review-graph-update
+        name: code-review-graph incremental update
+        entry: tools/crg_hook.cmd
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      # Run the project's pytest suite locally before the commit lands.
+      # This is intentionally quick — heavy backtests run in CI, not here.
       - id: pytest-quick
         name: pytest (quick subset)
         entry: pytest -q --no-cov tests/
