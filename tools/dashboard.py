@@ -151,7 +151,10 @@ def _signal_filename_for(symbol: str) -> str:
 
 def _read_per_symbol_signal(symbol: str) -> Dict[str, Any]:
     """Walk candidate dirs looking for the per-symbol signal file. Returns
-    a dict with at least {symbol, direction, confidence, ts} or sentinel."""
+    a dict with at least {symbol, direction, confidence, ts} plus the
+    agents-vote block and EA runtime overrides if the brain wrote them
+    (Round 11+). Missing fields are reported as None / sentinel so the
+    dashboard can render partial state."""
     name = _signal_filename_for(symbol)
     for base in _candidate_signal_dirs():
         f = base / name
@@ -168,6 +171,15 @@ def _read_per_symbol_signal(symbol: str) -> Dict[str, Any]:
                 "model": data.get("model"),
                 "file": str(f),
                 "age_sec": round((dt.datetime.now() - mtime).total_seconds(), 1),
+                # Agent breakdown + EA gate overrides (Round 11). Kept
+                # as nested dicts so the HTML/v2 page can render per-
+                # agent vote + reason without a second request.
+                "agents": data.get("agents"),
+                "sl_atr_mult": data.get("sl_atr_mult"),
+                "tp_atr_mult": data.get("tp_atr_mult"),
+                "adx_min": data.get("adx_min"),
+                "require_all_3": data.get("require_all_3"),
+                "max_spread_atr_pct": data.get("max_spread_atr_pct"),
             }
         except Exception:
             # Try next candidate dir; missing/corrupt file is non-fatal.
@@ -180,6 +192,12 @@ def _read_per_symbol_signal(symbol: str) -> Dict[str, Any]:
         "model": None,
         "file": None,
         "age_sec": None,
+        "agents": None,
+        "sl_atr_mult": None,
+        "tp_atr_mult": None,
+        "adx_min": None,
+        "require_all_3": None,
+        "max_spread_atr_pct": None,
     }
 
 
@@ -625,9 +643,371 @@ _OPS_HTML = r"""<!doctype html>
 """
 
 
+# ─── /v2 advanced dashboard ────────────────────────────────────────────────
+#
+# Richer operator view added 2026-04-24. Keeps the classic `/` ops view
+# intact for backward compatibility; adds new JSON endpoints + a Chart.js
+# HTML page at /v2. Everything is read-only — can never interfere with a
+# live brain.
+
+
+def _team_of(symbol: str) -> str:
+    """Best-effort symbol → team mapping. Falls back to settings.TEAMS if
+    the project exposes it, otherwise uses a static v14-era grouping."""
+    try:
+        from ai_trading_agents.risk_manager import team_of  # type: ignore
+
+        t = team_of(symbol)
+        if t:
+            return t
+    except Exception:
+        pass
+    s = (symbol or "").upper()
+    if s in {"XAUUSD", "XAGUSD"}:
+        return "METALS"
+    if s in {"BTCUSD", "ETHUSD", "LTCUSD", "XRPUSD"}:
+        return "CRYPTO"
+    if s in {"XTIUSD", "XBRUSD", "XNGUSD", "USOIL", "UKOIL"}:
+        return "COMMODITIES"
+    return "FOREX"
+
+
+def _agents_payload() -> Dict[str, Any]:
+    """Per-symbol agent-vote matrix. Each row = {symbol, team,
+    final_dir, final_conf, age_sec, agents:[{name, vote, reason}]}."""
+    rows = []
+    for s in _signals_payload():
+        agents_block = s.get("agents") or {}
+        votes = agents_block.get("votes") or []
+        rows.append(
+            {
+                "symbol": s.get("symbol"),
+                "team": _team_of(s.get("symbol") or ""),
+                "final_dir": s.get("direction"),
+                "final_conf": s.get("confidence"),
+                "pre_agent_dir": agents_block.get("dir"),
+                "age_sec": s.get("age_sec"),
+                "votes": votes,
+                "require_all_3": s.get("require_all_3"),
+                "adx_min": s.get("adx_min"),
+                "max_spread_atr_pct": s.get("max_spread_atr_pct"),
+            }
+        )
+    # Ordered by age (freshest first) so stale data sinks.
+    rows.sort(key=lambda r: (r.get("age_sec") is None, r.get("age_sec") or 0))
+    return {"rows": rows, "ts": dt.datetime.now().isoformat(timespec="seconds")}
+
+
+def _teams_payload() -> Dict[str, Any]:
+    """Per-team performance aggregation from state.recent_results."""
+    state = _read_brain_state()
+    recent = list(state.get("recent_results", []) or [])
+    buckets: Dict[str, Dict[str, Any]] = {}
+    for r in recent:
+        if not isinstance(r, dict):
+            continue
+        sym = r.get("symbol") or r.get("sym") or ""
+        team = _team_of(sym)
+        b = buckets.setdefault(team, {"team": team, "trades": 0, "wins": 0, "losses": 0, "pnl": 0.0})
+        pnl = _pnl_of(r)
+        b["trades"] += 1
+        b["pnl"] += pnl
+        if pnl > 0:
+            b["wins"] += 1
+        elif pnl < 0:
+            b["losses"] += 1
+    out = []
+    for team in ("METALS", "FOREX", "CRYPTO", "COMMODITIES"):
+        b = buckets.get(team, {"team": team, "trades": 0, "wins": 0, "losses": 0, "pnl": 0.0})
+        wr = (b["wins"] / b["trades"] * 100.0) if b["trades"] else 0.0
+        out.append({**b, "pnl": round(b["pnl"], 2), "win_rate_pct": round(wr, 1)})
+    return {"teams": out}
+
+
+def _equity_curve_payload() -> Dict[str, Any]:
+    """Equity time series. Uses state.equity_snapshots if the brain writes
+    them; otherwise falls back to the sequence of recent_results P&L."""
+    state = _read_brain_state()
+    snaps = state.get("equity_snapshots") or []
+    series = []
+    if isinstance(snaps, list) and snaps:
+        for e in snaps:
+            if isinstance(e, dict) and "ts" in e and "equity" in e:
+                try:
+                    series.append({"ts": int(e["ts"]), "equity": float(e["equity"])})
+                except (TypeError, ValueError):
+                    continue
+    if not series:
+        # Fallback: cumulative P&L from recent_results.
+        base = float(state.get("start_of_day_equity") or 0.0)
+        cum = base
+        for r in state.get("recent_results", []) or []:
+            if not isinstance(r, dict):
+                continue
+            ts = r.get("ts")
+            pnl = _pnl_of(r)
+            if ts:
+                cum += pnl
+                try:
+                    series.append({"ts": int(ts), "equity": round(cum, 2)})
+                except (TypeError, ValueError):
+                    continue
+    return {"series": series, "base_equity": state.get("start_of_day_equity")}
+
+
+def _risk_payload() -> Dict[str, Any]:
+    """Snapshot of risk-manager + portfolio risk if modules are enabled."""
+    out: Dict[str, Any] = {}
+    state = _read_brain_state()
+    # Current exposure from MT5 if available (read-only)
+    if HAVE_MT5:
+        try:
+            if mt5.initialize():
+                try:
+                    positions = mt5.positions_get() or []
+                    out["open_positions"] = len(positions)
+                    out["open_volume"] = round(sum(p.volume for p in positions), 2)
+                    out["open_profit"] = round(sum(p.profit for p in positions), 2)
+                finally:
+                    mt5.shutdown()
+        except Exception:
+            pass
+    # Kelly multiplier from state
+    out["kelly_multiplier"] = state.get("kelly_multiplier")
+    out["drawdown_lockout_active"] = bool(state.get("drawdown_lockout_until", 0) or 0) > 0
+    # VaR/CVaR if computed recently
+    for k in ("var_95", "cvar_95", "portfolio_var", "stress_loss"):
+        if k in state:
+            out[k] = state[k]
+    return out
+
+
+@app.get("/api/agents")
+def api_agents() -> JSONResponse:
+    return JSONResponse(_agents_payload())
+
+
+@app.get("/api/teams")
+def api_teams() -> JSONResponse:
+    return JSONResponse(_teams_payload())
+
+
+@app.get("/api/equity_curve")
+def api_equity_curve() -> JSONResponse:
+    return JSONResponse(_equity_curve_payload())
+
+
+@app.get("/api/risk")
+def api_risk() -> JSONResponse:
+    return JSONResponse(_risk_payload())
+
+
+_V2_HTML = r"""<!doctype html>
+<html><head><meta charset="utf-8">
+<title>TrendMaster v14 — Pro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+ body{background:#0b1020;color:#d6e0ff;font:13px/1.45 ui-monospace,Consolas,monospace;margin:0;padding:16px}
+ h1{margin:0 0 12px 0;color:#ffd84a;font:600 17px ui-monospace}
+ h2{margin:0 0 8px 0;color:#8ab4ff;font:600 13px ui-monospace;letter-spacing:.3px}
+ .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+ .card{background:#14193a;border:1px solid #2a3464;border-radius:8px;padding:10px 12px;overflow:hidden}
+ .span3{grid-column:span 3}.span4{grid-column:span 4}.span6{grid-column:span 6}.span8{grid-column:span 8}.span12{grid-column:span 12}
+ .ok{color:#52e08a}.bad{color:#ff6b6b}.warn{color:#ffb347}.dim{color:#8090b8}
+ table{border-collapse:collapse;width:100%}
+ td,th{padding:3px 6px;border-bottom:1px solid #2a3464;text-align:left;white-space:nowrap}
+ th{color:#8ab4ff;font-weight:600}
+ .kpi{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60px}
+ .kpi .v{font:700 22px ui-monospace;color:#ffd84a}
+ .kpi .l{color:#8090b8;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+ .vote-chip{display:inline-block;min-width:22px;text-align:center;padding:1px 5px;margin:0 2px;border-radius:3px;font-weight:600;font-size:11px}
+ .v-buy{background:#143e25;color:#52e08a;border:1px solid #2b6a41}
+ .v-sell{background:#3e1414;color:#ff6b6b;border:1px solid #6a2b2b}
+ .v-none{background:#272b3e;color:#8090b8;border:1px solid #3a3e55}
+ .reason{color:#8090b8;font-size:11px;font-style:italic}
+ .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+ .tag{background:#2a3464;color:#d6e0ff;border-radius:4px;padding:2px 6px;font-size:11px}
+ canvas{max-height:240px}
+ a{color:#8ab4ff}
+</style></head>
+<body>
+<div class="head">
+  <h1>TrendMaster v14 — Pro view</h1>
+  <span class="tag" id="ts">—</span>
+</div>
+
+<div class="grid">
+  <div class="card span3 kpi"><div class="l">Trading state</div><div class="v" id="kpi-state">—</div></div>
+  <div class="card span3 kpi"><div class="l">P/L today</div><div class="v" id="kpi-pnl">—</div></div>
+  <div class="card span3 kpi"><div class="l">Trades (W/L)</div><div class="v" id="kpi-trades">—</div></div>
+  <div class="card span3 kpi"><div class="l">Restart count</div><div class="v" id="kpi-restart">—</div></div>
+
+  <div class="card span8">
+    <h2>Agent votes per symbol</h2>
+    <table id="tbl-agents">
+      <thead><tr><th>symbol</th><th>team</th><th>final</th><th>conf</th>
+      <th>trend H4</th><th>momentum H1</th><th>timing M30</th>
+      <th class="dim">age (s)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card span4">
+    <h2>Per-team P/L</h2>
+    <table id="tbl-teams">
+      <thead><tr><th>team</th><th>trades</th><th>W</th><th>L</th><th>WR%</th><th>P/L</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card span8">
+    <h2>Equity curve</h2>
+    <canvas id="ch-equity"></canvas>
+  </div>
+
+  <div class="card span4">
+    <h2>Risk snapshot</h2>
+    <table id="tbl-risk"><tbody></tbody></table>
+  </div>
+
+  <div class="card span12">
+    <h2>Signal confidence distribution</h2>
+    <canvas id="ch-conf"></canvas>
+  </div>
+</div>
+
+<script>
+const fmt = (v, d=2) => (v===null||v===undefined||Number.isNaN(+v)) ? "—" : (+v).toFixed(d);
+const colorPL = v => (v>0?"ok":(v<0?"bad":""));
+const VOTE_MAP = {1:{lbl:"BUY",cls:"v-buy"}, "-1":{lbl:"SELL",cls:"v-sell"}, 0:{lbl:"—",cls:"v-none"}};
+function voteChip(v){ const m = VOTE_MAP[v+""] || VOTE_MAP[0]; return `<span class="vote-chip ${m.cls}">${m.lbl}</span>`; }
+
+let chEquity=null, chConf=null;
+
+async function j(url){ try{const r=await fetch(url); return await r.json()}catch(e){return null} }
+
+async function refresh(){
+  const [pnl, rst, ag, tm, eq, risk] = await Promise.all([
+    j("/pnl"), j("/restarts"), j("/api/agents"), j("/api/teams"),
+    j("/api/equity_curve"), j("/api/risk")
+  ]);
+
+  document.getElementById("ts").textContent = new Date().toISOString().slice(0,19);
+
+  // KPIs
+  if(rst){
+    document.getElementById("kpi-state").innerHTML = rst.trading_paused
+      ? "<span class='bad'>HALTED</span>"
+      : (rst.drawdown_lockout_active ? "<span class='bad'>DD-LOCK</span>" : "<span class='ok'>LIVE</span>");
+    document.getElementById("kpi-restart").textContent = rst.restart_count ?? "—";
+  }
+  if(pnl){
+    const p = pnl.pnl, pp = pnl.pnl_pct;
+    document.getElementById("kpi-pnl").innerHTML = `<span class="${colorPL(p)}">${fmt(p)} (${fmt(pp,2)}%)</span>`;
+    document.getElementById("kpi-trades").innerHTML =
+      `${pnl.trades_today??0} (<span class="ok">${pnl.wins_today??0}</span>/<span class="bad">${pnl.losses_today??0}</span>)`;
+  }
+
+  // Agent-vote table
+  if(ag && ag.rows){
+    const byName = { trend_h4:null, momentum_h1:null, timing_m30:null };
+    const tb = document.querySelector("#tbl-agents tbody");
+    tb.innerHTML = ag.rows.map(r=>{
+      const map = Object.assign({}, byName);
+      (r.votes||[]).forEach(v=>{ if(v && v.name in map) map[v.name] = v; });
+      const cell = v => v
+        ? `${voteChip(v.vote)}<div class="reason">${(v.reason||"").slice(0,40)}</div>`
+        : `${voteChip(0)}`;
+      const dirCls = r.final_dir==="BUY"?"ok":(r.final_dir==="SELL"?"bad":"dim");
+      return `<tr>
+        <td>${r.symbol||"—"}</td><td class="dim">${r.team||""}</td>
+        <td class="${dirCls}">${r.final_dir||"—"}</td><td>${fmt(r.final_conf,3)}</td>
+        <td>${cell(map.trend_h4)}</td>
+        <td>${cell(map.momentum_h1)}</td>
+        <td>${cell(map.timing_m30)}</td>
+        <td class="dim">${fmt(r.age_sec,1)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  // Per-team table
+  if(tm && tm.teams){
+    const tb = document.querySelector("#tbl-teams tbody");
+    tb.innerHTML = tm.teams.map(t=>
+      `<tr><td>${t.team}</td><td>${t.trades}</td>
+       <td class="ok">${t.wins}</td><td class="bad">${t.losses}</td>
+       <td>${t.win_rate_pct}%</td>
+       <td class="${colorPL(t.pnl)}">${fmt(t.pnl)}</td></tr>`
+    ).join("");
+  }
+
+  // Risk table
+  if(risk){
+    const rows = [];
+    if("open_positions" in risk) rows.push(["open positions", risk.open_positions]);
+    if("open_volume" in risk) rows.push(["open volume", fmt(risk.open_volume)]);
+    if("open_profit" in risk) rows.push(["open profit",
+      `<span class="${colorPL(risk.open_profit)}">${fmt(risk.open_profit)}</span>`]);
+    if(risk.kelly_multiplier!=null) rows.push(["Kelly ×", fmt(risk.kelly_multiplier,3)]);
+    if(risk.var_95!=null) rows.push(["VaR 95%", fmt(risk.var_95)]);
+    if(risk.cvar_95!=null) rows.push(["CVaR 95%", fmt(risk.cvar_95)]);
+    rows.push(["DD lockout", risk.drawdown_lockout_active?"<span class='bad'>ACTIVE</span>":"<span class='ok'>clear</span>"]);
+    document.querySelector("#tbl-risk tbody").innerHTML = rows.map(([k,v])=>
+      `<tr><td class="dim">${k}</td><td>${v}</td></tr>`).join("");
+  }
+
+  // Equity curve
+  if(eq && Array.isArray(eq.series)){
+    const labels = eq.series.map(p => new Date(p.ts*1000).toISOString().slice(11,19));
+    const data = eq.series.map(p => p.equity);
+    if(!chEquity){
+      const ctx = document.getElementById("ch-equity");
+      chEquity = new Chart(ctx, {
+        type:"line",
+        data:{labels,datasets:[{label:"equity",data,borderColor:"#ffd84a",backgroundColor:"rgba(255,216,74,.08)",
+              fill:true,tension:.25,pointRadius:0}]},
+        options:{animation:false,plugins:{legend:{display:false}},
+          scales:{x:{ticks:{color:"#8090b8",maxTicksLimit:8}},y:{ticks:{color:"#8090b8"}}}}
+      });
+    } else {
+      chEquity.data.labels = labels; chEquity.data.datasets[0].data = data; chEquity.update("none");
+    }
+  }
+
+  // Confidence distribution
+  if(ag && ag.rows){
+    const buckets = Array(10).fill(0);
+    ag.rows.forEach(r=>{ const c = +r.final_conf; if(!isNaN(c) && c>=0 && c<=1) buckets[Math.min(9,Math.floor(c*10))]++; });
+    const labels = buckets.map((_,i)=>`${(i/10).toFixed(1)}–${((i+1)/10).toFixed(1)}`);
+    if(!chConf){
+      const ctx = document.getElementById("ch-conf");
+      chConf = new Chart(ctx, {
+        type:"bar",
+        data:{labels,datasets:[{label:"symbols",data:buckets,backgroundColor:"#8ab4ff"}]},
+        options:{animation:false,plugins:{legend:{display:false}},
+          scales:{x:{ticks:{color:"#8090b8"}},y:{ticks:{color:"#8090b8"},beginAtZero:true}}}
+      });
+    } else {
+      chConf.data.datasets[0].data = buckets; chConf.update("none");
+    }
+  }
+}
+
+refresh();
+setInterval(refresh, 2000);
+</script>
+</body></html>
+"""
+
+
+@app.get("/v2", response_class=HTMLResponse)
+def dashboard_v2() -> str:
+    return _V2_HTML
+
+
 if __name__ == "__main__":
     print(f"[dashboard] reading signal from: {SIGNAL_FILE}")
     print(f"[dashboard] brain log:           {BRAIN_ERR}")
     print(f"[dashboard] symbols:             {len(TRADING_PAIRS)} ({', '.join(TRADING_PAIRS) or 'none'})")
-    print("[dashboard] serving on http://localhost:8000/")
+    print("[dashboard] serving on http://localhost:8000/  (classic)  +  /v2  (pro)")
     uvicorn.run(app, host="127.0.0.1", port=8000, log_level="warning")
