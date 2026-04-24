@@ -945,6 +945,23 @@ DAILY_DIGEST = {
     "reports_dir": "reports",
 }
 
+# ---- Telegram notification switches ---------------------------------------
+# Per-event gating for the Telegram push notifier. Operational alerts
+# (DD lockout, MT5 disconnect, startup/shutdown, daily digest, drift,
+# panic, /command replies, re-entry) always fire regardless — those
+# are rare and load-bearing. This block only controls the two chatty
+# buckets:
+#   - notify_on_signal: one message per direction CHANGE per symbol
+#     (can still be dozens per day across 19 symbols). Default OFF so
+#     Telegram stays quiet when the project runs live 24/7.
+#   - notify_on_fill:   one message per closed/filled deal (rare in
+#     our 3-of-3 gated strategy). Default ON — the operator wants to
+#     know when an actual trade happened, and only then.
+TELEGRAM = {
+    "notify_on_signal": False,
+    "notify_on_fill": True,
+}
+
 # ---- Ops maintenance (ai_trading_agents/ops_maintenance.py) ----------------
 OPS_MAINTENANCE = {
     "enabled": True,

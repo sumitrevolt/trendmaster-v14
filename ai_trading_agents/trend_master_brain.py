@@ -836,10 +836,12 @@ class TrendMasterBrain:
                 pass
 
         # ── Telegram push (throttled inside notifier) ────────────────────
-        # Only fires on direction *change* per symbol. A sustained BUY across
-        # 100 ticks ⇒ exactly 1 message. Wrapped in try/except so a flaky
-        # network or revoked bot token can never kill the brain.
-        if _get_tg is not None:
+        # Only fires on direction *change* per symbol — but across 19 symbols
+        # even that is noisy when the project runs live 24/7. Gated on
+        # settings.TELEGRAM.notify_on_signal (default False). Operator sees
+        # only trade fills (see trade_tracker.poll()), never per-signal.
+        _tg_cfg = getattr(settings, "TELEGRAM", {}) or {}
+        if _get_tg is not None and _tg_cfg.get("notify_on_signal", False):
             try:
                 _get_tg().notify_signal(
                     symbol=sym,

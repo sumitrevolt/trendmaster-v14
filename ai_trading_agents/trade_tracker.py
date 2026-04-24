@@ -198,6 +198,39 @@ class TradeTracker:
         # be tightened later if needed.
         state["last_processed_deal_ts"] = int(now)
         logger.info("trade_tracker: appended %d closed deal(s)", added)
+
+        # Telegram fill notifications (2026-04-24). Gated on
+        # settings.TELEGRAM.notify_on_fill (default True). Send one message
+        # per newly-added deal so the operator sees every real fill in
+        # real-time without per-signal spam. Wrapped in try/except so a
+        # flaky network or disabled bot never breaks the poll loop.
+        try:
+            from config import settings as _s
+
+            _tg_cfg = getattr(_s, "TELEGRAM", {}) or {}
+            if _tg_cfg.get("notify_on_fill", True):
+                from ai_trading_agents.telegram_notifier import get_notifier
+
+                n = get_notifier()
+                for r in results[-added:]:
+                    if not isinstance(r, dict):
+                        continue
+                    pnl = float(r.get("pnl", 0.0) or 0.0)
+                    sign = "+" if pnl > 0 else ""
+                    emoji = "💰" if pnl > 0 else ("🔴" if pnl < 0 else "⚪")
+                    n.notify_alert(
+                        title=f"Trade closed — {r.get('symbol', '?')}",
+                        message=(
+                            f"<b>{r.get('symbol', '?')}</b> "
+                            f"PnL: <code>{sign}{pnl:.2f}</code>  "
+                            f"R: <code>{sign}{float(r.get('r_mult', 0.0) or 0.0):.2f}</code>\n"
+                            f"deal <code>{r.get('deal_id', '?')}</code>"
+                        ),
+                        emoji=emoji,
+                    )
+        except Exception as e:
+            logger.debug("telegram fill-notify skipped: %s", e)
+
         return added
 
     @staticmethod
