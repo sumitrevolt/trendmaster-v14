@@ -51,8 +51,13 @@ weights = {int(c): float(len(y_tr) / (3 * cnt)) for c, cnt in zip(classes, count
 w_tr = np.array([weights[int(y)] for y in y_tr])
 print("class weights:", weights)
 
-d_tr = lgb.Dataset(X_tr, y_tr, weight=w_tr)
-d_va = lgb.Dataset(X_va, y_va, reference=d_tr)
+# Pass feature_name explicitly so Booster.feature_name() returns the
+# real training-time column list at inference time instead of the
+# default 'Column_0, Column_1, ...' placeholders. Without this, the
+# brain's feature-alignment guard cannot match columns and routes all
+# inference to rule fallback. See docs/POSTMORTEMS/2026-04-24_zero_trades.md.
+d_tr = lgb.Dataset(X_tr, y_tr, weight=w_tr, feature_name=list(FEATURE_COLS))
+d_va = lgb.Dataset(X_va, y_va, reference=d_tr, feature_name=list(FEATURE_COLS))
 
 params = dict(
     objective="multiclass",
