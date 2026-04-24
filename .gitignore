@@ -78,3 +78,17 @@ mt5_dialog_state.png
 # every rebuild — don't track). Regenerate with:
 #   code-review-graph visualize --mode community --format html
 docs/code_review_graph.html
+
+# OneDrive ghost copies. The `autmated trading` folder sits under
+# Documents\ which OneDrive syncs; it caches an older snapshot where
+# ai_trading_agents/*.py had been moved into archive/legacy_python/,
+# and keeps re-creating those copies. The authoritative sources are in
+# ai_trading_agents/; these duplicates are noise. Gitignoring keeps
+# `git status` clean while OneDrive does its thing.
+archive/legacy_python/
+archive/legacy_state/
+
+# LightGBM model binaries that tooling writes next to the brain.
+# Retrain produces them; we only check in the registry.json manifest.
+ai_trading_agents/*.lgb
+ai_trading_agents/trend_master_model*.lgb
