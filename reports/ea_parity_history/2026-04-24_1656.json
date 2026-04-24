@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-04-24T16:56:50.047259+00:00",
+  "symbols": [
+    "XAUUSD",
+    "EURUSD",
+    "GBPUSD",
+    "BTCUSD"
+  ],
+  "per_symbol": [
+    {
+      "symbol": "XAUUSD",
+      "csv": "xauusd_m5_history.csv",
+      "trades": 7313,
+      "wins": 2627,
+      "losses": 4686,
+      "expectancy_R": 0.4262931155271632,
+      "win_rate": 0.3592233009708738,
+      "gross_R": 3117.4815538501443,
+      "sharpe_proxy": 0.2233032448437665
+    },
+    {
+      "symbol": "EURUSD",
+      "csv": "eurusd_m5_history.csv",
+      "trades": 7655,
+      "wins": 2539,
+      "losses": 5116,
+      "expectancy_R": 0.3071458654584372,
+      "win_rate": 0.3316786414108426,
+      "gross_R": 2351.201600084337,
+      "sharpe_proxy": 0.16493531206451598
+    },
+    {
+      "symbol": "GBPUSD",
+      "csv": "gbpusd_m5_history.csv",
+      "trades": 7785,
+      "wins": 2466,
+      "losses": 5319,
+      "expectancy_R": 0.24313644434401793,
+      "win_rate": 0.31676300578034683,
+      "gross_R": 1892.8172192181796,
+      "sharpe_proxy": 0.13236077434726046
+    },
+    {
+      "symbol": "BTCUSD",
+      "csv": "btcusd_m5_history.csv",
+      "trades": 7750,
+      "wins": 2637,
+      "losses": 5113,
+      "expectancy_R": 0.3466524163651919,
+      "win_rate": 0.34025806451612906,
+      "gross_R": 2686.5562268302374,
+      "sharpe_proxy": 0.1842518157987546
+    }
+  ]
+}
