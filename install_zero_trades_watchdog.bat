@@ -35,7 +35,7 @@ echo.
 
 schtasks /create /f /sc daily /st 09:00 ^
     /tn "TrendMaster Zero Trades Watchdog" ^
-    /tr "cmd /c cd /d \"%ROOT%\" && \"%PY%\" tools\zero_trades_watchdog.py >> logs\zero_trades_watchdog.log 2>&1"
+    /tr "%ROOT%tools\run_zero_trades_watchdog.cmd"
 if errorlevel 1 (
     echo [X] watchdog task failed to register
     endlocal & exit /b 1

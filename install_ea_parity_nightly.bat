@@ -31,7 +31,7 @@ echo.
 
 schtasks /create /f /sc weekly /d MON,TUE,WED,THU,FRI /st 02:30 ^
     /tn "TrendMaster EA Parity Nightly" ^
-    /tr "cmd /c cd /d \"%ROOT%\" && \"%PY%\" tools\ea_parity_nightly.py >> logs\ea_parity_nightly.log 2>&1"
+    /tr "%ROOT%tools\run_ea_parity_nightly.cmd"
 if errorlevel 1 (
     echo [X] ea_parity nightly task failed to register
     endlocal & exit /b 1
