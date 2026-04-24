@@ -13,10 +13,10 @@ numpy>=1.24.0
 ta>=0.10.2
 
 # Environment Variables
-python-dotenv>=1.0.0
+python-dotenv>=1.2.2
 
 # Scheduling (optional, for advanced scheduling)
-schedule>=1.2.0
+schedule>=1.2.2
 
 # HTTP Requests (for API calls)
 requests>=2.31.0
@@ -28,7 +28,7 @@ xgboost>=2.0.0
 lightgbm>=4.0.0
 
 # Logging
-colorlog>=6.7.0
+colorlog>=6.10.1
 
 # Development / Testing
 pytest>=7.4.0
