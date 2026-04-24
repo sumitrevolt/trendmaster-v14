@@ -609,6 +609,37 @@ class TrendMasterBrain:
             try:
                 self.state.model = lgb.Booster(model_file=str(self.model_path))
                 logger.info("Loaded LGBM model: %s", self.model_path)
+                # Feature-alignment audit (added 2026-04-24). The 2026-04-24
+                # retrain produced a model whose confidence stuck at
+                # 0.344 +/- 0.005 across 18 diverse markets — classic
+                # feature-order mismatch fingerprint. Log the model's
+                # trained feature order vs the brain's FEATURE_COLS so
+                # any future drift is visible in the log.
+                try:
+                    from ai_trading_agents.ml_align import trained_feature_names
+
+                    model_feats = trained_feature_names(self.state.model)
+                except Exception:
+                    model_feats = []
+                if model_feats:
+                    order_match = model_feats == list(FEATURE_COLS)
+                    logger.info(
+                        "ML feature audit: order_match=%s  model_count=%d  brain_count=%d",
+                        order_match,
+                        len(model_feats),
+                        len(FEATURE_COLS),
+                    )
+                    if not order_match:
+                        missing = [c for c in model_feats if c not in FEATURE_COLS]
+                        extra = [c for c in FEATURE_COLS if c not in model_feats]
+                        logger.warning(
+                            "ML feature alignment MISMATCH — inference will reindex to model order at runtime. "
+                            "model[:5]=%s brain[:5]=%s missing_in_brain=%s extra_in_brain=%s",
+                            model_feats[:5],
+                            list(FEATURE_COLS)[:5],
+                            missing[:5],
+                            extra[:5],
+                        )
             except Exception as e:
                 logger.warning("Failed to load model (%s), will use rules.", e)
 
@@ -632,7 +663,16 @@ class TrendMasterBrain:
         if self.state.model is None:
             return self.infer_rule(x)
         try:
-            feats = x[FEATURE_COLS].iloc[-1:].values
+            # Align to model's training-time feature order (via feature_name()
+            # if exposed) rather than the module-level FEATURE_COLS, so a
+            # post-retrain drift between the two cannot silently feed the
+            # booster columns in the wrong order. See ai_trading_agents/ml_align.py.
+            from ai_trading_agents.ml_align import align_feature_row
+
+            feats, _used, _missing = align_feature_row(x, self.state.model, FEATURE_COLS)
+            if feats is None:
+                logger.warning("ML inference: missing features %s — falling back to rules.", _missing[:5])
+                return self.infer_rule(x)
             # LGBM multi-class: [P(SELL), P(NONE), P(BUY)]
             p = self.state.model.predict(feats)[0]
             p = np.asarray(p, dtype=float)
