@@ -493,6 +493,18 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
         x["sess_overlap"] = ((hours >= 12) & (hours < 16)).astype(int)
         x["sess_asian"] = ((hours >= 0) & (hours < 7)).astype(int)
 
+    # Advanced features (R&D 2026-04-24): frac-diff, Hurst, mom-of-mom,
+    # realized skew, Donchian distance. Enabled iff
+    # CFG.advanced_features_enabled is truthy. Defaults OFF so no live
+    # behaviour change until the operator opts in.
+    if CFG.get("advanced_features_enabled", False):
+        try:
+            from ai_trading_agents.advanced_features import add_advanced_features
+
+            x = add_advanced_features(x)
+        except Exception as e:  # pragma: no cover - defensive
+            logger.warning("advanced_features failed (%s); skipping", e)
+
     return x
 
 
