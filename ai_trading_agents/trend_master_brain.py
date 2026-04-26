@@ -916,7 +916,23 @@ class TrendMasterBrain:
         df = self.pull_bars(TF, 500, symbol=sym)
         if df is None or len(df) < 120:
             return None
-        x = build_features(df).dropna()
+        # [Phase B2 2026-04-26] Optional smart-money feature enrichment.
+        # When CFG.smartmoney_features_enabled=True, build_features_v2 is
+        # called (V1 + 8 COT/EIA cols). dropna() only requires V1 cols so a
+        # missing EIA key or offline COT does NOT kill the tick. The existing
+        # model (25 features) still works via align_feature_row reindexing;
+        # this path becomes fully useful after Phase B3 retraining on V2.
+        _smartmoney_on = CFG.get("smartmoney_features_enabled", False)
+        if _smartmoney_on:
+            try:
+                from ai_trading_agents.feature_cols_v2 import build_features_v2
+
+                x = build_features_v2(df, symbol=sym, fill_na_smartmoney=True).dropna(subset=list(FEATURE_COLS))
+            except Exception as _sme:
+                logger.warning("[%s] build_features_v2 failed (%s); v1 fallback", sym, _sme)
+                x = build_features(df).dropna()
+        else:
+            x = build_features(df).dropna()
         if x.empty:
             return None
 
