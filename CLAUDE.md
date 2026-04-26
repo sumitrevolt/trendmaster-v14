@@ -16,10 +16,47 @@ running on Windows + OctaFX-Demo broker.
 
 ## Current state (snapshot — verify against logs/, don't trust this past 24h)
 
-- Brain is running on **rule-based inference** (`infer_rule`). Top-level
-  ML model `trend_master_model.lgb` is renamed to
-  `.weak_disabled_2026-04-24` because it had no predictive edge
-  (holdout acc 0.344 vs random 0.333).
+- **`ai_trading_agents/` is a Windows NTFS junction** (`mklink /J`)
+  pointing to `C:\TrendMaster_aita_canonical\`. This is permanent
+  infrastructure, not a temporary fix — see
+  `docs/POSTMORTEMS/2026-04-25_phantom_deletion_incident.md` for why
+  (OneDrive/EDR was silently deleting `*.py` files in the original
+  Documents-side folder; the junction with the curated source outside
+  Documents stopped that). **Do NOT delete the junction or move modules
+  back into the original folder.**
+- **`.resolve()` trap inside the brain package**: any module living
+  inside `ai_trading_agents/` that needs the project root must use
+  `Path(__file__).parent.parent` — NEVER `Path(__file__).resolve().parent.parent`,
+  because `.resolve()` follows the junction to `C:\` and breaks every
+  config-file lookup. This rule is project-specific, only applies to
+  files inside the junction (i.e. `ai_trading_agents/`); files in
+  `tools/`, `tests/`, `docs/skills/` can use `.resolve()` normally
+  because they live outside the junction. Audit was clean as of
+  2026-04-25 evening — zero `.resolve()` callsites remain inside the
+  package. (12 total were affected: 6 found in the first pass + 6
+  more found later by re-grepping the canonical source directly via
+  Windows. The Linux mount under-reported the brain-side files because
+  it follows the junction differently from `Path.resolve()`. Always
+  re-grep `C:\TrendMaster_aita_canonical\` directly when auditing
+  `.resolve()` regressions.)
+- The `archive/legacy_python/` folder still holds byte-perfect
+  canonical copies of every brain module (used as the seed for
+  `C:\TrendMaster_aita_canonical\`). Treat it as the disaster-recovery
+  source-of-truth.
+- Brain is running on **rule-based inference** (`infer_rule`) in
+  practice. Top-level ML model `trend_master_model.lgb` IS still on
+  disk and IS still being loaded by `_load_model()` at brain startup
+  — but it has no predictive edge (holdout acc 0.344 vs random 0.333,
+  diagnose verdict MODEL_UNIFORM). The `ml_align` guard catches
+  feature-name mismatch and routes inference back to `infer_rule`
+  whenever the model would otherwise produce uniform 1/3 outputs.
+  (CLAUDE.md previously claimed the file was renamed to
+  `.weak_disabled_2026-04-24`. Verified 2026-04-25: no such rename
+  exists. To actually disable, run:
+  `move ai_trading_agents\trend_master_model.lgb ai_trading_agents\trend_master_model.lgb.weak_disabled_2026-04-24`
+  — operator decision because the rename forces the brain into the
+  per-team-model path which has its own MODEL_UNIFORM finding on
+  CRYPTO.)
 - Feature-alignment guard (`ai_trading_agents/ml_align.py`) is wired
   into `infer_ml`; if a model is loaded with mismatching feature names,
   inference safely routes to `infer_rule` instead of feeding misaligned
@@ -34,6 +71,16 @@ running on Windows + OctaFX-Demo broker.
 - See `docs/POSTMORTEMS/2026-04-24_zero_trades.md` for the 47-day
   silent-failure incident and root cause (feature-order mismatch
   after a retrain). The fix is in commit `c08cae1`.
+- **Phase A1 / A2 / B1 landed 2026-04-26.** A1+A2 surveyed influencer
+  / smart-money tracking as an alpha source — see
+  `reports/influencer_tracking_feasibility_2026-04-26.md` and
+  `reports/influencer_correlation_phaseA2_2026-04-26.md`. B1 shipped
+  the cross-asset / smart-money join harness in
+  `ai_trading_agents/cross_asset_join.py` (COT + EIA fetchers,
+  H1-aligned; 220-line test file in `tests/`); commit `862077b`. No
+  `FEATURE_COLS` change yet — Phase B2 will wire features in. See
+  `docs/POSTMORTEMS/2026-04-26_pre_commit_junction_breakage.md` for
+  the junction-related drama during the B1 commit cycle.
 
 ## Tools you must use BEFORE Grep/Read for code exploration
 
@@ -57,6 +104,7 @@ in `tools/crg_hook.cmd`.
 | Feature builder | `ai_trading_agents/trend_master_brain.py::build_features` | line ~459, returns DataFrame with FEATURE_COLS |
 | Feature list | `ai_trading_agents/trend_master_brain.py::FEATURE_COLS` | line ~499; canonical 25 names |
 | ML alignment guard | `ai_trading_agents/ml_align.py` | uses model.feature_name() to reorder columns |
+| Smart-money join | `ai_trading_agents/cross_asset_join.py` | Phase B1, COT+EIA fetchers + H1 align (Phase B2 wires features into FEATURE_COLS) |
 | Profit filter gates | `ai_trading_agents/profit_filters.py::evaluate_all` | 6 gates; spread_guard is OFF by policy |
 | Rule-based inference | `ai_trading_agents/trend_master_brain.py::infer_rule` | uses ema_stack/adx/rsi/bb_z; score >=0.35 fires |
 | State store | `ai_trading_agents/state_store.py` | reads/writes `logs/brain_state.json` |
@@ -67,9 +115,48 @@ in `tools/crg_hook.cmd`.
 | Zero-trades watchdog | `tools/zero_trades_watchdog.py` + scheduled task | daily 09:00 local |
 | EA parity nightly | `tools/ea_parity_nightly.py` + scheduled task | weekdays 02:30 local |
 | Diagnostic | `tools/diagnose_zero_trades.py` | OK / HALTED / MODEL_UNIFORM / CONF_BELOW_THRESHOLD |
-| Skills | `docs/skills/trading-*` | brain-restart, daily-pnl, ea-parity, why-inspector, zero-trades |
-| Postmortems | `docs/POSTMORTEMS/` | one file per incident |
+| Skills | `docs/skills/trading-*` | 32 skills: 14 original (mql5-ea, python-brain, risk-ops, backtest, bridge, strategies, indicators, ml-features, optimization, news-events, order-execution, portfolio, deploy-monitor, debug) + 5 ops (brain-restart, daily-pnl, ea-parity, why-inspector, zero-trades) + 8 from `trendmaster-quant-bundle` (tca-daily, stress-replay, model-healthcheck, postmortem-new, schtasks-audit, cross-asset-features, triple-barrier-upgrade, drift-triage) + 5 from `trendmaster-ops-excellence` (position-reconciliation, walkforward-promotion, cost-attribution, correlation-monitor, broker-failover) |
+| Plugins | `*.plugin` (workspace root) | `trendmaster-quant-bundle.plugin`, `trendmaster-ops-excellence.plugin` — installable Cowork plugins mirroring the new skill folders |
+| Postmortems | `docs/POSTMORTEMS/` (with `INDEX.md`) | one file per incident; index updated by `trading-postmortem-new` skill |
 | Round 5 deploy | `docs/DEPLOY_ROUND5_RUNBOOK.md` | per-team cap, session boost, reentry, pyramid, TP-ladder |
+
+## Brain package maintenance (junction architecture)
+
+`ai_trading_agents/` is a Windows NTFS junction at
+`C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents`
+pointing to the canonical source folder
+`C:\TrendMaster_aita_canonical\`.
+
+To **edit a brain module** (e.g., `state_store.py`): edit it directly
+through the `ai_trading_agents/` path; the write goes through to the
+canonical folder transparently. No special handling required.
+
+To **add a new brain module**: drop the .py file at
+`ai_trading_agents/<name>.py` (or equivalently at
+`C:\TrendMaster_aita_canonical\<name>.py`). Both views show it.
+
+To **rebuild the junction from scratch** (e.g., if it ever gets removed):
+
+```cmd
+cd /d "C:\Users\Ratanshila\Documents\autmated trading"
+rd /s /q ai_trading_agents
+mklink /J ai_trading_agents C:\TrendMaster_aita_canonical
+```
+
+To **rebuild `C:\TrendMaster_aita_canonical\` from `archive/legacy_python/`**
+(disaster recovery):
+
+```cmd
+cd /d "C:\Users\Ratanshila\Documents\autmated trading"
+mkdir C:\TrendMaster_aita_canonical 2>nul
+for %%m in (ab_test advanced_features daily_digest drift_detector ea_confirmations event_log gate_value kelly_sizer market_calendar meta_labeler metrics ml_align model_governance multi_agent multi_market_dispatcher news_feed online_learner ops_maintenance pair_params panic performance portfolio_risk process_lock profit_filters reentry_tracker regime_hmm risk_manager rolling_corr state_store structured_log team_params telegram_commands telegram_notifier trade_tracker) do copy /Y "archive\legacy_python\%%m.py" "C:\TrendMaster_aita_canonical\%%m.py"
+```
+
+Plus `trend_master_brain.py`, `__init__.py`, `cross_asset_join.py`, the
+`ml_models/` folder, and `trend_master_model.lgb`. The brain restart
+script (`start_brain_clean.cmd`) should ideally pre-flight check that
+the junction resolves; if `C:\TrendMaster_aita_canonical\` is missing,
+the brain will fail at import and the script should refuse to start.
 
 ## Data
 
@@ -150,6 +237,16 @@ Quantpedia, MQL5 forum 2024-2026):
   so they're discoverable from the picker.
 
 **Don't:**
+- **Don't call `Path(__file__).resolve()` in any module inside
+  `ai_trading_agents/`.** The package is a junction; `.resolve()`
+  follows it and `parent.parent` lands on `C:\` instead of the project
+  root, silently breaking every config-file load. Use plain
+  `Path(__file__).parent.parent`. Files in `tools/`, `tests/`,
+  `docs/skills/` are outside the junction and CAN use `.resolve()`
+  normally.
+- **Don't delete or recreate the `ai_trading_agents/` junction unless
+  `C:\TrendMaster_aita_canonical\` exists**, otherwise the brain dies
+  at next import. See "Brain package maintenance" above.
 - Don't restart the brain on a hunch. Use `start_brain_clean.cmd`
   only after `diagnose_zero_trades` says you have a real problem to
   solve.
@@ -164,6 +261,7 @@ Quantpedia, MQL5 forum 2024-2026):
 - Don't introduce new dependencies casually. The repo runs on a live
   trading machine; npm/Bun/Rust toolchains add Defender attack surface.
   We just had 34 files quarantined by Defender mid-session.
+- **Don't run pre-commit without a junction guard.** Pre-commit's `git stash`/restore cycle can replace the `ai_trading_agents/` junction with a real folder (or remove it entirely) when reformatting hooks touch files inside it. The repo now ships `tools/restore_junction.cmd` and a `tools/check_junction.py` pre-commit hook. If you ever see "no module named ai_trading_agents.X" after a commit, run `tools\restore_junction.cmd`. See `docs/POSTMORTEMS/2026-04-26_pre_commit_junction_breakage.md`.
 
 ## Operator's invariants (never break these)
 

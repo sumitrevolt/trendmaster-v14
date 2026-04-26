@@ -52,6 +52,22 @@ repos:
         always_run: true
         stages: [pre-commit]
 
+      # Verify the ai_trading_agents/ NTFS junction is still intact
+      # AFTER the auto-fix hooks (ruff --fix, ruff-format,
+      # end-of-file-fixer) have run. Pre-commit's git stash/restore
+      # cycle has been observed replacing the junction with a real
+      # folder when reformatting touches files inside it; this guard
+      # blocks the commit instead of silently corrupting the worktree.
+      # Skips silently on non-Windows. See
+      # docs/POSTMORTEMS/2026-04-26_pre_commit_junction_breakage.md.
+      - id: check-junction
+        name: ai_trading_agents junction guard
+        entry: python tools/check_junction.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
       # Run the project's pytest suite locally before the commit lands.
       # This is intentionally quick — heavy backtests run in CI, not here.
       - id: pytest-quick
