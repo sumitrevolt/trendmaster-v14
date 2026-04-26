@@ -3,7 +3,7 @@
 # Install with: pip install -r requirements.txt
 
 # MetaTrader 5 Python Integration
-MetaTrader5>=5.0.45
+MetaTrader5>=5.0.5735
 
 # Data Processing
 pandas>=3.0.2
