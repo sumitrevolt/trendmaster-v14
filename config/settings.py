@@ -664,6 +664,12 @@ TRENDMASTER_V14 = {
     # model has been replaced with the B3-trained model (trend_master_model_v2.lgb
     # copied to trend_master_model.lgb). Restart brain to activate V2 inference.
     "smartmoney_features_enabled": True,
+    # [Phase C1 2026-04-26] Meta-label act/skip gate (binary secondary classifier).
+    # Flip to True ONLY after meta_label_model.lgb has been trained and validated
+    # (run tools/train_v14_c1_metalabel.py, check OOF AUC >= 0.55, then enable).
+    # act_threshold: P_act must exceed this to allow a BUY/SELL signal through.
+    "metalabel_enabled": False,
+    "metalabel_act_threshold": 0.55,
 }
 
 # =============================================================================

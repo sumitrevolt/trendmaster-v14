@@ -318,20 +318,28 @@ schtasks /query /tn "TrendMaster EA Parity Nightly" /fo LIST
    hold=12H1, purged 5-fold WF OOF acc=0.393. Model live as
    `trend_master_model.lgb`. Restart brain to activate. Set `EIA_API_KEY`
    to unlock 33rd feature (ng_storage_delta_z; currently 32 eff. features).
-1b. **Meta-labelling head (Phase C)** — keep current 3-class as side-
-    classifier, add binary act/skip head trained on triple-barrier outcomes;
-    trade only when P_act > 0.55. Highest-leverage next move.
-2. **Fractional-diff & Hurst features** — added to `build_features` in
-   commit shipped with this CLAUDE.md upgrade. Retrain after 1-2 weeks
-   of live data accumulation under the new labels.
+1b. **✅ DONE — Meta-labelling head (Phase C1)** — shipped 2026-04-26.
+    `tools/train_v14_c1_metalabel.py`: 35 meta-features (3 B3 probs + 32 V2),
+    binary act/skip on triple-barrier outcomes; purged 5-fold WF OOF AUC=0.906
+    (PROMOTE). Model saved to `ai_trading_agents/meta_label_model.lgb`.
+    Brain wired (`infer_ml` gate, `_load_meta_model`). Gate is OFF by default.
+    To activate:
+      1. In `config/settings.py` set `metalabel_enabled = True`
+         (also `metalabel_act_threshold = 0.55`)
+      2. `start_brain_clean.cmd`
+      3. `.venv\Scripts\python.exe tools\diagnose_zero_trades.py`
+         --> expect MODEL_OK, non-NONE directions with P_act filter active
+2. **Fractional-diff & Hurst features** — retrain after 1-2 weeks of live
+   data accumulation under the triple-barrier labels.
 3. **Cross-asset features (done: COT+EIA via B1/B2)** — COT 7 contracts
    + EIA NG storage now live in `FEATURE_COLS_V2`. Next: add DXY/VIX/
    US10Y H1-aligned (requires MT5 symbols or free macro feed).
-4. **Meta-labelling head** — keep current 3-class as side-classifier,
-   add binary act/skip classifier on triple-barrier outcomes.
+4. **Per-team meta-label models (Phase C2)** — train separate act/skip heads
+   per team (METALS/FOREX/CRYPTO/COMMODITIES); team-specific TP_rate varies
+   80-88%, per-team models will capture that variance.
 5. **Sequential-bootstrap LightGBM** — replace stock bagging to fix
    overlapping-label correlation.
-6. **HMM-gated experts** — only after 1-4 deliver a deployable Sharpe.
+6. **HMM-gated experts** — only after 1-5 deliver a deployable Sharpe.
 
 ## Pre-commit hook gotchas (saw these mid-session)
 

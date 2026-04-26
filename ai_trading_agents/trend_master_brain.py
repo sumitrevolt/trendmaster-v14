@@ -543,6 +543,8 @@ FEATURE_COLS = [
 @dataclass
 class BrainState:
     model: Optional[object] = None
+    # [Phase C1 2026-04-26] binary act/skip meta-labeller; None when disabled
+    meta_model: Optional[object] = None
     rule_wr_buy: float = 0.5
     rule_wr_sell: float = 0.5
     last_signal: Dict = field(default_factory=dict)
@@ -564,7 +566,9 @@ class TrendMasterBrain:
         self.state_dir = state_dir or _ROOT / "ai_trading_agents"
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.model_path = self.state_dir / "trend_master_model.lgb"
+        self.meta_model_path = self.state_dir / "meta_label_model.lgb"
         self._load_model()
+        self._load_meta_model()
 
         # Durable state across restarts — recent results, cooldown, etc.
         # Loaded once at construction; mutated in tick_once; persisted at
@@ -655,6 +659,36 @@ class TrendMasterBrain:
             except Exception as e:
                 logger.warning("Failed to load model (%s), will use rules.", e)
 
+    def _load_meta_model(self) -> None:
+        """[Phase C1 2026-04-26] Load the binary act/skip meta-labeller.
+
+        The meta-model (meta_label_model.lgb) sits alongside the primary B3
+        model. It is loaded only when metalabel_enabled=True in CFG. At
+        startup it logs its presence; the gate is applied at inference time
+        inside infer_ml(). Zero live-behaviour change when enabled=False.
+        """
+        self.state.meta_model = None
+        if not CFG.get("metalabel_enabled", False):
+            return
+        if not _HAS_LGB:
+            return
+        if self.meta_model_path.exists():
+            try:
+                self.state.meta_model = lgb.Booster(model_file=str(self.meta_model_path))
+                fn = self.state.meta_model.feature_name()
+                logger.info(
+                    "Loaded meta-label model: %s  (%d features)",
+                    self.meta_model_path,
+                    len(fn),
+                )
+            except Exception as e:
+                logger.warning("Failed to load meta-label model (%s) — gate disabled.", e)
+        else:
+            logger.info(
+                "metalabel_enabled=True but %s not found — run train_v14_c1_metalabel.py",
+                self.meta_model_path,
+            )
+
     # ─── DATA PULL ──────────────────────────────────────────────────────
     def pull_bars(self, tf: str, n: int = 500, symbol: Optional[str] = None) -> Optional[pd.DataFrame]:
         if not _HAS_MT5:
@@ -700,6 +734,39 @@ class TrendMasterBrain:
             idx = int(np.argmax(p))
             conf = float(p[idx])
             cls = ["SELL", "NONE", "BUY"][idx] if len(p) == 3 else "NONE"
+
+            # [Phase C1 2026-04-26] Meta-label gate: binary act/skip.
+            # When metalabel_enabled=True and the meta-model is loaded,
+            # feed [P_sell, P_none, P_buy] + V2 features (35 cols) to the
+            # secondary classifier. Veto the trade when P_act < threshold.
+            # Only fires when B3 picked BUY or SELL (NONE passes through).
+            if cls != "NONE" and self.state.meta_model is not None:
+                try:
+                    _act_thr = float(CFG.get("metalabel_act_threshold", 0.55))
+                    # Build meta-feature row: [P_sell, P_none, P_buy] + V2
+                    _p_row = np.asarray(p, dtype=np.float32).reshape(1, -1)  # (1, 3)
+                    _v2_row = feats.astype(np.float32)  # (1, 32)
+                    _meta_row = np.concatenate([_p_row, _v2_row], axis=1)  # (1, 35)
+                    _p_act = float(self.state.meta_model.predict(_meta_row)[0])
+                    if _p_act < _act_thr:
+                        logger.debug(
+                            "meta-label gate: VETO %s (P_act=%.3f < %.2f)",
+                            cls,
+                            _p_act,
+                            _act_thr,
+                        )
+                        return "NONE", _p_act
+                    # Keep direction; blend confidence with P_act
+                    conf = float(conf * _p_act)
+                    logger.debug(
+                        "meta-label gate: PASS %s (P_act=%.3f, blended_conf=%.3f)",
+                        cls,
+                        _p_act,
+                        conf,
+                    )
+                except Exception as _me:
+                    logger.debug("meta-label gate failed (%s) — ignoring.", _me)
+
             return cls, conf
         except Exception as e:
             logger.warning("ML inference failed (%s) — rule fallback.", e)

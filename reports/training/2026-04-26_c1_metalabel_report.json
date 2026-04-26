@@ -1,0 +1,119 @@
+{
+  "phase": "C1",
+  "generated": "2026-04-26T14:03:56.701811+00:00",
+  "runtime_s": 47,
+  "b3_model": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\trend_master_model.lgb",
+  "b3_features": 32,
+  "meta_features": 35,
+  "symbols": 19,
+  "total_act_rows": 45834,
+  "overall_tp_rate": 0.8447,
+  "cv_folds": 4,
+  "oof_auc": 0.9063,
+  "oof_auc_per_fold": [
+    0.8837,
+    0.911,
+    0.9235,
+    0.9306
+  ],
+  "deploy_threshold": 0.55,
+  "verdict": "PROMOTE",
+  "act_threshold": 0.55,
+  "per_symbol": [
+    {
+      "symbol": "XAUUSD",
+      "n_act": 2536,
+      "tp_rate": 0.8344
+    },
+    {
+      "symbol": "XAGUSD",
+      "n_act": 2572,
+      "tp_rate": 0.8589
+    },
+    {
+      "symbol": "GBPJPY",
+      "n_act": 2367,
+      "tp_rate": 0.845
+    },
+    {
+      "symbol": "USDCAD",
+      "n_act": 2107,
+      "tp_rate": 0.8505
+    },
+    {
+      "symbol": "USDCHF",
+      "n_act": 2239,
+      "tp_rate": 0.8303
+    },
+    {
+      "symbol": "EURUSD",
+      "n_act": 2173,
+      "tp_rate": 0.8394
+    },
+    {
+      "symbol": "GBPUSD",
+      "n_act": 2117,
+      "tp_rate": 0.8474
+    },
+    {
+      "symbol": "AUDUSD",
+      "n_act": 2392,
+      "tp_rate": 0.837
+    },
+    {
+      "symbol": "USDJPY",
+      "n_act": 2533,
+      "tp_rate": 0.8101
+    },
+    {
+      "symbol": "NZDUSD",
+      "n_act": 2520,
+      "tp_rate": 0.8226
+    },
+    {
+      "symbol": "EURJPY",
+      "n_act": 2543,
+      "tp_rate": 0.8344
+    },
+    {
+      "symbol": "AUDJPY",
+      "n_act": 2611,
+      "tp_rate": 0.8158
+    },
+    {
+      "symbol": "CADJPY",
+      "n_act": 2618,
+      "tp_rate": 0.8037
+    },
+    {
+      "symbol": "EURGBP",
+      "n_act": 2047,
+      "tp_rate": 0.8534
+    },
+    {
+      "symbol": "BTCUSD",
+      "n_act": 2364,
+      "tp_rate": 0.8744
+    },
+    {
+      "symbol": "ETHUSD",
+      "n_act": 2381,
+      "tp_rate": 0.8828
+    },
+    {
+      "symbol": "XTIUSD",
+      "n_act": 2468,
+      "tp_rate": 0.8509
+    },
+    {
+      "symbol": "XBRUSD",
+      "n_act": 2496,
+      "tp_rate": 0.8826
+    },
+    {
+      "symbol": "XNGUSD",
+      "n_act": 2750,
+      "tp_rate": 0.8804
+    }
+  ]
+}
