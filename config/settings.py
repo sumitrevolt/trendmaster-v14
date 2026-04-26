@@ -660,6 +660,10 @@ TRENDMASTER_V14 = {
     "feature_windows": [5, 10, 20, 50],
     "include_orderflow": True,  # tick imbalance if MT5 tick stream available
     "include_session_feature": True,  # London / NY / overlap / Asian one-hot
+    # [Phase B3 2026-04-26] Smart-money (COT + EIA) feature enrichment.
+    # model has been replaced with the B3-trained model (trend_master_model_v2.lgb
+    # copied to trend_master_model.lgb). Restart brain to activate V2 inference.
+    "smartmoney_features_enabled": True,
 }
 
 # =============================================================================

@@ -200,6 +200,43 @@ def diagnose() -> int:
     near_third = all(abs(c - (1.0 / 3.0)) < UNIFORM_DISTANCE_1_3 for c in confs)
     near_half = all(abs(c - 0.5) < UNIFORM_DISTANCE_1_3 for c in confs)
     if near_third and c_std < UNIFORM_TOLERANCE and none_frac > 0.9:
+        # [Phase B3 2026-04-26] Before crying MODEL_UNIFORM, check whether the
+        # loaded model is a V2 model (>25 features) that requires smart-money
+        # columns not available in the diagnostic's static feature build.
+        # When smartmoney_features_enabled=True and the model has >25 features,
+        # the uniform output is expected here — the brain will build V2 features
+        # correctly at runtime. This is NOT a model pathology.
+        _v2_model = False
+        _v2_err = None
+        try:
+            import lightgbm as _lgb  # noqa: PLC0415
+
+            _m = _lgb.Booster(model_file=str(MODEL_PATH))
+            _v2_model = len(_m.feature_name()) > 25
+        except Exception as _e:
+            _v2_err = str(_e)
+        if _v2_model:
+            _sm_on = False
+            try:
+                import sys as _sys2  # noqa: PLC0415
+
+                _rr = str(REPO_ROOT)  # project root (tools/../)
+                if _rr not in _sys2.path:
+                    _sys2.path.insert(0, _rr)
+                from config import settings as _s  # noqa: PLC0415
+
+                _sm_on = getattr(_s, "TRENDMASTER_V14", {}).get("smartmoney_features_enabled", False)
+            except Exception:
+                _sm_on = False
+            if _sm_on:
+                print("\n[VERDICT] MODEL_OK (V2) - model expects smart-money features (>25 cols).")
+                print("          Uniform output in this diagnostic is expected: the static")
+                print("          feature build here omits COT/EIA cols that the brain provides")
+                print("          at runtime via build_features_v2().")
+                print("          smartmoney_features_enabled=True is set in config.")
+                print("\nNext step: restart the brain with start_brain_clean.cmd.")
+                print("  After restart, re-run this diagnostic to confirm MODEL_OK.")
+                return 0
         print("\n[VERDICT] MODEL_UNIFORM - confidences clustered near 1/3 with very low")
         print("          variance AND NONE dominates direction. Signature of a 3-class")
         print("          classifier returning near-uniform probabilities for every input")

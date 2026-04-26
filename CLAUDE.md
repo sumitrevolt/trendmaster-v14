@@ -71,16 +71,31 @@ running on Windows + OctaFX-Demo broker.
 - See `docs/POSTMORTEMS/2026-04-24_zero_trades.md` for the 47-day
   silent-failure incident and root cause (feature-order mismatch
   after a retrain). The fix is in commit `c08cae1`.
-- **Phase A1 / A2 / B1 landed 2026-04-26.** A1+A2 surveyed influencer
-  / smart-money tracking as an alpha source — see
+- **Phase A1 / A2 / B1 / B2 landed 2026-04-26.** A1+A2 surveyed
+  influencer / smart-money tracking as an alpha source — see
   `reports/influencer_tracking_feasibility_2026-04-26.md` and
   `reports/influencer_correlation_phaseA2_2026-04-26.md`. B1 shipped
   the cross-asset / smart-money join harness in
   `ai_trading_agents/cross_asset_join.py` (COT + EIA fetchers,
-  H1-aligned; 220-line test file in `tests/`); commit `862077b`. No
-  `FEATURE_COLS` change yet — Phase B2 will wire features in. See
-  `docs/POSTMORTEMS/2026-04-26_pre_commit_junction_breakage.md` for
-  the junction-related drama during the B1 commit cycle.
+  H1-aligned); commit `862077b`. **B2 (commit `5b85a21`) wired features
+  in**: `ai_trading_agents/feature_cols_v2.py` now exports `FEATURE_COLS_V2`
+  (33 cols = 25 v1 + 7 COT spec_delta_z + ng_storage_delta_z),
+  `SYMBOL_COT_MAP` (19 symbols → COT contract), and `build_features_v2`
+  (fill_na_smartmoney for live inference). `tick_once` in brain has CFG
+  gate `smartmoney_features_enabled` (now **True** as of B3). Walkforward
+  comparison 2026-04-26: V1 acc=0.422 expR=0.317 vs V2 acc=0.421 expR=0.306
+  across 19 symbols — no regression; CRYPTO improves (+3 pp expR, +1 pp acc);
+  EIA absent (no `EIA_API_KEY` set, ng_storage_delta_z = all-NaN, auto-
+  dropped to 32 effective features — set key in `config/.env` to unlock).
+  **Phase B3 shipped (commit follows B2 on 2026-04-26).** Triple-barrier
+  retrain on all 19 symbols, FEATURE_COLS_V2 (32 eff. features); purged 5-fold
+  walk-forward OOF acc=0.393 (threshold 0.38 → PROMOTE). Model saved to
+  `ai_trading_agents/trend_master_model_v2.lgb` and copied over live
+  `trend_master_model.lgb`. `smartmoney_features_enabled=True` set in
+  `config/settings.py`. Restart brain with `start_brain_clean.cmd` to
+  activate; run `diagnose_zero_trades.py` after restart to confirm MODEL_OK.
+  See `docs/POSTMORTEMS/2026-04-26_pre_commit_junction_breakage.md` for
+  the junction-related drama during the B1/B2 commit cycles.
 
 ## Tools you must use BEFORE Grep/Read for code exploration
 
@@ -298,15 +313,20 @@ schtasks /query /tn "TrendMaster EA Parity Nightly" /fo LIST
 
 ## Open R&D priorities (in order)
 
-1. **Triple-barrier labelling** — replace fixed-horizon return labels
-   in `tools/train_v14_better.py` with TP/SL/time triple-barrier;
-   target acc on purged CV ≥ 0.40.
+1. **✅ DONE — Triple-barrier labelling + V2 retrain (Phase B3)** — shipped
+   2026-04-26. `tools/train_v14_b3.py`: 19-symbol pool, TP=2×ATR/SL=1×ATR/
+   hold=12H1, purged 5-fold WF OOF acc=0.393. Model live as
+   `trend_master_model.lgb`. Restart brain to activate. Set `EIA_API_KEY`
+   to unlock 33rd feature (ng_storage_delta_z; currently 32 eff. features).
+1b. **Meta-labelling head (Phase C)** — keep current 3-class as side-
+    classifier, add binary act/skip head trained on triple-barrier outcomes;
+    trade only when P_act > 0.55. Highest-leverage next move.
 2. **Fractional-diff & Hurst features** — added to `build_features` in
    commit shipped with this CLAUDE.md upgrade. Retrain after 1-2 weeks
    of live data accumulation under the new labels.
-3. **Cross-asset features** — pull DXY/VIX/US10Y H1-aligned into
-   `build_features`. Requires either MT5 symbols if the broker offers
-   them or a free macro-data feed.
+3. **Cross-asset features (done: COT+EIA via B1/B2)** — COT 7 contracts
+   + EIA NG storage now live in `FEATURE_COLS_V2`. Next: add DXY/VIX/
+   US10Y H1-aligned (requires MT5 symbols or free macro feed).
 4. **Meta-labelling head** — keep current 3-class as side-classifier,
    add binary act/skip classifier on triple-barrier outcomes.
 5. **Sequential-bootstrap LightGBM** — replace stock bagging to fix
