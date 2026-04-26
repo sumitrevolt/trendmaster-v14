@@ -15,7 +15,7 @@ numpy>=2.4.4
 
 # HTTP clients (API calls + AI brain providers)
 aiohttp>=3.13.5
-httpx>=0.24.0
+httpx>=0.28.1
 
 # Machine Learning (required for Level 2 ML training in agent_training.py)
 scikit-learn>=1.8.0
