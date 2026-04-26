@@ -1,10 +1,33 @@
-"""Smart-money cross-asset feature joins (Phase B1, data plumbing only).
+"""Smart-money cross-asset feature joins (Phase B1 + B1.5 hotfix, data plumbing only).
 
 This module fetches the two slow-moving "smart-money" datasets identified
 in the Phase A2 cross-asset edge report and aligns them onto an H1 symbol
 DataFrame. It does NOT touch FEATURE_COLS, infer_ml, or any brain gate;
 Phase B2 is responsible for wiring these features into model training and
 inference.
+
+CFTC report tier (Phase B1.5 correction)
+----------------------------------------
+We use the CFTC LEGACY (futures-only) report endpoint
+``6dca-aqww.json``. That report exposes Non-Commercial / Commercial /
+Non-Reportable categories -- NOT Managed Money / Lev Money / Other
+Reportable, which only live on the Disaggregated (``72hf-taqq``) and
+TFF endpoints. Phase B1 originally tried to read ``m_money_*`` columns
+from the legacy endpoint, which silently produced empty result sets;
+Phase B1.5 corrects this to ``noncomm_positions_long_all`` /
+``noncomm_positions_short_all``, matching what Phase A2's correlation
+study (reports/influencer_correlation_phaseA2_2026-04-26.md) used to
+find EDGE-class signals on GC/SI/6E/6J/6C/CL/BTC. The legacy report
+gives ~16 years of weekly history (851 rows on flagship contracts);
+that long history is the explicit reason Phase A2 chose legacy over
+disaggregated.
+
+The constructed signal is "Non-Commercial Net" =
+non-commercial longs - non-commercial shorts, which in legacy COT
+parlance is the "speculator" category and is what the literature and
+Phase A2 refer to interchangeably. The variable name ``spec_net``
+reflects this; we are not feeding Disaggregated managed-money data
+despite the conceptual proximity.
 
 Data sources
 ------------
@@ -66,7 +89,11 @@ COT_CONTRACT_MARKET_PATTERNS: dict[str, list[str]] = {
     "6E": ["euro fx"],
     "6J": ["japanese yen"],
     "6C": ["canadian dollar"],
-    "CL": ["wti", "crude oil, light sweet"],
+    # Phase B1.5: drop the bare "wti" pattern -- it matched
+    # "WTI-PHYSICAL - NEW YORK MERCANTILE EXCHANGE" which only has
+    # 220 weekly rows (2022 onwards). The classic CL futures contract
+    # has the pattern below and gives the full 16-year history.
+    "CL": ["crude oil, light sweet"],
     "BTC": ["bitcoin"],
 }
 
@@ -166,8 +193,12 @@ def _http_get_json(url: str, params: dict | None = None) -> object:
 _COT_REQUIRED_COLS = (
     "report_date_as_yyyy_mm_dd",
     "contract_market_name",
-    "m_money_positions_long_all",
-    "m_money_positions_short_all",
+    # Phase B1.5: the legacy_fut endpoint exposes Non-Commercial /
+    # Commercial / Non-Reportable categories. Managed-Money columns
+    # (m_money_*) only exist on the Disaggregated (72hf-taqq) endpoint
+    # which Phase A2 deliberately avoided because of its shorter history.
+    "noncomm_positions_long_all",
+    "noncomm_positions_short_all",
 )
 
 
@@ -190,8 +221,8 @@ def _cot_records_to_frame(records: list[dict], contracts: Iterable[str]) -> pd.D
     rows = []
     for rec in records:
         try:
-            longs = float(rec["m_money_positions_long_all"])
-            shorts = float(rec["m_money_positions_short_all"])
+            longs = float(rec["noncomm_positions_long_all"])
+            shorts = float(rec["noncomm_positions_short_all"])
         except (TypeError, ValueError):
             continue
         rep_date = pd.to_datetime(rec["report_date_as_yyyy_mm_dd"], errors="coerce")
@@ -241,8 +272,12 @@ def fetch_cot_weekly(
 
     Returns a DataFrame indexed by report_date_as_yyyy_mm_dd
     (datetime64[ns]), columns "<CODE>_spec_delta_z" -- a 52-week rolling
-    z-score of (managed-money longs - managed-money shorts). Sorted
-    ascending.
+    z-score of (non-commercial longs - non-commercial shorts) from the
+    CFTC LEGACY (futures-only) report. Sorted ascending.
+
+    Note: legacy_fut "non-commercial" is the speculator category in
+    classical COT parlance; this is what Phase A2's correlation study
+    used and what generated the EDGE-class verdicts in the report.
 
     Parameters
     ----------
@@ -268,24 +303,49 @@ def fetch_cot_weekly(
             cached.index = pd.to_datetime(cached.index)
             return cached.sort_index()
 
-    params = {
-        "$limit": "5000",
-        "$order": "report_date_as_yyyy_mm_dd DESC",
-    }
-    try:
-        records = _http_get_json(CFTC_ENDPOINT, params=params)
-    except Exception as exc:
-        log.warning("CFTC fetch failed (%s); falling back to cache if any", exc)
+    # Phase B1.5: paginate per contract using a SoQL $where clause -- the
+    # default Socrata $limit (5000 records across the whole dataset) only
+    # reaches back ~36 weeks because the universe spans ~140 markets per
+    # week. Phase A2 found that filtering by market_and_exchange_names per
+    # contract with $limit=50000 reliably returns the full 16-year history
+    # (851 weekly rows on flagship contracts).
+    all_records: list[dict] = []
+    for code in contracts:
+        patterns = COT_CONTRACT_MARKET_PATTERNS.get(code, [])
+        if not patterns:
+            log.warning("No COT pattern for contract code %s; skipping", code)
+            continue
+        # Use a like-style filter on contract_market_name; SoQL doesn't
+        # support case-insensitive LIKE so we upper-case the pattern (the
+        # dataset stores names in upper case).
+        # Wrap each pattern with % wildcards.
+        like_clauses = " OR ".join(f"upper(contract_market_name) like '%{p.upper()}%'" for p in patterns)
+        where = f"({like_clauses}) AND report_date_as_yyyy_mm_dd >= '2010-01-01T00:00:00.000'"
+        params = {
+            "$where": where,
+            "$select": (
+                "report_date_as_yyyy_mm_dd,contract_market_name,noncomm_positions_long_all,noncomm_positions_short_all"
+            ),
+            "$order": "report_date_as_yyyy_mm_dd ASC",
+            "$limit": "50000",
+        }
+        try:
+            recs = _http_get_json(CFTC_ENDPOINT, params=params)
+        except Exception as exc:
+            log.warning("CFTC fetch for %s failed (%s); will try other contracts", code, exc)
+            continue
+        if isinstance(recs, list) and recs:
+            all_records.extend(recs)
+
+    if not all_records:
+        log.warning("CFTC: no records fetched for any contract; falling back to cache if any")
         cached = _read_cache(cache_path)
         if cached is not None:
             cached.index = pd.to_datetime(cached.index)
             return cached.sort_index()
-        raise
+        raise CrossAssetSchemaError("CFTC fetch returned no records for any requested contract")
 
-    if not isinstance(records, list):
-        raise CrossAssetSchemaError(f"CFTC endpoint returned non-list payload (type={type(records).__name__})")
-
-    df = _cot_records_to_frame(records, contracts)
+    df = _cot_records_to_frame(all_records, contracts)
     _write_cache(df, cache_path)
     return df
 
@@ -529,6 +589,14 @@ def align_to_h1(
         eia_aligned = _ffill_with_publish_lag(target, eia_df, _eia_publish_ts)
         for col in eia_aligned.columns:
             out[col] = eia_aligned[col].to_numpy()
+    else:
+        # Phase B1.5: keep the column contract stable. If EIA is unavailable
+        # (no API key, network down, etc.) we still surface the expected
+        # ng_storage_delta_z column as all-NaN so downstream feature builders
+        # (e.g. feature_cols_v2.build_features_v2) don't error. dropna() in
+        # the walkforward then removes those rows / columns naturally.
+        if "ng_storage_delta_z" not in out.columns:
+            out["ng_storage_delta_z"] = np.nan
 
     return out
 

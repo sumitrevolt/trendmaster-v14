@@ -22,9 +22,17 @@ echo Installing daily walkforward_lab task...
 echo ROOT=%ROOT%
 echo.
 
+REM Phase B1.5 fix: schtasks /tr needs the inner path quoted for the
+REM scheduler to preserve quotes around the action path (the project
+REM ROOT contains a space -- "autmated trading"). Without escaping, the
+REM outer cmd.exe consumes the quotes and schtasks splits the path on
+REM the space, registering an action like
+REM   C:\Users\Ratanshila\Documents\autmated
+REM and the Tuesday 08:00 run silently fails. The \"...\" form below
+REM passes a literal "%ROOT%tools\run_walkforward_lab.cmd" to schtasks.
 schtasks /create /f /sc daily /st 08:00 ^
     /tn "TrendMaster Walkforward Lab" ^
-    /tr "%ROOT%tools\run_walkforward_lab.cmd"
+    /tr "\"%ROOT%tools\run_walkforward_lab.cmd\""
 if errorlevel 1 (
     echo [X] walkforward_lab task failed to register
     endlocal & exit /b 1

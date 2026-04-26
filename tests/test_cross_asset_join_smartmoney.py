@@ -57,8 +57,11 @@ def _make_synthetic_cot_records(n_weeks: int, contracts: list[str]) -> list[dict
                 {
                     "report_date_as_yyyy_mm_dd": rep_date.strftime("%Y-%m-%dT00:00:00.000"),
                     "contract_market_name": contract_market_names[c],
-                    "m_money_positions_long_all": str(longs),
-                    "m_money_positions_short_all": str(shorts),
+                    # Phase B1.5: legacy_fut endpoint exposes noncomm_*
+                    # (Non-Commercial), not m_money_* (which only lives
+                    # on the Disaggregated endpoint).
+                    "noncomm_positions_long_all": str(longs),
+                    "noncomm_positions_short_all": str(shorts),
                 }
             )
     return records
@@ -142,8 +145,8 @@ def test_fetch_cot_schema_drift_raises(tmp_path):
         {
             "report_date_as_yyyy_mm_dd": "2024-01-02",
             "contract_market_name": "GOLD",
-            # m_money_positions_long_all DELIBERATELY MISSING
-            "m_money_positions_short_all": "1000",
+            # Phase B1.5: noncomm_positions_long_all DELIBERATELY MISSING
+            "noncomm_positions_short_all": "1000",
         }
     ]
 
@@ -155,7 +158,7 @@ def test_fetch_cot_schema_drift_raises(tmp_path):
 
         with pytest.raises(CrossAssetSchemaError) as exc_info:
             fetch_cot_weekly(contracts=["GC"], cache_path=cache)
-    assert "m_money_positions_long_all" in str(exc_info.value)
+    assert "noncomm_positions_long_all" in str(exc_info.value)
 
 
 # ---------------------------------------------------------------------------
