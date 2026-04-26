@@ -56,6 +56,7 @@ from sklearn.metrics import roc_auc_score
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from tools.sample_weights import avg_uniqueness  # noqa: E402  [Phase D1]
 from ai_trading_agents.feature_cols_v2 import build_features_v2  # noqa: E402
 from ai_trading_agents.trend_master_brain import FEATURE_COLS  # noqa: E402
 
@@ -187,10 +188,15 @@ def _purged_wf_cv_binary(
     X: np.ndarray,
     y: np.ndarray,
     feat_names: list[str],
+    sample_weights: np.ndarray,  # [Phase D1] pre-computed uniqueness×class weights
     folds: int = FOLDS,
     purge: int = PURGE,
 ) -> dict[str, Any]:
-    """Purged walk-forward CV for binary classifier. Returns OOF AUC."""
+    """Purged walk-forward CV for binary classifier. Returns OOF AUC.
+
+    [Phase D1] sample_weights replaces per-fold class-weight computation.
+    bagging_fraction disabled; uniqueness weights replace it.
+    """
     n = len(X)
     fold_size = n // (folds + 1)
     aucs: list[float] = []
@@ -208,8 +214,7 @@ def _purged_wf_cv_binary(
         if len(np.unique(y_tr)) < 2 or len(np.unique(y_te)) < 2:
             continue
 
-        pos_w = float((y_tr == 0).sum()) / max((y_tr == 1).sum(), 1)
-        w_tr = np.where(y_tr == 1, pos_w, 1.0)
+        w_tr = sample_weights[:train_end]  # [Phase D1] uniqueness×class weight slice
 
         d_tr = lgb.Dataset(X_tr, y_tr, weight=w_tr, feature_name=feat_names)
         d_va = lgb.Dataset(X_te, y_te, reference=d_tr, feature_name=feat_names)
@@ -220,8 +225,7 @@ def _purged_wf_cv_binary(
             num_leaves=31,
             min_data_in_leaf=60,
             feature_fraction=0.80,
-            bagging_fraction=0.80,
-            bagging_freq=5,
+            # [Phase D1] bagging_fraction removed; uniqueness weights replace it
             lambda_l2=1.0,
             verbosity=-1,
             seed=SEED,
@@ -309,6 +313,7 @@ def main() -> int:
     print(f"\n[3/5] Building meta-feature pool ({len(ALL_SYMBOLS)} symbols)...")
     meta_rows: list[np.ndarray] = []
     meta_labels: list[int] = []
+    uniq_weights: list[np.ndarray] = []  # [Phase D1]
     sym_stats: list[dict] = []
 
     for sym in ALL_SYMBOLS:
@@ -381,6 +386,8 @@ def main() -> int:
 
         meta_rows.append(X_meta)
         meta_labels.extend(y_act.tolist())
+        uniq_i = avg_uniqueness(n_act, HOLD_BARS)  # [Phase D1]
+        uniq_weights.append(uniq_i)  # [Phase D1]
         sym_stats.append(
             {
                 "symbol": sym,
@@ -397,15 +404,24 @@ def main() -> int:
     y_all = np.array(meta_labels, dtype=int)
     meta_feat_names = ["b3_p_sell", "b3_p_none", "b3_p_buy"] + list(b3_feat_names)
 
+    # [Phase D1] sequential-bootstrap sample weights: avg_uniqueness × balanced class weight
+    uniq_all = np.concatenate(uniq_weights)
+    pos_w = float((y_all == 0).sum()) / max(int((y_all == 1).sum()), 1)
+    class_w_all = np.where(y_all == 1, pos_w, 1.0).astype(np.float64)
+    sample_w_all = uniq_all * class_w_all
+
     print(f"\n  Total pool: {len(X_all):,} act-rows from {len(sym_stats)} symbols")
     print(f"  Meta features  : {len(meta_feat_names)} cols")
     print(f"  Overall TP rate: {y_all.mean():.1%}  (act={int(y_all.sum())}  skip={int((y_all == 0).sum())})")
+    print(
+        f"  Sample weight  : mean={sample_w_all.mean():.4f}  min={sample_w_all.min():.4f}  max={sample_w_all.max():.4f}"
+    )  # [Phase D1]
 
     # ------------------------------------------------------------------
     # Step 4: purged walk-forward CV
     # ------------------------------------------------------------------
     print(f"\n[4/5] Purged walk-forward CV ({FOLDS} folds, purge={PURGE} bars)...")
-    cv = _purged_wf_cv_binary(X_all, y_all, meta_feat_names)
+    cv = _purged_wf_cv_binary(X_all, y_all, meta_feat_names, sample_weights=sample_w_all)  # [Phase D1]
     oof_auc = cv["oof_auc"]
     print(f"  OOF AUC   : {oof_auc:.4f}  (per fold: {cv.get('oof_auc_per_fold', '?')})")
     print(f"  Random baseline : 0.500  |  Target : >= {ACT_AUC_THRESHOLD}")
@@ -421,10 +437,8 @@ def main() -> int:
     # Step 5: full-fit on all data
     # ------------------------------------------------------------------
     print(f"\n[5/5] Full-fit on all {len(X_all):,} act-rows...")
-    pos_w = float((y_all == 0).sum()) / max((y_all == 1).sum(), 1)
-    w_all = np.where(y_all == 1, pos_w, 1.0)
-
-    d_full = lgb.Dataset(X_all, y_all, weight=w_all, feature_name=meta_feat_names)
+    # [Phase D1] use sample_w_all (uniqueness × class weight) instead of flat class weights
+    d_full = lgb.Dataset(X_all, y_all, weight=sample_w_all, feature_name=meta_feat_names)
     params_full = dict(
         objective="binary",
         metric="auc",
@@ -432,8 +446,7 @@ def main() -> int:
         num_leaves=31,
         min_data_in_leaf=60,
         feature_fraction=0.80,
-        bagging_fraction=0.80,
-        bagging_freq=5,
+        # [Phase D1] bagging_fraction/bagging_freq removed; uniqueness weights replace them
         lambda_l2=1.0,
         num_iterations=700,
         verbosity=-1,

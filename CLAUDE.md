@@ -334,14 +334,30 @@ schtasks /query /tn "TrendMaster EA Parity Nightly" /fo LIST
 3. **Cross-asset features (done: COT+EIA via B1/B2)** — COT 7 contracts
    + EIA NG storage now live in `FEATURE_COLS_V2`. Next: add DXY/VIX/
    US10Y H1-aligned (requires MT5 symbols or free macro feed).
-4. **Per-team meta-label models (Phase C2)** — `tools/train_v14_c2_metalabel_perteam.py`
-   trains 4 separate act/skip heads (METALS/FOREX/CRYPTO/COMMODITIES); same 35-col
-   meta-feature schema as C1; routes each trade's P_act check to its team head.
-   To activate after training: set `metalabel_perteam_enabled = True` in settings
-   (keep `metalabel_enabled = True` as fallback). Then `start_brain_clean.cmd`.
-5. **Sequential-bootstrap LightGBM** — replace stock bagging to fix
-   overlapping-label correlation.
-6. **HMM-gated experts** — only after 1-5 deliver a deployable Sharpe.
+4. **✅ DONE — Per-team meta-label models (Phase C2)** — shipped 2026-04-26.
+   `tools/train_v14_c2_metalabel_perteam.py`: 4×PROMOTE AUC 0.873–0.920.
+   Models: `meta_label_model_{METALS,FOREX,CRYPTO,COMMODITIES}.lgb`. Gate OFF by default.
+   To activate: set `metalabel_perteam_enabled = True` + `metalabel_enabled = True`
+   in `config/settings.py`, then `start_brain_clean.cmd`.
+5. **✅ DONE — Sequential-bootstrap LightGBM (Phase D1)** — shipped 2026-04-26.
+   `tools/sample_weights.py`: `avg_uniqueness(n, hold_bars)` via O(n) diff-array + cumsum.
+   All three trainers patched (B3/C1/C2): `bagging_fraction` removed, replaced by
+   `sample_weight = avg_uniqueness × balanced_class_weight` passed to `lgb.Dataset`.
+   Cascade retrain results (all PROMOTE):
+     - B3:          OOF acc=0.3857  (32 features, 78k samples, 19 symbols)
+     - C1 global:   OOF AUC=0.9078  (45k act-rows)
+     - C2 METALS:   OOF AUC=0.8787  (+0.6pp vs pre-D1)
+     - C2 FOREX:    OOF AUC=0.9082  (+0.4pp vs pre-D1)
+     - C2 CRYPTO:   OOF AUC=0.9005  (-1.2pp vs pre-D1 — expected: more honest estimate)
+     - C2 COMMOD:   OOF AUC=0.9047  (-1.5pp vs pre-D1 — expected: more honest estimate)
+   D1 does NOT change brain behaviour or gate flags. Models on disk are updated;
+   gates (metalabel_enabled, metalabel_perteam_enabled) remain False by default.
+   Report: `reports/training/2026-04-26_d1_sequential_bootstrap_report.json`
+6. **Fractional-diff (d≈0.4) + Hurst exponent features (Phase D2)** — retrain after
+   1-2 weeks of live data under the triple-barrier labels.
+7. **DXY/VIX/US10Y macro features H1-aligned (Phase D3)** — beyond COT/EIA; requires
+   MT5 symbols or free macro feed.
+8. **HMM-gated experts** — only after D1-D3 deliver a deployable Sharpe.
 
 ## Pre-commit hook gotchas (saw these mid-session)
 

@@ -52,6 +52,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from tools.sample_weights import avg_uniqueness  # noqa: E402  [Phase D1]
 from ai_trading_agents.feature_cols_v2 import (  # noqa: E402
     FEATURE_COLS_V2,
     SMARTMONEY_COLS,
@@ -180,10 +181,17 @@ def _purged_wf_cv(
     X: np.ndarray,
     y: np.ndarray,
     feat_names: list[str],
+    sample_weights: np.ndarray,  # [Phase D1] pre-computed uniqueness×class weights
     folds: int = FOLDS,
     purge: int = PURGE,
 ) -> dict[str, Any]:
-    """Purged walk-forward 5-fold cross-validation. Returns OOF metrics."""
+    """Purged walk-forward 5-fold cross-validation. Returns OOF metrics.
+
+    [Phase D1] sample_weights replaces per-fold class-weight computation.
+    Weights = avg_uniqueness × balanced_class_weight (see sample_weights.py).
+    bagging_fraction disabled (set to 1.0); uniqueness weights serve the
+    same de-duplication purpose more principled-ly.
+    """
     n = len(X)
     fold_size = n // (folds + 1)
     accs: list[float] = []
@@ -191,7 +199,6 @@ def _purged_wf_cv(
     all_true: list[int] = []
 
     label_map = {-1: 0, 0: 1, 1: 2}
-    inv_map = {0: -1, 1: 0, 2: 1}
     y_enc = np.array([label_map[int(v)] for v in y], dtype=int)
 
     for k in range(folds):
@@ -205,9 +212,7 @@ def _purged_wf_cv(
         if len(np.unique(y_tr)) < 2:
             continue
 
-        classes, counts = np.unique(y_tr, return_counts=True)
-        w = {int(c): float(len(y_tr) / (3 * cnt)) for c, cnt in zip(classes, counts)}
-        w_tr = np.array([w.get(int(yy), 1.0) for yy in y_tr])
+        w_tr = sample_weights[:train_end]  # uniqueness×class weight slice
 
         d_tr = lgb.Dataset(X_tr, y_tr, weight=w_tr, feature_name=feat_names)
         d_va = lgb.Dataset(X_te, y_te, reference=d_tr, feature_name=feat_names)
@@ -219,8 +224,7 @@ def _purged_wf_cv(
             num_leaves=63,
             min_data_in_leaf=80,
             feature_fraction=0.85,
-            bagging_fraction=0.85,
-            bagging_freq=5,
+            # [Phase D1] bagging_fraction removed; uniqueness weights replace it
             lambda_l2=0.5,
             verbosity=-1,
             seed=SEED,
@@ -333,6 +337,11 @@ def main() -> None:
             symbol_stats[sym] = {"status": "too_few_samples", "n": post}
             continue
 
+        # [Phase D1] Per-symbol average uniqueness for sequential-bootstrap weights.
+        # Computed on the clean rows for this symbol BEFORE pooling, so cross-symbol
+        # label windows don't bleed into each other's uniqueness calculation.
+        feats["__uniq__"] = avg_uniqueness(len(feats), HOLD_BARS)
+
         dist = feats["__label__"].value_counts().sort_index().to_dict()
         frames.append(feats)
         print(
@@ -367,15 +376,29 @@ def main() -> None:
     X_all = pool[feat_cols].values.astype(np.float64)
     y_all = pool["__y__"].values.astype(int)
     y_raw = pool["__label__"].values.astype(int)
+    # [Phase D1] Extract per-symbol uniqueness preserved through pd.concat + sort_index
+    uniq_all = pool["__uniq__"].values.astype(np.float64)
 
     print(f"\n  Final X shape : {X_all.shape}")
     print(f"  Label dist (0=SELL 1=NONE 2=BUY): {dict(zip(*np.unique(y_all, return_counts=True)))}")
+
+    # [Phase D1] Pre-compute combined sample weights: avg_uniqueness × balanced class weight.
+    # Replaces per-fold class-weight computation inside _purged_wf_cv.
+    classes, counts = np.unique(y_all, return_counts=True)
+    class_w_map = {int(c): float(len(y_all) / (3 * cnt)) for c, cnt in zip(classes, counts)}
+    class_w_all = np.array([class_w_map.get(int(yy), 1.0) for yy in y_all])
+    sample_w_all = uniq_all * class_w_all
+    print(
+        f"  Sample weights: uniq mean={uniq_all.mean():.4f}  "
+        f"combined mean={sample_w_all.mean():.4f}  "
+        f"(bagging_fraction replaced by uniqueness weights)"
+    )
 
     # ------------------------------------------------------------------
     # Step 3: purged walk-forward CV
     # ------------------------------------------------------------------
     print(f"\n[3/4] Purged walk-forward CV ({FOLDS} folds, purge={PURGE} bars)…")
-    cv = _purged_wf_cv(X_all, y_raw, feat_cols)
+    cv = _purged_wf_cv(X_all, y_raw, feat_cols, sample_weights=sample_w_all)
     oof_acc = cv["oof_acc"]
     print(f"  OOF accuracy : {oof_acc:.4f}  (per fold: {cv['oof_acc_per_fold']})")
     print(f"  Random baseline : 0.333  |  Target : >= {DEPLOY_THRESHOLD}")
@@ -390,11 +413,8 @@ def main() -> None:
     # Step 4: full-fit on entire pool
     # ------------------------------------------------------------------
     print(f"\n[4/4] Full-fit on all {len(X_all):,} samples…")
-    classes, counts = np.unique(y_all, return_counts=True)
-    weights = {int(c): float(len(y_all) / (3 * cnt)) for c, cnt in zip(classes, counts)}
-    w_all = np.array([weights[int(yy)] for yy in y_all])
-
-    d_full = lgb.Dataset(X_all, y_all, weight=w_all, feature_name=feat_cols)
+    # [Phase D1] Use pre-computed uniqueness×class weights (same as CV)
+    d_full = lgb.Dataset(X_all, y_all, weight=sample_w_all, feature_name=feat_cols)
     params_full = dict(
         objective="multiclass",
         num_class=3,
@@ -403,8 +423,7 @@ def main() -> None:
         num_leaves=63,
         min_data_in_leaf=80,
         feature_fraction=0.85,
-        bagging_fraction=0.85,
-        bagging_freq=5,
+        # [Phase D1] bagging_fraction removed; uniqueness weights replace it
         lambda_l2=0.5,
         verbosity=-1,
         seed=SEED,
@@ -442,6 +461,7 @@ def main() -> None:
         "oof_acc": oof_acc,
         "deploy_threshold": DEPLOY_THRESHOLD,
         "promote": oof_acc >= DEPLOY_THRESHOLD,
+        "uniqueness_weighted": True,  # [Phase D1]
         "model_path": str(OUT_V2),
         "feature_name_roundtrip_ok": match,
         "runtime_sec": round(elapsed, 1),

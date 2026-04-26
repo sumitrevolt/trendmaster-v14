@@ -62,6 +62,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from ai_trading_agents.feature_cols_v2 import build_features_v2  # noqa: E402
+from tools.sample_weights import avg_uniqueness  # noqa: E402  [Phase D1]
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -185,10 +186,15 @@ def _purged_wf_cv_binary(
     X: np.ndarray,
     y: np.ndarray,
     feat_names: list[str],
+    sample_weights: np.ndarray,  # [Phase D1] pre-computed uniqueness×class weights
     folds: int = FOLDS,
     purge: int = PURGE,
 ) -> dict[str, Any]:
-    """Purged walk-forward CV for binary classifier. Returns OOF AUC."""
+    """Purged walk-forward CV for binary classifier. Returns OOF AUC.
+
+    [Phase D1] sample_weights replaces per-fold class-weight computation.
+    bagging_fraction disabled; uniqueness weights replace it.
+    """
     n = len(X)
     fold_size = n // (folds + 1)
     aucs: list[float] = []
@@ -206,8 +212,7 @@ def _purged_wf_cv_binary(
         if len(np.unique(y_tr)) < 2 or len(np.unique(y_te)) < 2:
             continue
 
-        pos_w = float((y_tr == 0).sum()) / max((y_tr == 1).sum(), 1)
-        w_tr = np.where(y_tr == 1, pos_w, 1.0)
+        w_tr = sample_weights[:train_end]  # [Phase D1] uniqueness×class weight slice
 
         d_tr = lgb.Dataset(X_tr, y_tr, weight=w_tr, feature_name=feat_names)
         d_va = lgb.Dataset(X_te, y_te, reference=d_tr, feature_name=feat_names)
@@ -218,8 +223,7 @@ def _purged_wf_cv_binary(
             num_leaves=31,
             min_data_in_leaf=40,  # slightly lower than C1 — smaller per-team sets
             feature_fraction=0.80,
-            bagging_fraction=0.80,
-            bagging_freq=5,
+            # [Phase D1] bagging_fraction removed; uniqueness weights replace it
             lambda_l2=1.0,
             verbosity=-1,
             seed=SEED,
@@ -264,10 +268,11 @@ def _build_symbol_meta(
     b3_feat_names: list[str],
     cot_df: pd.DataFrame | None,
     eia_df: pd.DataFrame | None,
-) -> tuple[np.ndarray, np.ndarray] | None:
-    """Build 35-col meta-feature matrix + binary labels for one symbol.
+) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+    """Build 35-col meta-feature matrix + binary labels + uniqueness for one symbol.
 
-    Returns (X_meta, y) or None if the symbol is unusable.
+    Returns (X_meta, y, uniq) or None if the symbol is unusable.
+    [Phase D1] uniq = avg_uniqueness(n_act, HOLD_BARS) — used for sample weighting.
     """
     csv_path = DATA_DIR / f"{sym.lower()}_m5_history.csv"
     if not csv_path.exists():
@@ -325,7 +330,8 @@ def _build_symbol_meta(
         f"B3_buy={int((b3_side_arr[combined_mask] == +1).sum())}  "
         f"B3_sell={int((b3_side_arr[combined_mask] == -1).sum())}"
     )
-    return X_meta, y_act
+    uniq = avg_uniqueness(n_act, HOLD_BARS)  # [Phase D1]
+    return X_meta, y_act, uniq
 
 
 # ---------------------------------------------------------------------------
@@ -390,15 +396,17 @@ def main() -> int:
         # Collect meta-features for all symbols in this team
         team_rows: list[np.ndarray] = []
         team_labels: list[int] = []
+        team_uniq: list[np.ndarray] = []  # [Phase D1]
         sym_stats: list[dict] = []
 
         for sym in symbols:
             result = _build_symbol_meta(sym, b3, b3_feat_names, cot_df, eia_df)
             if result is None:
                 continue
-            X_meta, y_act = result
+            X_meta, y_act, uniq = result  # [Phase D1] unpack uniqueness
             team_rows.append(X_meta)
             team_labels.extend(y_act.tolist())
+            team_uniq.append(uniq)  # [Phase D1]
             sym_stats.append(
                 {
                     "symbol": sym,
@@ -427,10 +435,20 @@ def main() -> int:
         X_team = np.vstack(team_rows)
         y_team = np.array(team_labels, dtype=int)
         team_tp = float(y_team.mean())
+
+        # [Phase D1] sequential-bootstrap sample weights: avg_uniqueness × balanced class weight
+        uniq_team = np.concatenate(team_uniq)
+        pos_w_team = float((y_team == 0).sum()) / max(int((y_team == 1).sum()), 1)
+        class_w_team = np.where(y_team == 1, pos_w_team, 1.0).astype(np.float64)
+        sample_w_team = uniq_team * class_w_team
+
         print(f"  {team_name}: {len(X_team):,} act-rows  overall TP={team_tp:.1%}  features={len(meta_feat_names)}")
+        print(
+            f"  Sample weight  : mean={sample_w_team.mean():.4f}  min={sample_w_team.min():.4f}  max={sample_w_team.max():.4f}"
+        )  # [Phase D1]
 
         # Purged walk-forward CV
-        cv = _purged_wf_cv_binary(X_team, y_team, meta_feat_names)
+        cv = _purged_wf_cv_binary(X_team, y_team, meta_feat_names, sample_weights=sample_w_team)  # [Phase D1]
         oof_auc = cv["oof_auc"]
         verdict = "PROMOTE" if oof_auc >= ACT_AUC_THRESHOLD else "HOLD"
         if verdict == "HOLD":
@@ -438,10 +456,8 @@ def main() -> int:
         print(f"  {team_name} OOF AUC: {oof_auc:.4f}  (per fold: {cv.get('oof_auc_per_fold', '?')})  --> {verdict}")
         print(f"  act(TP)={cv.get('n_act', '?')}  skip(SL/TO)={cv.get('n_skip', '?')}")
 
-        # Full fit
-        pos_w = float((y_team == 0).sum()) / max((y_team == 1).sum(), 1)
-        w_all = np.where(y_team == 1, pos_w, 1.0)
-        d_full = lgb.Dataset(X_team, y_team, weight=w_all, feature_name=meta_feat_names)
+        # Full fit — [Phase D1] use sample_w_team (uniqueness × class weight)
+        d_full = lgb.Dataset(X_team, y_team, weight=sample_w_team, feature_name=meta_feat_names)
         params_full = dict(
             objective="binary",
             metric="auc",
@@ -449,8 +465,7 @@ def main() -> int:
             num_leaves=31,
             min_data_in_leaf=40,
             feature_fraction=0.80,
-            bagging_fraction=0.80,
-            bagging_freq=5,
+            # [Phase D1] bagging_fraction/bagging_freq removed; uniqueness weights replace them
             lambda_l2=1.0,
             num_iterations=700,
             verbosity=-1,
