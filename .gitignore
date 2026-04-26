@@ -45,6 +45,9 @@ supervisor.log
 # Historical data & backtest output — too large for git
 data/*.csv
 !data/.gitkeep
+data/external/*.parquet
+data/external/*.csv
+!data/external/.gitkeep
 backtest_results.txt
 reports/*.csv
 reports/*.json
