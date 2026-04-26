@@ -25,7 +25,7 @@ aiohttp>=3.13.5
 # Machine Learning (CPU-based — for agent training system)
 scikit-learn>=1.8.0
 xgboost>=3.2.0
-lightgbm>=4.0.0
+lightgbm>=4.6.0
 
 # Logging
 colorlog>=6.10.1
