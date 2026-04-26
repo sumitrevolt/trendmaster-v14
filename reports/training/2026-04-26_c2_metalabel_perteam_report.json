@@ -1,0 +1,182 @@
+{
+  "phase": "C2",
+  "generated": "2026-04-26T14:20:59.005394+00:00",
+  "runtime_s": 62,
+  "b3_model": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\trend_master_model.lgb",
+  "b3_features": 32,
+  "meta_features": 35,
+  "act_auc_threshold": 0.55,
+  "teams": [
+    {
+      "team": "METALS",
+      "symbols": [
+        {
+          "symbol": "XAUUSD",
+          "n_act": 2536,
+          "tp_rate": 0.8344
+        },
+        {
+          "symbol": "XAGUSD",
+          "n_act": 2572,
+          "tp_rate": 0.8589
+        }
+      ],
+      "n_act_total": 5108,
+      "team_tp_rate": 0.8467,
+      "oof_auc": 0.873,
+      "oof_auc_per_fold": [
+        0.8993,
+        0.9135,
+        0.8961,
+        0.9191
+      ],
+      "cv_folds": 4,
+      "cv_n_act": 2867,
+      "cv_n_skip": 537,
+      "verdict": "PROMOTE",
+      "model_path": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\meta_label_model_METALS.lgb"
+    },
+    {
+      "team": "FOREX",
+      "symbols": [
+        {
+          "symbol": "GBPJPY",
+          "n_act": 2367,
+          "tp_rate": 0.845
+        },
+        {
+          "symbol": "USDCAD",
+          "n_act": 2107,
+          "tp_rate": 0.8505
+        },
+        {
+          "symbol": "USDCHF",
+          "n_act": 2239,
+          "tp_rate": 0.8303
+        },
+        {
+          "symbol": "EURUSD",
+          "n_act": 2173,
+          "tp_rate": 0.8394
+        },
+        {
+          "symbol": "GBPUSD",
+          "n_act": 2117,
+          "tp_rate": 0.8474
+        },
+        {
+          "symbol": "AUDUSD",
+          "n_act": 2392,
+          "tp_rate": 0.837
+        },
+        {
+          "symbol": "USDJPY",
+          "n_act": 2533,
+          "tp_rate": 0.8101
+        },
+        {
+          "symbol": "NZDUSD",
+          "n_act": 2520,
+          "tp_rate": 0.8226
+        },
+        {
+          "symbol": "EURJPY",
+          "n_act": 2543,
+          "tp_rate": 0.8344
+        },
+        {
+          "symbol": "AUDJPY",
+          "n_act": 2611,
+          "tp_rate": 0.8158
+        },
+        {
+          "symbol": "CADJPY",
+          "n_act": 2618,
+          "tp_rate": 0.8037
+        },
+        {
+          "symbol": "EURGBP",
+          "n_act": 2047,
+          "tp_rate": 0.8534
+        }
+      ],
+      "n_act_total": 28267,
+      "team_tp_rate": 0.8313,
+      "oof_auc": 0.904,
+      "oof_auc_per_fold": [
+        0.8922,
+        0.9126,
+        0.9185,
+        0.9127
+      ],
+      "cv_folds": 4,
+      "cv_n_act": 15606,
+      "cv_n_skip": 3238,
+      "verdict": "PROMOTE",
+      "model_path": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\meta_label_model_FOREX.lgb"
+    },
+    {
+      "team": "CRYPTO",
+      "symbols": [
+        {
+          "symbol": "BTCUSD",
+          "n_act": 2364,
+          "tp_rate": 0.8744
+        },
+        {
+          "symbol": "ETHUSD",
+          "n_act": 2381,
+          "tp_rate": 0.8828
+        }
+      ],
+      "n_act_total": 4745,
+      "team_tp_rate": 0.8786,
+      "oof_auc": 0.9124,
+      "oof_auc_per_fold": [
+        0.898,
+        0.9017,
+        0.939,
+        0.9482
+      ],
+      "cv_folds": 4,
+      "cv_n_act": 2783,
+      "cv_n_skip": 377,
+      "verdict": "PROMOTE",
+      "model_path": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\meta_label_model_CRYPTO.lgb"
+    },
+    {
+      "team": "COMMODITIES",
+      "symbols": [
+        {
+          "symbol": "XTIUSD",
+          "n_act": 2468,
+          "tp_rate": 0.8509
+        },
+        {
+          "symbol": "XBRUSD",
+          "n_act": 2496,
+          "tp_rate": 0.8826
+        },
+        {
+          "symbol": "XNGUSD",
+          "n_act": 2750,
+          "tp_rate": 0.8804
+        }
+      ],
+      "n_act_total": 7714,
+      "team_tp_rate": 0.8717,
+      "oof_auc": 0.9199,
+      "oof_auc_per_fold": [
+        0.8879,
+        0.9418,
+        0.9478,
+        0.9337
+      ],
+      "cv_folds": 4,
+      "cv_n_act": 4536,
+      "cv_n_skip": 604,
+      "verdict": "PROMOTE",
+      "model_path": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\meta_label_model_COMMODITIES.lgb"
+    }
+  ]
+}

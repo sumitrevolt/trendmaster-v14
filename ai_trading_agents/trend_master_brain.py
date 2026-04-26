@@ -255,6 +255,30 @@ MIN_CONF = float(CFG.get("min_ml_confidence", 0.58))
 # never degrade below coin-flip+margin.
 SESSION_BOOST_CFG = getattr(settings, "SESSION_BOOST", {}) or {}
 
+# [Phase C2 2026-04-26] Symbol -> team routing for per-team meta-labellers.
+# Must stay in sync with TEAMS dict in tools/train_v14_c2_metalabel_perteam.py.
+_SYMBOL_TEAM: Dict[str, str] = {
+    "XAUUSD": "METALS",
+    "XAGUSD": "METALS",
+    "GBPJPY": "FOREX",
+    "USDCAD": "FOREX",
+    "USDCHF": "FOREX",
+    "EURUSD": "FOREX",
+    "GBPUSD": "FOREX",
+    "AUDUSD": "FOREX",
+    "USDJPY": "FOREX",
+    "NZDUSD": "FOREX",
+    "EURJPY": "FOREX",
+    "AUDJPY": "FOREX",
+    "CADJPY": "FOREX",
+    "EURGBP": "FOREX",
+    "BTCUSD": "CRYPTO",
+    "ETHUSD": "CRYPTO",
+    "XTIUSD": "COMMODITIES",
+    "XBRUSD": "COMMODITIES",
+    "XNGUSD": "COMMODITIES",
+}
+
 
 def _effective_min_conf(now_utc: Optional[datetime] = None) -> float:
     """Return MIN_CONF discounted by peak/shoulder session boost."""
@@ -545,6 +569,8 @@ class BrainState:
     model: Optional[object] = None
     # [Phase C1 2026-04-26] binary act/skip meta-labeller; None when disabled
     meta_model: Optional[object] = None
+    # [Phase C2 2026-04-26] per-team meta-labellers; keys = METALS/FOREX/CRYPTO/COMMODITIES
+    meta_models_perteam: Dict[str, Optional[object]] = field(default_factory=dict)
     rule_wr_buy: float = 0.5
     rule_wr_sell: float = 0.5
     last_signal: Dict = field(default_factory=dict)
@@ -660,34 +686,58 @@ class TrendMasterBrain:
                 logger.warning("Failed to load model (%s), will use rules.", e)
 
     def _load_meta_model(self) -> None:
-        """[Phase C1 2026-04-26] Load the binary act/skip meta-labeller.
+        """[Phase C1/C2 2026-04-26] Load act/skip meta-labellers.
 
-        The meta-model (meta_label_model.lgb) sits alongside the primary B3
-        model. It is loaded only when metalabel_enabled=True in CFG. At
-        startup it logs its presence; the gate is applied at inference time
-        inside infer_ml(). Zero live-behaviour change when enabled=False.
+        C1 global head  : meta_label_model.lgb          (metalabel_enabled=True)
+        C2 per-team heads: meta_label_model_{TEAM}.lgb  (metalabel_perteam_enabled=True)
+
+        Per-team takes precedence at inference time when both are loaded.
+        Zero live-behaviour change when both flags are False.
         """
         self.state.meta_model = None
-        if not CFG.get("metalabel_enabled", False):
-            return
+        self.state.meta_models_perteam = {}
         if not _HAS_LGB:
             return
-        if self.meta_model_path.exists():
-            try:
-                self.state.meta_model = lgb.Booster(model_file=str(self.meta_model_path))
-                fn = self.state.meta_model.feature_name()
+
+        # --- C1: global head ---
+        if CFG.get("metalabel_enabled", False):
+            if self.meta_model_path.exists():
+                try:
+                    self.state.meta_model = lgb.Booster(model_file=str(self.meta_model_path))
+                    fn = self.state.meta_model.feature_name()
+                    logger.info(
+                        "Loaded meta-label model (global): %s  (%d features)",
+                        self.meta_model_path,
+                        len(fn),
+                    )
+                except Exception as e:
+                    logger.warning("Failed to load global meta-label model (%s) — gate disabled.", e)
+            else:
                 logger.info(
-                    "Loaded meta-label model: %s  (%d features)",
+                    "metalabel_enabled=True but %s not found — run train_v14_c1_metalabel.py",
                     self.meta_model_path,
-                    len(fn),
                 )
-            except Exception as e:
-                logger.warning("Failed to load meta-label model (%s) — gate disabled.", e)
-        else:
-            logger.info(
-                "metalabel_enabled=True but %s not found — run train_v14_c1_metalabel.py",
-                self.meta_model_path,
-            )
+
+        # --- C2: per-team heads ---
+        if CFG.get("metalabel_perteam_enabled", False):
+            _teams = ("METALS", "FOREX", "CRYPTO", "COMMODITIES")
+            loaded_teams = []
+            for _team in _teams:
+                _path = self.state_dir / f"meta_label_model_{_team}.lgb"
+                if _path.exists():
+                    try:
+                        _m = lgb.Booster(model_file=str(_path))
+                        self.state.meta_models_perteam[_team] = _m
+                        loaded_teams.append(_team)
+                    except Exception as e:
+                        logger.warning("Failed to load per-team meta model %s (%s) — skipping.", _team, e)
+                else:
+                    logger.info(
+                        "metalabel_perteam_enabled=True but %s not found — run train_v14_c2_metalabel_perteam.py",
+                        _path,
+                    )
+            if loaded_teams:
+                logger.info("Loaded per-team meta-label models: %s", loaded_teams)
 
     # ─── DATA PULL ──────────────────────────────────────────────────────
     def pull_bars(self, tf: str, n: int = 500, symbol: Optional[str] = None) -> Optional[pd.DataFrame]:
@@ -704,8 +754,13 @@ class TrendMasterBrain:
         return df[["open", "high", "low", "close", "volume"]]
 
     # ─── INFERENCE ──────────────────────────────────────────────────────
-    def infer_ml(self, x: pd.DataFrame) -> Tuple[str, float]:
-        """Returns (direction, confidence). direction is 'BUY' / 'SELL' / 'NONE'."""
+    def infer_ml(self, x: pd.DataFrame, symbol: str = "") -> Tuple[str, float]:
+        """Returns (direction, confidence). direction is 'BUY' / 'SELL' / 'NONE'.
+
+        symbol (optional): if provided and metalabel_perteam_enabled=True, the
+        per-team meta-labeller for that symbol's team is used instead of the
+        global C1 head. Falls back to global head when team model not loaded.
+        """
         if self.state.model is None:
             return self.infer_rule(x)
         try:
@@ -735,22 +790,40 @@ class TrendMasterBrain:
             conf = float(p[idx])
             cls = ["SELL", "NONE", "BUY"][idx] if len(p) == 3 else "NONE"
 
-            # [Phase C1 2026-04-26] Meta-label gate: binary act/skip.
-            # When metalabel_enabled=True and the meta-model is loaded,
-            # feed [P_sell, P_none, P_buy] + V2 features (35 cols) to the
-            # secondary classifier. Veto the trade when P_act < threshold.
+            # [Phase C1/C2 2026-04-26] Meta-label gate: binary act/skip.
+            # Selects the meta-model to use:
+            #   C2 per-team  (metalabel_perteam_enabled=True, team model loaded)
+            #   C1 global    (metalabel_enabled=True, global model loaded)
+            #   no gate      (both disabled or no models loaded)
+            # Builds meta-row [P_sell, P_none, P_buy] + V2 feats (35 cols),
+            # vetoes when P_act < threshold, blends confidence on pass.
             # Only fires when B3 picked BUY or SELL (NONE passes through).
-            if cls != "NONE" and self.state.meta_model is not None:
+            _meta_model_to_use = None
+            if cls != "NONE":
+                # C2: prefer per-team model for this symbol
+                if self.state.meta_models_perteam:
+                    _team = _SYMBOL_TEAM.get(symbol.upper(), "")
+                    _meta_model_to_use = self.state.meta_models_perteam.get(_team)
+                    if _meta_model_to_use is None and _team:
+                        # team not in perteam dict — fall back to global
+                        _meta_model_to_use = self.state.meta_model
+                # C1 global fallback (also used when perteam dict is empty)
+                if _meta_model_to_use is None:
+                    _meta_model_to_use = self.state.meta_model
+
+            if cls != "NONE" and _meta_model_to_use is not None:
                 try:
                     _act_thr = float(CFG.get("metalabel_act_threshold", 0.55))
                     # Build meta-feature row: [P_sell, P_none, P_buy] + V2
                     _p_row = np.asarray(p, dtype=np.float32).reshape(1, -1)  # (1, 3)
                     _v2_row = feats.astype(np.float32)  # (1, 32)
                     _meta_row = np.concatenate([_p_row, _v2_row], axis=1)  # (1, 35)
-                    _p_act = float(self.state.meta_model.predict(_meta_row)[0])
+                    _p_act = float(_meta_model_to_use.predict(_meta_row)[0])
+                    _team_tag = _SYMBOL_TEAM.get(symbol.upper(), "global")
                     if _p_act < _act_thr:
                         logger.debug(
-                            "meta-label gate: VETO %s (P_act=%.3f < %.2f)",
+                            "meta-label gate [%s]: VETO %s (P_act=%.3f < %.2f)",
+                            _team_tag,
                             cls,
                             _p_act,
                             _act_thr,
@@ -759,7 +832,8 @@ class TrendMasterBrain:
                     # Keep direction; blend confidence with P_act
                     conf = float(conf * _p_act)
                     logger.debug(
-                        "meta-label gate: PASS %s (P_act=%.3f, blended_conf=%.3f)",
+                        "meta-label gate [%s]: PASS %s (P_act=%.3f, blended_conf=%.3f)",
+                        _team_tag,
                         cls,
                         _p_act,
                         conf,
@@ -1003,7 +1077,7 @@ class TrendMasterBrain:
         if x.empty:
             return None
 
-        direction, conf = self.infer_ml(x)
+        direction, conf = self.infer_ml(x, symbol=sym)
 
         # [enhancement 2026-04-23 R4] Market-calendar gate — weekends +
         # holidays. Gated on settings.MARKET_CALENDAR.enabled (default ON

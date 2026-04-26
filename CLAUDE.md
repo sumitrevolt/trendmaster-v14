@@ -334,9 +334,11 @@ schtasks /query /tn "TrendMaster EA Parity Nightly" /fo LIST
 3. **Cross-asset features (done: COT+EIA via B1/B2)** — COT 7 contracts
    + EIA NG storage now live in `FEATURE_COLS_V2`. Next: add DXY/VIX/
    US10Y H1-aligned (requires MT5 symbols or free macro feed).
-4. **Per-team meta-label models (Phase C2)** — train separate act/skip heads
-   per team (METALS/FOREX/CRYPTO/COMMODITIES); team-specific TP_rate varies
-   80-88%, per-team models will capture that variance.
+4. **Per-team meta-label models (Phase C2)** — `tools/train_v14_c2_metalabel_perteam.py`
+   trains 4 separate act/skip heads (METALS/FOREX/CRYPTO/COMMODITIES); same 35-col
+   meta-feature schema as C1; routes each trade's P_act check to its team head.
+   To activate after training: set `metalabel_perteam_enabled = True` in settings
+   (keep `metalabel_enabled = True` as fallback). Then `start_brain_clean.cmd`.
 5. **Sequential-bootstrap LightGBM** — replace stock bagging to fix
    overlapping-label correlation.
 6. **HMM-gated experts** — only after 1-5 deliver a deployable Sharpe.

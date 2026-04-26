@@ -670,6 +670,12 @@ TRENDMASTER_V14 = {
     # act_threshold: P_act must exceed this to allow a BUY/SELL signal through.
     "metalabel_enabled": False,
     "metalabel_act_threshold": 0.55,
+    # [Phase C2 2026-04-26] Per-team meta-label heads (METALS/FOREX/CRYPTO/COMMODITIES).
+    # Flip to True ONLY after all 4 team models are trained and validated
+    # (run tools/train_v14_c2_metalabel_perteam.py, check OOF AUC >= 0.55 per team).
+    # When True, per-team head takes precedence over global C1 head for each symbol.
+    # Keep metalabel_enabled=True as well so global head is available as fallback.
+    "metalabel_perteam_enabled": False,
 }
 
 # =============================================================================
