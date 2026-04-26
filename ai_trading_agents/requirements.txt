@@ -4,7 +4,7 @@
 # Web server & real-time dashboard
 fastapi>=0.136.1
 uvicorn[standard]>=0.46.0
-websockets>=12.0
+websockets>=16.0
 
 # MetaTrader 5 (Windows only — MT5 must be installed and running)
 MetaTrader5>=5.0.45
