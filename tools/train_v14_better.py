@@ -18,7 +18,13 @@ sys.path.insert(0, str(ROOT))
 from ai_trading_agents.trend_master_brain import build_features, FEATURE_COLS
 
 CSV = ROOT / "data" / "xauusd_m5_history.csv"
-OUT = ROOT / "ai_trading_agents" / "trend_master_model.lgb"
+# Write to a CANDIDATE path, never the live model. Promotion to
+# trend_master_model.lgb must go through tools/enable_phase_b3_ml.py
+# (which backs up the current live model and runs diagnose post-swap).
+# This trainer is single-symbol XAUUSD-only and historically produced
+# the 109 KB uniform-output model that silently zero-trades when copied
+# live. See docs/POSTMORTEMS/2026-04-29_uniform_model_recurrence.md.
+OUT = ROOT / "ai_trading_agents" / "trend_master_model_v14_better_candidate.lgb"
 
 HORIZON = 12  # 12 bars on M5 = 1 hour ahead
 THR_ATR = 0.5  # 0.5 * ATR move = "directional" event
@@ -92,4 +98,10 @@ for thr in (0.38, 0.42, 0.45, 0.50, 0.55):
     print(f"  thr={thr:.2f}  BUY n={mb.sum():4d} prec={pb:.3f}  | SELL n={ms.sum():4d} prec={ps:.3f}")
 
 model.save_model(str(OUT))
-print(f"\nsaved -> {OUT}")
+print(f"\nsaved CANDIDATE -> {OUT}")
+print("This file is a CANDIDATE only. To promote to live, validate via")
+print("  .venv\\Scripts\\python.exe tools\\diagnose_zero_trades.py")
+print("then explicitly copy:")
+print(f"  copy /Y {OUT} ai_trading_agents\\trend_master_model.lgb")
+print("Direct overwrites of the live model are blocked by policy")
+print("(see docs/POSTMORTEMS/2026-04-29_uniform_model_recurrence.md).")
