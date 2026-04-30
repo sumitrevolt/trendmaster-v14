@@ -141,6 +141,13 @@ All ALL of these were completed in the same session as the incident
   bypassing the framework's rollback. The .git/hooks file is local-only
   so fresh checkouts must restore this manually — see CLAUDE.md "Brain
   package maintenance".
+- [x] Confirmed via pre-commit source (`pre_commit/commands/run.py:428`)
+  that `args.hook_stage in hook.stages` filtering is correct; the
+  heal-junction firing "during pre-commit" was an output-ordering
+  illusion (post-commit invocation runs immediately after the commit
+  message is recorded, and its output interleaves visually with the
+  pre-commit-stage output). Stages config in
+  `.pre-commit-config.yaml` is honoured as written.
 
 Remaining (out of scope for the immediate fix):
 
