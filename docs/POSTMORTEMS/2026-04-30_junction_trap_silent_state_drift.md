@@ -112,13 +112,30 @@ Also unrelated noise fix:
    pre-flight check that reads/validates the existing state file would
    catch a stale or wrong-path file.
 
-## Follow-ups (non-blocking)
+## Follow-ups
 
-- [ ] Update `diagnose_zero_trades.py` to assert
-  `now - last_saved_at < 120s`. Severity: high.
-- [ ] Audit other modules in `ai_trading_agents/` that compute paths via
-  `Path(__file__).parent.parent` — apply the same validation/fallback.
-- [ ] Consider centralizing project-root resolution in a single helper
-  (e.g., `ai_trading_agents.paths.project_root()`) to avoid drift.
+All ALL of these were completed in the same session as the incident
+(commits `e61340a` brain modules, `677a4be` pre-commit auto-heal):
+
+- [x] Update `diagnose_zero_trades.py` to assert
+  `now - last_saved_at < 120s`. Done in `e61340a` —
+  STATE_STALE_AFTER_SECONDS=120, returns STATE_DRIFT verdict.
+- [x] Audit other modules in `ai_trading_agents/` that compute paths via
+  `Path(__file__).parent.parent` — applied to all 12 callers
+  (`state_store`, `event_log`, `process_lock`, `cross_asset_join`,
+  `feature_cols_v2`, `gate_value`, `market_calendar`, `news_feed`,
+  `ops_maintenance`, `profit_filters`, `multi_market_dispatcher`,
+  `trend_master_brain`).
+- [x] Centralized project-root resolution in
+  `ai_trading_agents/_paths.py::project_root()` (commit `e61340a`).
+- [x] Auto-heal the pre-commit stash/restore junction breakage.
+  `tools/check_junction.py` gained a `--heal` flag and a new
+  `heal-junction` pre-commit hook runs at `[post-commit, post-checkout,
+  post-merge]` stages (commit `677a4be`). Operator must run
+  `pre-commit install --hook-type post-commit --hook-type post-checkout
+  --hook-type post-merge` once.
+
+Remaining (out of scope for the immediate fix):
+
 - [ ] Rotate `cross_asset_join.py:fetch_*` calls to retry every N hours,
   not every tick — also reduces wasted CPU on the no-API-key path.
