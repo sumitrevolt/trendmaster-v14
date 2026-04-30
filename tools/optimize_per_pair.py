@@ -34,6 +34,7 @@ iteration is a tight numpy loop.
 
 from __future__ import annotations
 
+import gc
 import json
 import sys
 from pathlib import Path
@@ -98,12 +99,19 @@ def optimize_symbol(csv_path: Path, symbol: str) -> Dict:
     best_1to3 = None  # best with tp/sl >= 2.8
     all_results: List = []
 
+    cfg_idx = 0
     for sl in SL_VALUES:
         for tp in TP_VALUES:
             for adx in ADX_VALUES:
                 rr = tp / sl
                 cfg = FilterConfig(adx_min=adx, sl_atr=sl, tp_atr=tp)
                 r = backtest_1to3(df, cfg, name=f"sl{sl}/tp{tp}/adx{adx}")
+                # 2026-04-30: drop the BacktestResult's heavy fields (trade list,
+                # equity curve) we don't need, then GC every 9 configs to keep
+                # peak RSS flat on Windows.
+                cfg_idx += 1
+                if cfg_idx % 9 == 0:
+                    gc.collect()
                 if r.trades == 0:
                     continue
                 s = score_config(r)
@@ -127,13 +135,19 @@ def optimize_symbol(csv_path: Path, symbol: str) -> Dict:
                     if best_1to3 is None or s > best_1to3["score"]:
                         best_1to3 = row
 
-    return {
+    # 2026-04-30: drop full df + intermediate per-config rows before returning
+    # to prevent OOM on Windows (was crashing at symbol 1/19). Keep only
+    # the two winners; the auto-generated PAIR_PARAMS only needs those.
+    del df
+    result = {
         "symbol": symbol,
         "n_configs": len(all_results),
         "best_overall": best_overall,
         "best_1to3": best_1to3,
-        "all_results": all_results,
     }
+    del all_results
+    gc.collect()
+    return result
 
 
 def main():

@@ -1,0 +1,114 @@
+# =============================================================================
+# TrendMaster v14 — SHARED Python ↔ MQL5 Config (single source of truth)
+# =============================================================================
+# Generated baseline: 2026-04-29
+# Authority: This file is canonical. Both Python brain and MQL5 EA must
+#            derive their parameters from here.
+#
+# Usage:
+#   - Python: imported by config/settings.py via load_shared_config()
+#   - MQL5  : run `python tools/sync_config_to_mqh.py` to regenerate
+#             MQL5/Include/TrendMasterShared.mqh, then recompile EA.
+#
+# Schema note: Don't add new keys without also updating BOTH:
+#   1) config/settings.py loader  (so Python honours them)
+#   2) tools/sync_config_to_mqh.py emitter  (so EA gets them)
+# =============================================================================
+
+version: 1
+last_updated: "2026-04-29"
+authority: "config/trading_config.yaml"
+
+# ---------------------------------------------------------------------------
+# Risk parameters - SHARED. RISK.risk_percent (Python) and InpRiskPct (EA)
+# now BOTH derive from this single value.
+# ---------------------------------------------------------------------------
+risk:
+  risk_percent: 0.5            # % of equity per trade (was 0.5 Python / 1.0 EA)
+  max_daily_drawdown_percent: 3.0
+  max_open_trades: 8           # global cap (per-team caps below bind)
+  max_open_per_team: 2
+  max_consecutive_losses: 2
+  default_sl_atr_multiple: 1.0
+  default_tp_atr_multiple: 3.0
+  min_sl_pips: 5
+  min_lot_size: 0.01
+  max_lot_size: 0.03
+  min_risk_reward: 2.5
+
+# ---------------------------------------------------------------------------
+# Magic number & signal file - MUST match between Python and EA
+# ---------------------------------------------------------------------------
+ea_bridge:
+  magic: 20260420
+  signal_file: "trendmaster_signals.json"
+  use_common_folder: false
+  ai_stale_secs: 60
+  ai_required: false           # true = brain MUST agree (hard gate)
+  ai_auto_per_symbol: true     # EA auto-derives per-symbol filename
+
+# ---------------------------------------------------------------------------
+# Brain inference cadence & confidence gates
+# ---------------------------------------------------------------------------
+brain:
+  inference_interval_ms: 3000
+  min_ml_confidence: 0.58      # [R12 2026-04-30] 0.70 → 0.58 after 1-trade-in-6-weeks audit; floor 0.50 in _effective_min_conf
+  agent_min_votes: 2
+  smartmoney_features_enabled: true
+  metalabel_enabled: false     # Flip True after OOF AUC ≥ 0.55 validated
+  metalabel_perteam_enabled: false
+  metalabel_act_threshold: 0.55
+
+# ---------------------------------------------------------------------------
+# Profit-filter stack (each gate independently toggleable)
+# ---------------------------------------------------------------------------
+profit_optimizer:
+  enabled: true
+  spread_guard: false          # disabled per operator policy 2026-04-22
+  vol_regime: true
+  profit_lock: true
+  loss_cooldown: true
+  session_window: true
+  news_blackout: true
+  daily_loss_limit: true
+
+  max_spread_atr_ratio: 0.25
+  vol_min_quantile: 0.10       # was 0.20, lowered 2026-04-28 dead-market fix
+  vol_max_quantile: 0.95
+  daily_profit_target_pct: 2.0
+  max_consec_losses: 3
+  cooldown_hours: 4
+  best_hours_utc: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  news_window_minutes: 30
+  news_impact_levels: ["high"]
+  daily_max_loss_pct: 3.0
+  intraday_dd_pct: 2.0
+
+# ---------------------------------------------------------------------------
+# EA confirmation indicators (mirrored in ea_confirmations.py for backtest)
+# ---------------------------------------------------------------------------
+ea_indicators:
+  ema_fast: 20
+  ema_mid: 50
+  ema_slow: 200
+  supertrend_period: 10
+  supertrend_factor: 3.0
+  adx_period: 14
+  adx_min: 22
+  bollinger_period: 20
+  bollinger_dev: 2.0
+  bollinger_width_floor_ratio: 0.9   # current width >= 0.9× median(50)
+  macd_fast: 12
+  macd_slow: 26
+  macd_signal: 9
+
+# ---------------------------------------------------------------------------
+# Trading pairs (this list IS used by EA via per-chart attachment, but the
+# Python brain iterates this same list for multi-symbol mode)
+# ---------------------------------------------------------------------------
+trading_pairs:
+  metals:    ["XAUUSD", "XAGUSD"]
+  forex:     ["GBPJPY", "USDCAD", "USDCHF", "EURUSD", "GBPUSD",
+              "AUDUSD", "USDJPY", "NZDUSD", "EURJPY", "AUDJPY", "CADJPY"]
+  crypto:    ["BTCUSD", "ETHUSD"]
+  commodities: ["XTIUSD", "XBRUSD", "XNGUSD"]
