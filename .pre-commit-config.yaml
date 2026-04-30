@@ -68,6 +68,24 @@ repos:
         always_run: true
         stages: [pre-commit]
 
+      # Auto-heal the junction AFTER the commit lands. Observed
+      # 2026-04-30: pre-commit's `[INFO] Restored changes from ...`
+      # stash-pop step (which runs *after* all pre-commit hooks
+      # finish) replaces the junction with a real folder. The
+      # pre-commit-stage check-junction hook can't catch this because
+      # it runs before the breaking step. This post-commit invocation
+      # detects the breakage and runs tools/restore_junction.cmd.
+      # Operator must enable post-commit hooks once via:
+      #   pre-commit install --hook-type post-commit
+      # See docs/POSTMORTEMS/2026-04-30_junction_trap_silent_state_drift.md.
+      - id: heal-junction
+        name: ai_trading_agents junction auto-heal
+        entry: python tools/check_junction.py --heal
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [post-commit, post-checkout, post-merge]
+
       # Run the project's pytest suite locally before the commit lands.
       # This is intentionally quick — heavy backtests run in CI, not here.
       - id: pytest-quick
