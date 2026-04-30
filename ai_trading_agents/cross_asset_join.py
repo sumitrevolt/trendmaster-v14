@@ -78,6 +78,14 @@ log = logging.getLogger(__name__)
 # update it without a `global` declaration. Was firing per tick × per symbol.
 _eia_missing_warned = [False]
 
+# In-memory rate-limit cache for fetch_cot_weekly / fetch_eia_ng_storage.
+# CFTC publishes weekly (Fri 15:30 ET); EIA publishes weekly (Thu 10:30 ET).
+# Re-reading the parquet on every tick × every symbol is pure overhead. A
+# 1-hour in-memory TTL is conservative — even at peak traffic, 19 symbols ×
+# 20 ticks/min × 60 min = 22,800 fetches/hour collapse to 1.
+_FETCH_TTL_SECONDS = 3600
+_fetch_cache: dict[str, tuple[float, "pd.DataFrame"]] = {}
+
 # Junction-safe project root via ai_trading_agents._paths — see the
 # 2026-04-30 postmortem. The previous Path(__file__).parent.parent pattern
 # silently drifted to C:\ when Python returned __file__ through the canonical
@@ -269,6 +277,182 @@ def _cot_records_to_frame(records: list[dict], contracts: Iterable[str]) -> pd.D
         out[f"{code}_spec_delta_z"] = z
     out.index.name = "report_date"
     return out
+
+
+# ---------------------------------------------------------------------------
+# Phase D3 — Macro fetchers (DXY / VIX / US10Y) via yfinance
+# ---------------------------------------------------------------------------
+# Three first-order FX-relevant macro series:
+#   ^DXY     — ICE US Dollar Index (broad USD strength)
+#   ^VIX     — CBOE Volatility Index (risk-off / risk-on proxy)
+#   ^TNX     — CBOE 10-Year Treasury Yield Index (US10Y * 10)
+# yfinance is already a dependency (not new). Cached parquet under
+# data/external/ with the same 7-day stale-by-mtime rule used for COT/EIA.
+MACRO_TICKERS: dict[str, str] = {
+    "DXY": "DX-Y.NYB",  # ICE US Dollar Index continuous futures
+    "VIX": "^VIX",
+    "US10Y": "^TNX",
+}
+
+
+def fetch_macro_h1(
+    cache_path: Path | None = None,
+    force_refresh: bool = False,
+    history_period: str = "2y",
+) -> pd.DataFrame:
+    """Fetch DXY/VIX/US10Y daily-or-finer history and return per-day close.
+
+    Returns a DataFrame indexed by tz-naive UTC midnight per day with
+    columns ``DXY_close, VIX_close, US10Y_close`` plus their 60-day
+    rolling z-scores ``DXY_close_z, VIX_close_z, US10Y_close_z``.
+
+    Failure modes
+    -------------
+    * yfinance not installed (pre-commit env): graceful CrossAssetConfigError.
+    * Network failure: returns the cached parquet if any, else raises.
+    """
+    cache_path = cache_path or (EXTERNAL_DIR / "macro_h1_cache.parquet")
+
+    if not force_refresh and _cache_is_fresh(cache_path):
+        cached = _read_cache(cache_path)
+        if cached is not None and not cached.empty:
+            cached.index = pd.to_datetime(cached.index)
+            return cached.sort_index()
+
+    try:
+        import yfinance as yf  # type: ignore
+    except ImportError as e:
+        raise CrossAssetConfigError(
+            "yfinance not installed; macro features unavailable. "
+            "pip install yfinance (already in requirements; check venv)."
+        ) from e
+
+    frames = []
+    for col, ticker in MACRO_TICKERS.items():
+        try:
+            df = yf.download(
+                ticker,
+                period=history_period,
+                interval="1d",
+                progress=False,
+                auto_adjust=False,
+            )
+        except Exception as exc:
+            log.warning("macro fetch %s (%s) failed: %s", col, ticker, exc)
+            continue
+        if df is None or df.empty:
+            log.warning("macro fetch %s returned no rows", col)
+            continue
+        # yfinance 1.x returns a MultiIndex on columns:
+        # [('Adj Close', ticker), ('Close', ticker), ...]. Extract the Close
+        # column as a 1-d Series regardless of the column-shape variant.
+        close_series: pd.Series | None = None
+        if isinstance(df.columns, pd.MultiIndex):
+            if ("Close", ticker) in df.columns:
+                close_series = df[("Close", ticker)]
+            elif "Close" in df.columns.get_level_values(0):
+                # Single-ticker MultiIndex: drop the Ticker level
+                sub = df["Close"]
+                if isinstance(sub, pd.DataFrame) and sub.shape[1] == 1:
+                    close_series = sub.iloc[:, 0]
+                elif isinstance(sub, pd.Series):
+                    close_series = sub
+        elif "Close" in df.columns:
+            close_series = df["Close"]
+
+        if close_series is None:
+            log.warning("macro fetch %s: could not locate Close column", col)
+            continue
+
+        s = close_series.astype(float)
+        idx = pd.to_datetime(s.index)
+        if getattr(idx, "tz", None) is not None:
+            idx = idx.tz_localize(None)
+        s.index = idx.normalize()
+        s.name = f"{col}_close"
+        frames.append(s)
+
+    if not frames:
+        cached = _read_cache(cache_path)
+        if cached is not None and not cached.empty:
+            cached.index = pd.to_datetime(cached.index)
+            return cached.sort_index()
+        raise CrossAssetConfigError("macro fetch returned nothing and no cache present")
+
+    out = pd.concat(frames, axis=1).sort_index().ffill().dropna(how="all")
+    # 60-day rolling z-score per series
+    for col in ("DXY", "VIX", "US10Y"):
+        c = f"{col}_close"
+        if c not in out.columns:
+            out[f"{col}_close_z"] = np.nan
+            continue
+        roll = out[c].rolling(60, min_periods=60)
+        out[f"{col}_close_z"] = (out[c] - roll.mean()) / roll.std(ddof=0)
+
+    _write_cache(out, cache_path)
+    return out
+
+
+def macro_align_h1(symbol_h1_index: pd.DatetimeIndex, macro_df: pd.DataFrame) -> pd.DataFrame:
+    """Forward-fill daily macro values onto an H1 index.
+
+    Same publish-lag-aware contract as the COT alignment: at H1 timestamp
+    T, only macro days with date <= T are visible. NYC close is used as
+    a publish proxy (~21:00 UTC); we approximate by shifting daily index
+    by +21h before forward-fill. Good enough for a feature signal.
+    """
+    if macro_df is None or macro_df.empty:
+        return pd.DataFrame(
+            np.nan,
+            index=symbol_h1_index,
+            columns=[
+                "DXY_close_z",
+                "VIX_close_z",
+                "US10Y_close_z",
+            ],
+        )
+    target = symbol_h1_index
+    if getattr(target, "tz", None) is None:
+        target = target.tz_localize("UTC")
+    src = macro_df.copy()
+    if getattr(src.index, "tz", None) is not None:
+        src.index = src.index.tz_localize(None)
+    src.index = src.index + pd.Timedelta(hours=21)
+    src.index = src.index.tz_localize("UTC")
+    aligned = src.reindex(target.union(src.index)).sort_index().ffill().reindex(target)
+    cols = ["DXY_close_z", "VIX_close_z", "US10Y_close_z"]
+    for c in cols:
+        if c not in aligned.columns:
+            aligned[c] = np.nan
+    return aligned[cols]
+
+
+# Module-level once-per-process flag for the missing-yfinance / no-macro log.
+_macro_unavailable_warned = [False]
+
+
+def _cached_fetch(key: str, fn):
+    """Memoize a fetch function for _FETCH_TTL_SECONDS.
+
+    Lets ``align_to_h1`` collapse 19-symbols × N-ticks/min worth of disk
+    reads on the COT/EIA parquet caches into one read per hour. The
+    underlying parquet files have their own 7-day staleness rule, so a
+    1-h in-memory TTL is conservative on top of that.
+
+    Exceptions raised by ``fn`` (e.g. ``CrossAssetConfigError`` from
+    ``fetch_eia_ng_storage`` when EIA_API_KEY is unset) are NOT cached
+    — they propagate every call so a fix mid-session takes effect on
+    the next tick.
+    """
+    import time as _t  # local import keeps cold-start cheap
+
+    now = _t.time()
+    entry = _fetch_cache.get(key)
+    if entry is not None and (now - entry[0]) < _FETCH_TTL_SECONDS:
+        return entry[1]
+    val = fn()
+    _fetch_cache[key] = (now, val)
+    return val
 
 
 def fetch_cot_weekly(
@@ -575,10 +759,10 @@ def align_to_h1(
         return symbol_h1_df
 
     if cot_df is None:
-        cot_df = fetch_cot_weekly()
+        cot_df = _cached_fetch("cot", fetch_cot_weekly)
     if eia_df is None:
         try:
-            eia_df = fetch_eia_ng_storage()
+            eia_df = _cached_fetch("eia_ng", fetch_eia_ng_storage)
         except CrossAssetConfigError:
             if not _eia_missing_warned[0]:
                 log.info("EIA_API_KEY not configured; skipping NG storage features")
