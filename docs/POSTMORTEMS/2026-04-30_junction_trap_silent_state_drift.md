@@ -134,6 +134,13 @@ All ALL of these were completed in the same session as the incident
   post-merge]` stages (commit `677a4be`). Operator must run
   `pre-commit install --hook-type post-commit --hook-type post-checkout
   --hook-type post-merge` once.
+- [x] Pre-commit framework's stash/restore "files modified by this hook"
+  rollback re-broke the junction even when `heal-junction` ran. Fix:
+  `.git/hooks/post-commit` was extended with a final-line direct call
+  to `tools\restore_junction.cmd` AFTER pre-commit's hook-impl finishes,
+  bypassing the framework's rollback. The .git/hooks file is local-only
+  so fresh checkouts must restore this manually — see CLAUDE.md "Brain
+  package maintenance".
 
 Remaining (out of scope for the immediate fix):
 
