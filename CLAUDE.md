@@ -173,6 +173,45 @@ script (`start_brain_clean.cmd`) should ideally pre-flight check that
 the junction resolves; if `C:\TrendMaster_aita_canonical\` is missing,
 the brain will fail at import and the script should refuse to start.
 
+**One-time post-clone setup** (junction auto-heal after every commit):
+
+```cmd
+.venv\Scripts\python.exe -mpre_commit install ^
+    --hook-type pre-commit ^
+    --hook-type post-commit ^
+    --hook-type post-checkout ^
+    --hook-type post-merge
+```
+
+Then manually append the final-line junction restore to
+`.git\hooks\post-commit` (this bypasses pre-commit's framework
+"files-modified" rollback that re-breaks the junction):
+
+```sh
+# Final junction heal — runs OUTSIDE pre-commit's framework
+if [ -f "$HERE/../../tools/restore_junction.cmd" ]; then
+    cmd.exe //c "$HERE/../../tools/restore_junction.cmd" >/dev/null 2>&1 || true
+fi
+```
+
+Without this, every `git commit` leaves the worktree with a broken
+junction and you'll have to run `tools\restore_junction.cmd` by hand.
+See `docs/POSTMORTEMS/2026-04-30_junction_trap_silent_state_drift.md`.
+
+**Brain path resolution rule v2 (2026-04-30):** any module inside
+`ai_trading_agents/` that needs the project root MUST use the helper
+`from ai_trading_agents._paths import project_root`. The bare
+`Path(__file__).parent.parent` pattern is *necessary but not
+sufficient* on Windows — Python can return `__file__` through the
+canonical junction target (`C:\TrendMaster_aita_canonical\`)
+depending on path-cache state, putting `_ROOT` at `C:\` and
+silently writing logs/state to `C:\logs\`. The helper validates via
+`config/settings.py` invariant and falls back to `Path.cwd()` (always
+project root via the launcher's `cd /d`). The two sys.path-bootstrap
+modules (`trend_master_brain.py`, `multi_market_dispatcher.py`)
+inline the same validation since they run before the helper can be
+imported.
+
 ## Data
 
 - 19 historical CSVs in `data/<symbol_lower>_m5_history.csv`. Schema:
@@ -375,3 +414,70 @@ Read MEMORY.md at session start; it has 16+ entries covering v14
 phases, gate policy, schedule of incidents, and known gotchas. When
 saving project memory, add a one-line entry to MEMORY.md and a typed
 detail file under the same directory.
+
+## TrendMaster AI Organization (added 2026-04-30)
+
+Seven OpenClaw agents now operate as an engineering team. Charter:
+`docs/AI_ORG_CHARTER.md` (READ THIS before touching any team workflow).
+
+| Role | Agent | Cadence | Output |
+|---|---|---|---|
+| Operator Liaison | main | on-demand | direct chat |
+| On-Call | trader | every 60 min | `logs/team_handoff.jsonl` heartbeat |
+| Daily Brief | trader | 08:30 IST | `docs/team/trader/morning_<date>.md` |
+| Engineering Lead | architect | Sun 09:00 IST | `docs/team/architect/weekly_<date>.md` |
+| Quant Researcher | researcher (gemini) | Sat 10:00 IST | `docs/team/researcher/weekly_<date>.md` |
+| QA / Reviewer | reviewer | every 12h | `docs/team/reviewer/audit_<date>_<HH>.md` |
+| SRE / Debugger | debugger | every 6h gated | `docs/team/debugger/triage_<date>_<HH>.md` |
+| Tech Writer | writer (haiku) | 23:00 IST + on CRITICAL | `docs/team/writer/digest_<date>.md` |
+
+Cadences tightened 2026-04-30 to stay under Copilot Enterprise 5-hour
+session quota — was burning through it with 30-min trader heartbeat +
+1-hour debugger. New numbers: ~32 calls/day worst case (was ~78).
+
+**Coordination:** `tools/team_handoff.py` enforces JSON-line schema for
+the team's audit channel `logs/team_handoff.jsonl`. Subcommands:
+`append`, `validate`, `recent`, `digest`, `schema`. The writer's daily
+digest pulls `digest --hours 24` as its source.
+
+**GitHub:** repo [`sumitrevolt/trendmaster-v14`](https://github.com/sumitrevolt/trendmaster-v14).
+Branch convention: `main` operator-only, agents push to `team-outputs`
+(append-only daily/weekly auto-commits). Labels: `agent-escalation`,
+`agent-task:<role>` (×6), `adr`. Created 2026-04-30.
+
+**Cron jobs in `~/.openclaw/cron/jobs.json`** (7 total): seeded by
+`tools/seed_team_crons.py` (idempotent), staggered by
+`tools/stagger_team_crons.py`, tightened by `tools/tighten_team_crons.py`.
+Pre-seed backup at `*.bak.before-team-seed-2026-04-30`.
+
+**Operator's morning routine** (4 commands):
+1. `tools\openclaw_brief.py`
+2. `type docs\team\trader\morning_<today>.md`
+3. `type docs\team\writer\digest_<yesterday>.md`
+4. `gh issue list --label agent-escalation`
+
+**Soft guidance for OpenClaw agents — execution boundary**
+(operator-relaxed 2026-04-30 from prior "hard rule"):
+The brain → EA JSON-signal pipe remains the **default** trade-execution
+path. OpenClaw agents may now interact with MT5 (chart attach,
+AutoTrading toggle, EA reload) when operator explicitly requests it —
+`PC_CONTROL_BLOCK_FOREGROUND` env no longer lists `MetaTrader 5;OctaFX;mt5`.
+Banking apps stay blocked (`Bank;HDFC;ICICI;SBI;Axis`). Agents still
+should NOT: place market orders directly via `MetaTrader5.order_send`,
+click Buy/Sell in One-Click panel, modify open positions, or run a
+"manage account" UI flow on broker website. AI hallucination + open MT5
+credentials is still a real failure mode.
+
+**Note for Claude Code (this runtime):** Anthropic's tool layer still
+grants MT5 at `tier="read"` regardless of the project-side relaxation —
+Claude Code can `screenshot`/`open_application` MT5 but not click/type.
+Use OpenClaw `pc-control` MCP for click+type-required MT5 work.
+
+**Adding/removing agents:** edit `~/.openclaw/openclaw.json` agents
+list, edit `docs/AI_ORG_CHARTER.md`, edit `tools/seed_team_crons.py`
+(add new template), re-run seeder, restart gateway. Don't add roles
+that duplicate existing ones — keep the org flat.
+
+**Killing an underperforming agent:** if reviewer keeps producing noise
+or architect proposes nothing for 3 weeks, kill its cron with
+`schtasks /Change /TN "..." /DISABLE`. Charter explicitly allows this.
