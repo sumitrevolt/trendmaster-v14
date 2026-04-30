@@ -28,11 +28,12 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from ai_trading_agents._paths import project_root
+
 logger = logging.getLogger("process_lock")
 
-_HERE = Path(__file__).resolve().parent
-_ROOT = _HERE.parent
-_LOCK_DIR = _ROOT / "logs"
+# Junction-safe project root — see _paths.py and the 2026-04-30 postmortem.
+_LOCK_DIR = project_root() / "logs"
 
 
 def _pid_alive(pid: int) -> bool:

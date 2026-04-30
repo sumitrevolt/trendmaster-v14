@@ -143,7 +143,11 @@ def analyze(
     If expectancy > 0, vetoes *cost* you (you'd have made money).
     If expectancy ≤ 0, vetoes *save* you (you'd have lost money).
     """
-    root = Path(__file__).resolve().parent.parent
+    # Junction-safe project root — see ai_trading_agents._paths and the
+    # 2026-04-30 postmortem.
+    from ai_trading_agents._paths import project_root
+
+    root = project_root()
     events_path = Path(events_path) if events_path else root / "logs" / "events.jsonl"
     since_ts = int(time.time() - window_days * 86400)
     events = _load_events(events_path, since_ts)

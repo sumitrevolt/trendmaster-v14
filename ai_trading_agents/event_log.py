@@ -168,8 +168,11 @@ def get_log(path: Optional[Path] = None) -> EventLog:
     with _INIT_LOCK:
         if _SINGLETON is None:
             if path is None:
-                root = Path(__file__).resolve().parent.parent
-                path = root / "logs" / "events.jsonl"
+                # Junction-safe project root — see ai_trading_agents._paths
+                # and the 2026-04-30 postmortem.
+                from ai_trading_agents._paths import project_root
+
+                path = project_root() / "logs" / "events.jsonl"
             _SINGLETON = EventLog(path=path)
         return _SINGLETON
 

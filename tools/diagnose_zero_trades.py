@@ -28,6 +28,7 @@ from __future__ import annotations
 import json
 import statistics
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -42,6 +43,10 @@ MODEL_PATH = REPO_ROOT / "ai_trading_agents" / "trend_master_model.lgb"
 UNIFORM_TOLERANCE = 0.05  # confidence std < this AND mean near 1/K -> uniform-ish
 UNIFORM_DISTANCE_1_3 = 0.05  # all confidences within +/- this of 1/3 -> K=3 uniform
 MIN_CONF_DEFAULT = 0.58  # from trend_master_brain.py:250
+# Max age of brain_state.json before it indicates state-write drift. The brain
+# saves every PERSIST_EVERY_N ticks (~3-15s). 120s is a generous ceiling — see
+# docs/POSTMORTEMS/2026-04-30_junction_trap_silent_state_drift.md.
+STATE_STALE_AFTER_SECONDS = 120
 
 
 def load_state() -> Dict[str, Any]:
@@ -142,6 +147,30 @@ def diagnose() -> int:
     if "_error" in state:
         print(f"\n[VERDICT] INSUFFICIENT_STATE - {state['_error']}")
         return 2
+
+    # 1b. State freshness check -----------------------------------------
+    # Catches the 2026-04-30 junction-trap pattern: brain alive, log fresh,
+    # but state writes silently going to a different (wrong) path.
+    try:
+        mtime = STATE_PATH.stat().st_mtime
+        age = time.time() - mtime
+        last_saved_at = float(state.get("last_saved_at") or 0)
+        save_age = time.time() - last_saved_at if last_saved_at else float("inf")
+        if age > STATE_STALE_AFTER_SECONDS or save_age > STATE_STALE_AFTER_SECONDS:
+            print(f"\n[VERDICT] STATE_DRIFT - brain_state.json is {age:.0f}s old on disk")
+            print(f"          (last_saved_at field reports {save_age:.0f}s ago).")
+            print("          The brain log may look healthy, but state writes are")
+            print("          NOT landing here. Check for the junction-trap pattern:")
+            print("          state/events/lock written to C:\\logs\\ instead of project root.")
+            print("          See docs/POSTMORTEMS/2026-04-30_junction_trap_silent_state_drift.md")
+            print("\nRemediation:")
+            print("  1. Check C:\\logs\\brain_state.json — if it exists and is fresh, the")
+            print("     brain is in the junction-trap pattern. Restart via start_brain_clean.cmd.")
+            print("  2. If brain is stopped: relaunch via start_brain_clean.cmd.")
+            return 1
+    except OSError as e:
+        print(f"\n[VERDICT] STATE_DRIFT - cannot stat brain_state.json: {e}")
+        return 1
 
     # 2. Halt / kill-switch check ---------------------------------------
     halt_keys = ("halted", "trading_paused", "panic", "disabled")

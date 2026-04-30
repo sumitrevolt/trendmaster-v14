@@ -49,9 +49,25 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-# Allow imports from project root
-_HERE = Path(__file__).resolve().parent
+# Allow imports from project root.
+# IMPORTANT: do NOT use Path(__file__).resolve() here — ai_trading_agents/ is a
+# Windows NTFS junction to C:\TrendMaster_aita_canonical\, and .resolve() follows
+# the junction so _ROOT lands on C:\ instead of the project root. See
+# CLAUDE.md "Brain package maintenance" and the 2026-04-25 phantom-deletion
+# postmortem. Restored 2026-04-30 after this regressed (again) and put the brain
+# into a watchpet restart loop. Pre-flight import passed because cwd was on
+# sys.path implicitly; the detached `python -u ai_trading_agents\trend_master_brain.py`
+# launch had no such crutch and crashed at `from config import settings`.
+#
+# 2026-04-30 (junction-trap incident #2): even without .resolve(), Python can
+# return __file__ through the canonical target depending on Windows path-cache
+# state, putting _ROOT at C:\. Validate via config/settings.py invariant; fall
+# back to cwd if absent. Helper module ai_trading_agents._paths can NOT be
+# imported here because this block bootstraps sys.path itself.
+_HERE = Path(__file__).parent
 _ROOT = _HERE.parent
+if not (_ROOT / "config" / "settings.py").exists():
+    _ROOT = Path.cwd()
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 

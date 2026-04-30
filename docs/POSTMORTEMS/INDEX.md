@@ -6,6 +6,7 @@ incident.
 
 ## 2026
 
+- [2026-04-30 - Junction trap silent state drift to C:\logs\ (RESOLVED via `_ROOT` validation fallback in state_store/event_log/process_lock)](2026-04-30_junction_trap_silent_state_drift.md)
 - [2026-04-29 - Recurring 109 KB uniform-output model overwriting live (RESOLVED via candidate-path hardening of `train_v14_better.py`)](2026-04-29_uniform_model_recurrence.md)
 - [2026-04-29 - 16-hour brain silent termination (RESOLVED; first incident detected end-to-end by watch_pets.py)](2026-04-29_brain_silent_termination.md)
 - [2026-04-28 - Orphaned D2 model + dead-market lockout (RESOLVED via `.lgb` file rename + vol_min_quantile loosen)](2026-04-28_orphaned_d2_model_and_dead_market_lockout.md)

@@ -281,7 +281,11 @@ def _load_news_calendar(path: Optional[_Path] = None) -> list:
     if (now - _NEWS_CACHE["loaded_ts"]) < _NEWS_CACHE_TTL_S and _NEWS_CACHE["events"]:
         return _NEWS_CACHE["events"]
     if path is None:
-        path = _Path(__file__).resolve().parent.parent / "config" / "news_calendar.json"
+        # Junction-safe project root — see ai_trading_agents._paths and the
+        # 2026-04-30 postmortem.
+        from ai_trading_agents._paths import project_root
+
+        path = project_root() / "config" / "news_calendar.json"
     events: list = []
     try:
         if path.exists():

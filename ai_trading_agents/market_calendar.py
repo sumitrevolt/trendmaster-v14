@@ -127,7 +127,11 @@ def _load_holidays(path: Optional[Path] = None) -> list:
     if (now - _CACHE["loaded_ts"]) < _CACHE_TTL_S and _CACHE["holidays"]:
         return _CACHE["holidays"]
     if path is None:
-        path = Path(__file__).resolve().parent.parent / "config" / "market_holidays.json"
+        # Junction-safe project root — see ai_trading_agents._paths and the
+        # 2026-04-30 postmortem.
+        from ai_trading_agents._paths import project_root
+
+        path = project_root() / "config" / "market_holidays.json"
     items: list = []
     try:
         if path.exists():

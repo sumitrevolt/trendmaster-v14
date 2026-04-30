@@ -35,11 +35,15 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, Optional
 
+from ai_trading_agents._paths import project_root
+
 logger = logging.getLogger("state_store")
 
-_HERE = Path(__file__).resolve().parent
-_ROOT = _HERE.parent
-_DEFAULT_PATH = _ROOT / "logs" / "brain_state.json"
+# Junction-safe project root — see _paths.py and the 2026-04-30 postmortem.
+# Centralised here because state_store, event_log, and process_lock all hit
+# the same trap: __file__ can come back through C:\TrendMaster_aita_canonical\
+# even without an explicit .resolve() call.
+_DEFAULT_PATH = project_root() / "logs" / "brain_state.json"
 
 
 _DEFAULTS: Dict[str, Any] = {

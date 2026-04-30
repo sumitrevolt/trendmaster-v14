@@ -36,10 +36,11 @@ import numpy as np
 import pandas as pd
 
 from ai_trading_agents import cross_asset_join
+from ai_trading_agents._paths import project_root
 from ai_trading_agents.trend_master_brain import FEATURE_COLS, build_features
 
-# Junction-safe -- DO NOT use .resolve() here.
-PROJECT_ROOT = Path(__file__).parent.parent
+# Junction-safe project root — see _paths.py and the 2026-04-30 postmortem.
+PROJECT_ROOT = project_root()
 _log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------

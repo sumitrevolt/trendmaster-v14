@@ -73,10 +73,18 @@ except ImportError:  # pragma: no cover - requests is in the project deps
 
 log = logging.getLogger(__name__)
 
-# IMPORTANT: do NOT use Path(__file__).resolve() inside this module -- the
-# ai_trading_agents/ folder is a Windows NTFS junction and .resolve() will
-# walk it to C:\ and break every config-file lookup. See CLAUDE.md.
-PROJECT_ROOT = Path(__file__).parent.parent
+# Once-per-process flag for the missing-EIA-API-key log line. Module-level
+# list (mutable) so the inner closure in enrich_with_smartmoney_features can
+# update it without a `global` declaration. Was firing per tick × per symbol.
+_eia_missing_warned = [False]
+
+# Junction-safe project root via ai_trading_agents._paths — see the
+# 2026-04-30 postmortem. The previous Path(__file__).parent.parent pattern
+# silently drifted to C:\ when Python returned __file__ through the canonical
+# target despite no .resolve() call.
+from ai_trading_agents._paths import project_root
+
+PROJECT_ROOT = project_root()
 EXTERNAL_DIR = PROJECT_ROOT / "data" / "external"
 
 # CFTC market codes (Socrata returns contract_market_name as a string we
@@ -572,7 +580,9 @@ def align_to_h1(
         try:
             eia_df = fetch_eia_ng_storage()
         except CrossAssetConfigError:
-            log.info("EIA_API_KEY not configured; skipping NG storage features")
+            if not _eia_missing_warned[0]:
+                log.info("EIA_API_KEY not configured; skipping NG storage features")
+                _eia_missing_warned[0] = True
             eia_df = pd.DataFrame()
 
     out = symbol_h1_df.copy()

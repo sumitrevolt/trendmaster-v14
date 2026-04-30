@@ -236,7 +236,11 @@ def fetch_and_merge(
     respecting the fetch-rate limit. Safe to call on a cron.
     """
     if calendar_path is None:
-        calendar_path = Path(__file__).resolve().parent.parent / "config" / "news_calendar.json"
+        # Junction-safe project root — see ai_trading_agents._paths and the
+        # 2026-04-30 postmortem.
+        from ai_trading_agents._paths import project_root
+
+        calendar_path = project_root() / "config" / "news_calendar.json"
     # Rate limit via an adjacent timestamp file (cheap, no dep).
     stamp = calendar_path.with_suffix(".lastfetch")
     try:

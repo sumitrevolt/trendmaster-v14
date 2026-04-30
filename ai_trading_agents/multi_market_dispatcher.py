@@ -13,8 +13,18 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-_HERE = Path(__file__).resolve().parent
+# Junction-safe — see CLAUDE.md "Brain package maintenance" and the
+# 2026-04-30 postmortem. Even without .resolve(), Python on Windows can hand
+# back __file__ through the canonical target. Validate via the project's
+# config/settings.py invariant; fall back to cwd if absent (the brain
+# launcher always sets cwd to project root via `cd /d`). Helper-module
+# import is NOT used here because this block runs *before* sys.path is
+# extended, so we have to inline the same logic that ai_trading_agents._paths
+# uses.
+_HERE = Path(__file__).parent
 _ROOT = _HERE.parent
+if not (_ROOT / "config" / "settings.py").exists():
+    _ROOT = Path.cwd()
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 

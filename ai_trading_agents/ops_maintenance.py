@@ -230,7 +230,11 @@ def vacuum_events(events_path: Path, max_lines: int = 500_000, max_age_days: int
 # ======================================================================
 def run_all(project_root: Optional[Path] = None) -> MaintenanceReport:
     report = MaintenanceReport(ts=int(time.time()))
-    root = Path(project_root) if project_root else Path(__file__).resolve().parent.parent
+    # Junction-safe project root — see ai_trading_agents._paths and the
+    # 2026-04-30 postmortem.
+    from ai_trading_agents._paths import project_root as _project_root
+
+    root = Path(project_root) if project_root else _project_root()
     try:
         rotated = rotate_logs(root / "logs")
         report.rotated = rotated
