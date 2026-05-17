@@ -10,8 +10,8 @@ websockets>=12.0
 MetaTrader5>=5.0.45
 
 # Data processing
-pandas>=3.0.2
-numpy>=2.4.4
+pandas>=3.0.3
+numpy>=2.4.5
 
 # HTTP clients (API calls + AI brain providers)
 aiohttp>=3.13.5

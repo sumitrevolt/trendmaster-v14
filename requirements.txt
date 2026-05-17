@@ -6,8 +6,8 @@
 MetaTrader5>=5.0.45
 
 # Data Processing
-pandas>=3.0.2
-numpy>=2.4.4
+pandas>=3.0.3
+numpy>=2.4.5
 
 # Technical Analysis (pure Python, no C dependencies)
 ta>=0.11.0
