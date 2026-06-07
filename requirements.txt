@@ -6,8 +6,8 @@
 MetaTrader5>=5.0.45
 
 # Data Processing
-pandas>=3.0.2
-numpy>=2.4.4
+pandas>=3.0.3
+numpy>=2.4.6
 
 # Technical Analysis (pure Python, no C dependencies)
 ta>=0.11.0
@@ -23,7 +23,7 @@ requests>=2.33.1
 aiohttp>=3.13.5
 
 # Machine Learning (CPU-based — for agent training system)
-scikit-learn>=1.8.0
+scikit-learn>=1.9.0
 xgboost>=3.2.0
 lightgbm>=4.0.0
 
