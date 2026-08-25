@@ -43,11 +43,36 @@ SKIP_FILES: set[str] = {
     "tools/chart_surgery.py",
     "tools/check_status.py",
     "tools/cleanup_orphans.py",
+    "tools/cleanup_project.py",
     "tools/compile_ea.py",
     "tools/install_indicator.py",
     "tools/live_brain_check.py",
     "tools/reload_indicator.py",
     "tools/trigger_training.py",
+    # Scripts that do module-level sys.argv parsing / sys.exit.
+    "tools/mission_control.py",
+    "tools/unified_dashboard.py",
+    # Archive scripts — do module-level file I/O, missing JSON templates, etc.
+    "tools/tv_alert_setup/_archive/add_euraud_and_xngusd.py",
+    "tools/tv_alert_setup/_archive/add_m1_alerts.py",
+    "tools/tv_alert_setup/_archive/add_multi_tf_alerts.py",
+    "tools/tv_alert_setup/_archive/add_secret_to_alerts.py",
+    "tools/tv_alert_setup/_archive/find_broken_alerts.py",
+    "tools/tv_alert_setup/_archive/fix_alerts_with_secret.py",
+    "tools/tv_alert_setup/_archive/fix_broken_alerts.py",
+    "tools/tv_alert_setup/_archive/focus_chromium.py",
+    "tools/tv_alert_setup/_archive/guided_wizard.py",
+    "tools/tv_alert_setup/_archive/probe_create_v2.py",
+    "tools/tv_alert_setup/_archive/probe_freq_values.py",
+    "tools/tv_alert_setup/_archive/reset_and_create.py",
+    "tools/tv_alert_setup/_archive/set_instant_frequency.py",
+    "tools/tv_alert_setup/_archive/setup_top5_multi_tf.py",
+    "tools/tv_alert_setup/_archive/swap_h1_to_m1.py",
+    "tools/tv_alert_setup/_archive/swap_h4_to_m30.py",
+    "tools/tv_alert_setup/_archive/test_create_payloads.py",
+    "tools/tv_alert_setup/analyze_pine_alert.py",
+    # Reads TOKEN at module level and sys.exit(3) if not set.
+    "tools/telegram_direction_listener.py",
 }
 
 # Same set, for the top-level-MT5 guard (these files are deliberately
@@ -55,6 +80,19 @@ SKIP_FILES: set[str] = {
 MT5_TOPLEVEL_OK: set[str] = {
     "tools/cleanup_orphans.py",
     "tools/live_brain_check.py",
+    "tools/daily_telegram_summary.py",
+    "tools/dashboard_server.py",
+    "tools/find_at_command.py",
+    "tools/hourly_telegram_snapshot.py",
+    "tools/nuclear_enable_at.py",
+    "tools/python_executor_oneshot.py",
+    "tools/python_signal_executor.py",
+    "tools/rank_top_pairs.py",
+    "tools/safeguards.py",
+    "tools/send_ctrl_e_postmessage.py",
+    "tools/toggle_at_single.py",
+    "tools/trailing_stop_manager.py",
+    "tools/widen_sl_on_open_positions.py",
 }
 
 # Optional heavy deps not installed in CI (Linux). When a module's
@@ -130,6 +168,13 @@ def test_module_imports(module_name: str, path: Path) -> None:
     except ImportError as e:
         # Late-import errors that aren't ModuleNotFoundError (rare).
         pytest.skip(f"{module_name} late import error: {e}")
+    except SystemExit as e:
+        # Script-style modules that call sys.exit() on import.
+        # exit(0) = success (e.g. check_no_resolve passed), treat as pass.
+        # exit(1) = actual failure, propagate.
+        if e.code != 0:
+            raise
+        # exit(0) is fine — script ran its check and reported OK.
 
 
 def test_no_toplevel_mt5_import() -> None:

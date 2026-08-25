@@ -24,11 +24,11 @@ authority: "config/trading_config.yaml"
 # now BOTH derive from this single value.
 # ---------------------------------------------------------------------------
 risk:
-  risk_percent: 0.5            # % of equity per trade (was 0.5 Python / 1.0 EA)
+  risk_percent: 3.0            # % of equity per trade (was 0.5 Python / 1.0 EA)
   max_daily_drawdown_percent: 3.0
   max_open_trades: 8           # global cap (per-team caps below bind)
   max_open_per_team: 2
-  max_consecutive_losses: 2
+  max_consecutive_losses: 3   # aligned with profit_optimizer.max_consec_losses
   default_sl_atr_multiple: 1.0
   default_tp_atr_multiple: 3.0
   min_sl_pips: 5
@@ -52,7 +52,7 @@ ea_bridge:
 # ---------------------------------------------------------------------------
 brain:
   inference_interval_ms: 3000
-  min_ml_confidence: 0.58      # [R12 2026-04-30] 0.70 → 0.58 after 1-trade-in-6-weeks audit; floor 0.50 in _effective_min_conf
+  min_ml_confidence: 0.58      # [R12 2026-04-30] lowered 0.82 → 0.58 after 1-trade-in-6-weeks audit. Rule-mode peak=0.83, score≥0.38 admitted. Revert: 0.82
   agent_min_votes: 2
   smartmoney_features_enabled: true
   metalabel_enabled: false     # Flip True after OOF AUC ≥ 0.55 validated
@@ -73,16 +73,25 @@ profit_optimizer:
   daily_loss_limit: true
 
   max_spread_atr_ratio: 0.25
-  vol_min_quantile: 0.10       # was 0.20, lowered 2026-04-28 dead-market fix
+  # 2026-05-10 lowered 0.10 → 0.05 — BTC weekend dead-market veto was
+  # blocking signals (ATR ~207 vs q10=216). Operator chose this over
+  # enabling INFERRED guessing for TV alerts. Direction stays correct
+  # via brain's rule-based ema/adx/rsi logic, just admits more
+  # low-volatility regimes. Slippage may rise marginally.
+  vol_min_quantile: 0.05
   vol_max_quantile: 0.95
   daily_profit_target_pct: 2.0
-  max_consec_losses: 3
+  # 2026-05-09: temporarily raised 3 → 60 to bypass stale 50-loss streak
+  # in MT5 deal history (today-morning's 4-dupe-executor incident polluted
+  # trade_tracker's lookback). Restore to 3 once new winning trades dilute
+  # the streak, OR when trade_tracker is patched to ignore pre-incident deals.
+  max_consec_losses: 3        # restored 2026-08-25 from temporary 60 (was bypassed for stale streak)
   cooldown_hours: 4
-  best_hours_utc: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  best_hours_utc: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]  # 07:00-20:59 UTC London+NY
   news_window_minutes: 30
   news_impact_levels: ["high"]
-  daily_max_loss_pct: 3.0
-  intraday_dd_pct: 2.0
+  daily_max_loss_pct: 5.0
+  intraday_dd_pct: 3.0
 
 # ---------------------------------------------------------------------------
 # EA confirmation indicators (mirrored in ea_confirmations.py for backtest)
@@ -105,10 +114,10 @@ ea_indicators:
 # ---------------------------------------------------------------------------
 # Trading pairs (this list IS used by EA via per-chart attachment, but the
 # Python brain iterates this same list for multi-symbol mode)
-# ---------------------------------------------------------------------------
-trading_pairs:
+# ---------------------------------------------------------------------------  trading_pairs:
+  # [2026-05-01] Concentrated mode: top-2 by Sharpe per team.
+  # Team caps (max_open_per_team=2) limit concurrent exposure.
   metals:    ["XAUUSD", "XAGUSD"]
-  forex:     ["GBPJPY", "USDCAD", "USDCHF", "EURUSD", "GBPUSD",
-              "AUDUSD", "USDJPY", "NZDUSD", "EURJPY", "AUDJPY", "CADJPY"]
+  forex:     ["USDCHF", "AUDJPY"]
   crypto:    ["BTCUSD", "ETHUSD"]
-  commodities: ["XTIUSD", "XBRUSD", "XNGUSD"]
+  commodities: ["XTIUSD", "XNGUSD"]

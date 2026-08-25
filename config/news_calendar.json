@@ -1,70 +1,318 @@
 [
   {
-    "_note": "TrendMaster v14 hand-curated high-impact macro calendar, 2026-Q2 through 2026-Q3 skeleton (2026-04-22 through 2026-07-31). Built offline from well-known recurring release patterns (FOMC ~6-week cadence, NFP first Friday, US CPI ~mid-month, ECB/BOE/BOJ ~6-week cadence, UK CPI 3rd Wednesday, Eurozone CPI flash last week of month). Times are approximate — exact release times can drift by a few minutes and meeting dates can be rescheduled. REFRESH WEEKLY from forexfactory.com or investing.com's economic calendar before relying on this for production trading. Schema consumed by ai_trading_agents/profit_filters.py::_load_news_calendar — fields: ts_utc (ISO-8601 with Z), event (string, prefix with currency code), impact (lowercase; 'high' is the only level currently blocked).",
+    "_note": "Refreshed 2026-08-25. Source: known central bank schedules + recurring indicator cadences. High-impact only. Refresh weekly from forexfactory.com.",
     "ts_utc": "1970-01-01T00:00:00Z",
     "event": "__HEADER__",
     "impact": "none"
   },
-
-  { "ts_utc": "2026-04-28T12:30:00Z", "event": "USD Durable Goods Orders",        "impact": "high" },
-  { "ts_utc": "2026-04-29T12:30:00Z", "event": "USD Advance GDP Q1",              "impact": "high" },
-  { "ts_utc": "2026-04-29T18:00:00Z", "event": "FOMC Rate Decision",              "impact": "high" },
-  { "ts_utc": "2026-04-29T18:30:00Z", "event": "FOMC Press Conference (Powell)",  "impact": "high" },
-  { "ts_utc": "2026-04-30T09:00:00Z", "event": "EUR Eurozone CPI Flash (YoY)",    "impact": "high" },
-  { "ts_utc": "2026-04-30T09:00:00Z", "event": "EUR Eurozone GDP Flash Q1",       "impact": "high" },
-  { "ts_utc": "2026-05-01T03:00:00Z", "event": "JPY BOJ Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-05-01T06:30:00Z", "event": "JPY BOJ Outlook Report / Presser", "impact": "high" },
-  { "ts_utc": "2026-05-01T12:30:00Z", "event": "USD Non-Farm Payrolls",           "impact": "high" },
-  { "ts_utc": "2026-05-01T12:30:00Z", "event": "USD Unemployment Rate",           "impact": "high" },
-  { "ts_utc": "2026-05-01T12:30:00Z", "event": "USD Average Hourly Earnings",     "impact": "high" },
-
-  { "ts_utc": "2026-05-05T04:30:00Z", "event": "AUD RBA Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-05-07T11:00:00Z", "event": "GBP BOE Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-05-07T11:30:00Z", "event": "GBP BOE Monetary Policy Report",  "impact": "high" },
-  { "ts_utc": "2026-05-13T12:30:00Z", "event": "USD CPI (YoY, Core)",             "impact": "high" },
-  { "ts_utc": "2026-05-14T12:30:00Z", "event": "USD PPI (YoY, Core)",             "impact": "high" },
-  { "ts_utc": "2026-05-15T12:30:00Z", "event": "USD Retail Sales",                "impact": "high" },
-  { "ts_utc": "2026-05-19T12:30:00Z", "event": "CAD CPI (YoY)",                   "impact": "high" },
-  { "ts_utc": "2026-05-20T06:00:00Z", "event": "GBP UK CPI (YoY)",                "impact": "high" },
-  { "ts_utc": "2026-05-29T09:00:00Z", "event": "EUR Eurozone CPI Flash (YoY)",    "impact": "high" },
-  { "ts_utc": "2026-05-29T12:30:00Z", "event": "USD Core PCE Price Index",        "impact": "high" },
-
-  { "ts_utc": "2026-06-02T04:30:00Z", "event": "AUD RBA Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-06-05T12:30:00Z", "event": "USD Non-Farm Payrolls",           "impact": "high" },
-  { "ts_utc": "2026-06-05T12:30:00Z", "event": "USD Unemployment Rate",           "impact": "high" },
-  { "ts_utc": "2026-06-05T12:30:00Z", "event": "USD Average Hourly Earnings",     "impact": "high" },
-  { "ts_utc": "2026-06-10T12:30:00Z", "event": "USD CPI (YoY, Core)",             "impact": "high" },
-  { "ts_utc": "2026-06-11T11:15:00Z", "event": "EUR ECB Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-06-11T11:45:00Z", "event": "EUR ECB Press Conference (Lagarde)", "impact": "high" },
-  { "ts_utc": "2026-06-11T12:30:00Z", "event": "USD PPI (YoY, Core)",             "impact": "high" },
-  { "ts_utc": "2026-06-16T12:30:00Z", "event": "USD Retail Sales",                "impact": "high" },
-  { "ts_utc": "2026-06-17T06:00:00Z", "event": "GBP UK CPI (YoY)",                "impact": "high" },
-  { "ts_utc": "2026-06-17T18:00:00Z", "event": "FOMC Rate Decision",              "impact": "high" },
-  { "ts_utc": "2026-06-17T18:30:00Z", "event": "FOMC Press Conference (Powell)",  "impact": "high" },
-  { "ts_utc": "2026-06-17T18:00:00Z", "event": "USD FOMC Dot Plot / SEP",         "impact": "high" },
-  { "ts_utc": "2026-06-18T11:00:00Z", "event": "GBP BOE Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-06-19T03:00:00Z", "event": "JPY BOJ Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-06-26T12:30:00Z", "event": "USD Core PCE Price Index",        "impact": "high" },
-  { "ts_utc": "2026-06-30T09:00:00Z", "event": "EUR Eurozone CPI Flash (YoY)",    "impact": "high" },
-
-  { "ts_utc": "2026-07-03T12:30:00Z", "event": "USD Non-Farm Payrolls",           "impact": "high" },
-  { "ts_utc": "2026-07-03T12:30:00Z", "event": "USD Unemployment Rate",           "impact": "high" },
-  { "ts_utc": "2026-07-03T12:30:00Z", "event": "USD Average Hourly Earnings",     "impact": "high" },
-  { "ts_utc": "2026-07-07T04:30:00Z", "event": "AUD RBA Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-07-15T06:00:00Z", "event": "GBP UK CPI (YoY)",                "impact": "high" },
-  { "ts_utc": "2026-07-15T12:30:00Z", "event": "USD CPI (YoY, Core)",             "impact": "high" },
-  { "ts_utc": "2026-07-16T12:30:00Z", "event": "USD PPI (YoY, Core)",             "impact": "high" },
-  { "ts_utc": "2026-07-16T12:30:00Z", "event": "USD Retail Sales",                "impact": "high" },
-  { "ts_utc": "2026-07-21T12:30:00Z", "event": "CAD CPI (YoY)",                   "impact": "high" },
-  { "ts_utc": "2026-07-23T11:15:00Z", "event": "EUR ECB Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-07-23T11:45:00Z", "event": "EUR ECB Press Conference (Lagarde)", "impact": "high" },
-  { "ts_utc": "2026-07-29T18:00:00Z", "event": "FOMC Rate Decision",              "impact": "high" },
-  { "ts_utc": "2026-07-29T18:30:00Z", "event": "FOMC Press Conference (Powell)",  "impact": "high" },
-  { "ts_utc": "2026-07-30T11:00:00Z", "event": "GBP BOE Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-07-30T11:30:00Z", "event": "GBP BOE Monetary Policy Report",  "impact": "high" },
-  { "ts_utc": "2026-07-30T12:30:00Z", "event": "USD Advance GDP Q2",              "impact": "high" },
-  { "ts_utc": "2026-07-31T03:00:00Z", "event": "JPY BOJ Rate Decision",           "impact": "high" },
-  { "ts_utc": "2026-07-31T06:30:00Z", "event": "JPY BOJ Outlook Report / Presser", "impact": "high" },
-  { "ts_utc": "2026-07-31T09:00:00Z", "event": "EUR Eurozone CPI Flash (YoY)",    "impact": "high" },
-  { "ts_utc": "2026-07-31T12:30:00Z", "event": "USD Core PCE Price Index",        "impact": "high" }
+  {
+    "ts_utc": "2026-09-02T04:30:00Z",
+    "event": "AUD RBA Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-04T12:30:00Z",
+    "event": "USD Average Hourly Earnings m/m",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-04T12:30:00Z",
+    "event": "USD Non-Farm Employment Change",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-04T12:30:00Z",
+    "event": "USD Unemployment Rate",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-10T12:30:00Z",
+    "event": "USD CPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-11T11:15:00Z",
+    "event": "EUR ECB Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-11T11:45:00Z",
+    "event": "EUR ECB Press Conference (Lagarde)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-11T12:30:00Z",
+    "event": "USD PPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-16T12:30:00Z",
+    "event": "USD Retail Sales",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-17T06:00:00Z",
+    "event": "GBP UK CPI (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-17T18:00:00Z",
+    "event": "FOMC Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-17T18:00:00Z",
+    "event": "USD FOMC Dot Plot / SEP",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-17T18:30:00Z",
+    "event": "FOMC Press Conference (Powell)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-18T11:00:00Z",
+    "event": "GBP BOE Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-19T03:00:00Z",
+    "event": "JPY BOJ Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-21T12:30:00Z",
+    "event": "CAD CPI (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-09-30T09:00:00Z",
+    "event": "EUR Eurozone CPI Flash (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-02T12:30:00Z",
+    "event": "USD Core PCE Price Index",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-07T04:30:00Z",
+    "event": "AUD RBA Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-09T12:30:00Z",
+    "event": "USD Average Hourly Earnings m/m",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-09T12:30:00Z",
+    "event": "USD Non-Farm Employment Change",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-09T12:30:00Z",
+    "event": "USD Unemployment Rate",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-13T12:30:00Z",
+    "event": "USD CPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-14T12:30:00Z",
+    "event": "USD PPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-15T06:00:00Z",
+    "event": "GBP UK CPI (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-16T12:30:00Z",
+    "event": "USD Retail Sales",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-30T03:00:00Z",
+    "event": "JPY BOJ Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-30T11:15:00Z",
+    "event": "EUR ECB Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-30T11:45:00Z",
+    "event": "EUR ECB Press Conference (Lagarde)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-30T12:30:00Z",
+    "event": "USD Advance GDP Q3",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-10-31T09:00:00Z",
+    "event": "EUR Eurozone CPI Flash (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-04T04:30:00Z",
+    "event": "AUD RBA Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-04T18:00:00Z",
+    "event": "FOMC Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-04T18:30:00Z",
+    "event": "FOMC Press Conference (Powell)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-06T11:00:00Z",
+    "event": "GBP BOE Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-06T12:30:00Z",
+    "event": "USD Average Hourly Earnings m/m",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-06T12:30:00Z",
+    "event": "USD Non-Farm Employment Change",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-06T12:30:00Z",
+    "event": "USD Unemployment Rate",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-12T12:30:00Z",
+    "event": "USD CPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-13T12:30:00Z",
+    "event": "USD PPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-17T12:30:00Z",
+    "event": "USD Retail Sales",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-18T06:00:00Z",
+    "event": "GBP UK CPI (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-20T12:30:00Z",
+    "event": "CAD CPI (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-11-30T09:00:00Z",
+    "event": "EUR Eurozone CPI Flash (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-01T12:30:00Z",
+    "event": "USD Core PCE Price Index",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-02T04:30:00Z",
+    "event": "AUD RBA Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-04T12:30:00Z",
+    "event": "USD Average Hourly Earnings m/m",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-04T12:30:00Z",
+    "event": "USD Non-Farm Employment Change",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-04T12:30:00Z",
+    "event": "USD Unemployment Rate",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-10T12:30:00Z",
+    "event": "USD CPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-11T12:30:00Z",
+    "event": "USD PPI (YoY, Core)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-16T06:00:00Z",
+    "event": "GBP UK CPI (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-16T12:30:00Z",
+    "event": "USD Retail Sales",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-17T18:00:00Z",
+    "event": "FOMC Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-17T18:00:00Z",
+    "event": "USD FOMC Dot Plot / SEP",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-17T18:30:00Z",
+    "event": "FOMC Press Conference (Powell)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-18T11:00:00Z",
+    "event": "GBP BOE Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-18T11:15:00Z",
+    "event": "EUR ECB Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-18T11:45:00Z",
+    "event": "EUR ECB Press Conference (Lagarde)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-19T03:00:00Z",
+    "event": "JPY BOJ Rate Decision",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-21T12:30:00Z",
+    "event": "CAD CPI (YoY)",
+    "impact": "high"
+  },
+  {
+    "ts_utc": "2026-12-31T09:00:00Z",
+    "event": "EUR Eurozone CPI Flash (YoY)",
+    "impact": "high"
+  }
 ]

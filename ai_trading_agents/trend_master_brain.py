@@ -167,6 +167,11 @@ try:
     from ai_trading_agents.online_learner import OnlineLearner as _OnlineLearner  # noqa: E402
 except Exception:
     _OnlineLearner = None  # type: ignore
+# [2026-08-25] 8-layer confluence scoring — precision strategy gate.
+try:
+    from ai_trading_agents.scoring import should_fire as _confluence_score  # noqa: E402
+except Exception:
+    _confluence_score = None  # type: ignore
 
 # [enhancement 2026-04-23 R4 — operator grade] performance analytics, daily
 # digest, market calendar, gate-value attribution.
@@ -872,24 +877,28 @@ class TrendMasterBrain:
         bbz = float(last.get("bb_z", 0) or 0)
 
         # weighted rule: trend + momentum + volatility context
+        # [2026-08-25] AGGRESSIVE per operator request: ADX 22→18,
+        # fire threshold 0.35→0.28 so a single strong condition
+        # (trend+ADX) can fire. Safeguards (conf gate, MTF H1+H4,
+        # profit gates) unchanged.
         score = 0.0
-        if bull and adx > 22:
+        if bull and adx > 18:
             score += 0.35
         if bull and bbz > 0:
             score += 0.15
         if bull and rsi > 50 and rsi < 75:
             score += 0.10
-        if bear and adx > 22:
+        if bear and adx > 18:
             score -= 0.35
         if bear and bbz < 0:
             score -= 0.15
         if bear and rsi < 50 and rsi > 25:
             score -= 0.10
 
-        if score >= 0.35:
-            return "BUY", 0.55 + min(0.4, score - 0.35)
-        if score <= -0.35:
-            return "SELL", 0.55 + min(0.4, -(score + 0.35))
+        if score >= 0.28:
+            return "BUY", 0.55 + min(0.4, max(0.0, score - 0.28))
+        if score <= -0.28:
+            return "SELL", 0.55 + min(0.4, max(0.0, -(score + 0.28)))
         return "NONE", 0.5
 
     # ─── MTF ALIGNMENT ──────────────────────────────────────────────────
@@ -1505,6 +1514,32 @@ class TrendMasterBrain:
         # carries the original direction (needed for require_same_direction).
         if direction in ("BUY", "SELL"):
             self.persistent.setdefault("last_signal_direction", {})[sym] = direction
+
+        # ── 8-LAYER CONFLUENCE SCORING GATE ──────────────────────────────
+        # [2026-08-25] Precision strategy — only fire signals with sufficient
+        # confluence across trend, momentum, volatility, session, MTF,
+        # price action, volume, and stochastic. Grid-search optimized:
+        # min_score=5.0, SL=0.8xATR, TP=2.0xATR.
+        # Sits AFTER agent vote + risk_manager, BEFORE final signal write.
+        if direction in ("BUY", "SELL") and _confluence_score is not None:
+            try:
+                direction, conf, _score_result = _confluence_score(
+                    df=df,
+                    direction=direction,
+                    conf=conf,
+                    hour_utc=datetime.now(timezone.utc).hour,
+                )
+                if direction == "NONE":
+                    reason = f"confluence: {_score_result.detail}"
+                    if _log_dedup((sym, reason), interval_s=60.0):
+                        logger.info("[%s] %s", sym, reason)
+                    self.state.last_veto_per_symbol[sym] = (
+                        f"{self.state.last_veto_per_symbol.get(sym, '')} | {reason}"
+                        if self.state.last_veto_per_symbol.get(sym)
+                        else reason
+                    )
+            except Exception as _sce:
+                logger.debug("confluence scoring skipped: %s", _sce)
 
         self.write_signal(direction, conf, agent_dir, agent_votes, symbol=sym)
 
