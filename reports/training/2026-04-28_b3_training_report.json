@@ -1,0 +1,234 @@
+{
+  "generated_at": "2026-04-28T07:59:42.388497+00:00",
+  "phase": "B3",
+  "feature_set": "v2",
+  "n_features": 32,
+  "dropped_cols": [
+    "ng_storage_delta_z"
+  ],
+  "effective_smartmoney_cols": [
+    "GC_spec_delta_z",
+    "SI_spec_delta_z",
+    "6E_spec_delta_z",
+    "6J_spec_delta_z",
+    "6C_spec_delta_z",
+    "CL_spec_delta_z",
+    "BTC_spec_delta_z"
+  ],
+  "n_symbols": 19,
+  "n_samples_total": 78231,
+  "cv": {
+    "oof_acc": 0.3857186685074398,
+    "oof_acc_per_fold": [
+      0.3883,
+      0.3865,
+      0.3595,
+      0.4086
+    ],
+    "folds": 4
+  },
+  "oof_acc": 0.3857186685074398,
+  "deploy_threshold": 0.38,
+  "promote": true,
+  "uniqueness_weighted": true,
+  "model_path": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\trend_master_model_v2.lgb",
+  "feature_name_roundtrip_ok": true,
+  "runtime_sec": 68.3,
+  "symbol_stats": {
+    "XAUUSD": {
+      "status": "ok",
+      "h1_bars": 4171,
+      "clean_samples": 4107,
+      "label_dist": {
+        "-1": 1014,
+        "0": 1883,
+        "1": 1210
+      }
+    },
+    "XAGUSD": {
+      "status": "ok",
+      "h1_bars": 4173,
+      "clean_samples": 4109,
+      "label_dist": {
+        "-1": 1123,
+        "0": 1821,
+        "1": 1165
+      }
+    },
+    "GBPJPY": {
+      "status": "ok",
+      "h1_bars": 4184,
+      "clean_samples": 4120,
+      "label_dist": {
+        "-1": 1005,
+        "0": 1956,
+        "1": 1159
+      }
+    },
+    "USDCAD": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 915,
+        "0": 2160,
+        "1": 1044
+      }
+    },
+    "USDCHF": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 1031,
+        "0": 2067,
+        "1": 1021
+      }
+    },
+    "EURUSD": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 1011,
+        "0": 2103,
+        "1": 1005
+      }
+    },
+    "GBPUSD": {
+      "status": "ok",
+      "h1_bars": 4184,
+      "clean_samples": 4117,
+      "label_dist": {
+        "-1": 1044,
+        "0": 2096,
+        "1": 977
+      }
+    },
+    "AUDUSD": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 1048,
+        "0": 1956,
+        "1": 1115
+      }
+    },
+    "USDJPY": {
+      "status": "ok",
+      "h1_bars": 4184,
+      "clean_samples": 4120,
+      "label_dist": {
+        "-1": 1079,
+        "0": 1904,
+        "1": 1137
+      }
+    },
+    "NZDUSD": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 1139,
+        "0": 1925,
+        "1": 1055
+      }
+    },
+    "EURJPY": {
+      "status": "ok",
+      "h1_bars": 4182,
+      "clean_samples": 4118,
+      "label_dist": {
+        "-1": 1045,
+        "0": 1895,
+        "1": 1178
+      }
+    },
+    "AUDJPY": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 1050,
+        "0": 1826,
+        "1": 1243
+      }
+    },
+    "CADJPY": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 1084,
+        "0": 1900,
+        "1": 1135
+      }
+    },
+    "EURGBP": {
+      "status": "ok",
+      "h1_bars": 4183,
+      "clean_samples": 4119,
+      "label_dist": {
+        "-1": 938,
+        "0": 2240,
+        "1": 941
+      }
+    },
+    "BTCUSD": {
+      "status": "ok",
+      "h1_bars": 4194,
+      "clean_samples": 4130,
+      "label_dist": {
+        "-1": 1146,
+        "0": 1979,
+        "1": 1005
+      }
+    },
+    "ETHUSD": {
+      "status": "ok",
+      "h1_bars": 4193,
+      "clean_samples": 4129,
+      "label_dist": {
+        "-1": 1200,
+        "0": 1955,
+        "1": 974
+      }
+    },
+    "XTIUSD": {
+      "status": "ok",
+      "h1_bars": 4174,
+      "clean_samples": 4110,
+      "label_dist": {
+        "-1": 1068,
+        "0": 1917,
+        "1": 1125
+      }
+    },
+    "XBRUSD": {
+      "status": "ok",
+      "h1_bars": 4173,
+      "clean_samples": 4109,
+      "label_dist": {
+        "-1": 1120,
+        "0": 1833,
+        "1": 1156
+      }
+    },
+    "XNGUSD": {
+      "status": "ok",
+      "h1_bars": 4174,
+      "clean_samples": 4110,
+      "label_dist": {
+        "-1": 1164,
+        "0": 1641,
+        "1": 1305
+      }
+    }
+  },
+  "label_dist": {
+    "0": 20224,
+    "1": 37057,
+    "2": 20950
+  }
+}

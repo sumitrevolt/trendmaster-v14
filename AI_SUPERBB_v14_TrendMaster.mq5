@@ -140,7 +140,7 @@ input bool    InpUseSessionFilt = true;
 input int     InpLondonStartUtc = 7;
 input int     InpNYEndUtc       = 20;
 input int     InpCooldownSecs   = 90;         // Between entries
-input bool    InpBlockNewsWin   = true;       // Skip 5m before/after top-of-hour (proxy)
+input bool    InpBlockNewsWin   = false;      // [2026-04-28] DISABLED — :55-:05 proxy was structurally blocking every H1-bar entry (bar close lands at :00 ≤ :05). Brain's profit_filters.news_blackout uses real calendar; EA proxy was redundant.
 
 input group "=== SAFETY ==="
 input double  InpMaxSpreadAtrPc = 0.40;       // [R11] 0.20 -> 0.40: overnight spreads blocked every pair
@@ -316,8 +316,9 @@ void EnsureSuperTrend(int rates_total, const double &high[], const double &low[]
         if(atr <= 0) continue;
 
         double hl2 = (hp + lp) / 2.0;
-        double upperBasic = hl2 + InpST_Mult * atr;
-        double lowerBasic = hl2 - InpST_Mult * atr;
+        double st_mult_eff = EffectiveSTMult();
+        double upperBasic = hl2 + st_mult_eff * atr;
+        double lowerBasic = hl2 - st_mult_eff * atr;
 
         // final upper/lower
         double prevUpper = (ci > 0 && g_st_dir[ci-1] != 0) ? g_st_line[ci-1] : upperBasic;
@@ -465,7 +466,7 @@ bool FillConfirmations(int rates_total, const double &close[], ConfSet &c, int s
 
     // ── C2 VOLATILITY (BB context) ──────────────────────────────
     double bb_width_now = bbU - bbL;
-    bool width_ok = bb_width_now >= width_med * 0.9;       // trending, not squeezed
+    bool width_ok = bb_width_now >= width_med * EffectiveBBFloorPct();   // [v14.5] per-team override via signal JSON
     if(c.trend_dir == 1)
     {
         if(px > bbM && width_ok) c.c2_vola = true;
@@ -523,12 +524,18 @@ double   g_ai_adx_min       = 0.0;
 // to Inp*".
 int      g_ai_require_all_3     = -1;   // -1 = not set; 0 = false; 1 = true
 double   g_ai_max_spread_atr_pc = 0.0;  // 0 = not set
+// [v14.5 2026-04-25] Per-team SuperTrend mult + BB width floor pct.
+// Brain writes from team_params.py TEAM_PARAMS[team]. 0 = not provided.
+double   g_ai_st_mult           = 0.0;
+double   g_ai_bb_floor_pct      = 0.0;
 
 double EffectiveSLAtrMult() { return g_ai_sl_atr_mult > 0 ? g_ai_sl_atr_mult : InpSL_AtrMult; }
 double EffectiveTPAtrMult() { return g_ai_tp_atr_mult > 0 ? g_ai_tp_atr_mult : InpTP_AtrMult; }
 double EffectiveADXMin()    { return g_ai_adx_min     > 0 ? g_ai_adx_min     : InpADX_Min;    }
 bool   EffectiveRequireAll3()     { return g_ai_require_all_3 >= 0 ? (g_ai_require_all_3 > 0) : InpRequireAll3; }
 double EffectiveMaxSpreadAtrPct() { return g_ai_max_spread_atr_pc > 0 ? g_ai_max_spread_atr_pc : InpMaxSpreadAtrPc; }
+double EffectiveSTMult()     { return g_ai_st_mult       > 0 ? g_ai_st_mult       : InpST_Mult; }
+double EffectiveBBFloorPct() { return g_ai_bb_floor_pct  > 0 ? g_ai_bb_floor_pct  : 0.9;        }
 
 
 // File format (kept intentionally simple — parse manually, no json lib):
@@ -544,6 +551,8 @@ int ReadAIGate(string &direction, double &conf)
     g_ai_adx_min     = 0.0;
     g_ai_require_all_3     = -1;
     g_ai_max_spread_atr_pc = 0.0;
+    g_ai_st_mult           = 0.0;
+    g_ai_bb_floor_pct      = 0.0;
     int fh = FileOpen(ResolveAISignalFile(), FILE_READ | FILE_TXT | FILE_ANSI);
     if(fh == INVALID_HANDLE)
     {
@@ -638,6 +647,29 @@ int ReadAIGate(string &direction, double &conf)
         if(comma < 0) comma = StringFind(all, "}", colon);
         string num = StringSubstr(all, colon + 1, comma - colon - 1);
         g_ai_max_spread_atr_pc = StringToDouble(num);
+    }
+
+    // [v14.5 2026-04-25] Per-team SuperTrend mult (st_mult) and BB-width
+    // floor (bb_width_floor_pct) overrides. Brain reads from team_params.py
+    // TEAM_PARAMS[team] and writes into the per-symbol signal JSON. 0 = not
+    // provided => fall back to compiled InpST_Mult / 0.9 default.
+    p = StringFind(all, "\"st_mult\"");
+    if(p >= 0)
+    {
+        int colon = StringFind(all, ":", p);
+        int comma = StringFind(all, ",", colon);
+        if(comma < 0) comma = StringFind(all, "}", colon);
+        string num = StringSubstr(all, colon + 1, comma - colon - 1);
+        g_ai_st_mult = StringToDouble(num);
+    }
+    p = StringFind(all, "\"bb_width_floor_pct\"");
+    if(p >= 0)
+    {
+        int colon = StringFind(all, ":", p);
+        int comma = StringFind(all, ",", colon);
+        if(comma < 0) comma = StringFind(all, "}", colon);
+        string num = StringSubstr(all, colon + 1, comma - colon - 1);
+        g_ai_bb_floor_pct = StringToDouble(num);
     }
 
     // Stale check

@@ -1,0 +1,23 @@
+{
+  "symbol": "USDCAD",
+  "team": "FOREX",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4119,
+  "n_trades": 858,
+  "win_rate": 0.28321678321678323,
+  "expectancy_R": 0.2762237762237762,
+  "max_dd": 23.0,
+  "oos_acc": 0.4712099125364432,
+  "oos_acc_per_fold": [
+    0.4592,
+    0.4592,
+    0.4636,
+    0.5029
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

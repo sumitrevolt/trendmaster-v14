@@ -1,0 +1,206 @@
+[
+  {
+    "category": "env",
+    "name": "MT5_LOGIN",
+    "state": "OK",
+    "detail": "REQUIRED - broker login"
+  },
+  {
+    "category": "env",
+    "name": "MT5_PASSWORD",
+    "state": "OK",
+    "detail": "REQUIRED - broker password"
+  },
+  {
+    "category": "env",
+    "name": "MT5_SERVER",
+    "state": "OK",
+    "detail": "REQUIRED - broker server"
+  },
+  {
+    "category": "env",
+    "name": "TELEGRAM_BOT_TOKEN",
+    "state": "OK",
+    "detail": "REQUIRED - Telegram bot"
+  },
+  {
+    "category": "env",
+    "name": "TELEGRAM_CHAT_ID",
+    "state": "OK",
+    "detail": "REQUIRED - operator chat"
+  },
+  {
+    "category": "env",
+    "name": "TV_WEBHOOK_SECRET",
+    "state": "OK",
+    "detail": "REQUIRED - webhook auth"
+  },
+  {
+    "category": "env",
+    "name": "NGROK_DOMAIN",
+    "state": "OK",
+    "detail": "REQUIRED - public tunnel"
+  },
+  {
+    "category": "env",
+    "name": "TV_PUBLIC_URL",
+    "state": "OK",
+    "detail": "REQUIRED - public URL"
+  },
+  {
+    "category": "env_opt",
+    "name": "EIA_API_KEY",
+    "state": "blank",
+    "detail": "optional - natural gas storage feature for V2 model (32\u219233 features)"
+  },
+  {
+    "category": "env_opt",
+    "name": "CTRADER_CLIENT_ID",
+    "state": "OK",
+    "detail": "optional - cTrader IC Markets dual-broker mode"
+  },
+  {
+    "category": "env_opt",
+    "name": "CTRADER_ACCESS_TOKEN",
+    "state": "blank",
+    "detail": "optional - cTrader OAuth (parked 2026-05-07)"
+  },
+  {
+    "category": "env_opt",
+    "name": "CTRADER_ACCOUNT_ID",
+    "state": "blank",
+    "detail": "optional - IC Markets account"
+  },
+  {
+    "category": "env_opt",
+    "name": "TV_EMAIL_USER",
+    "state": "blank",
+    "detail": "deprecated - webhook is active path"
+  },
+  {
+    "category": "env_opt",
+    "name": "TV_EMAIL_APP_PASSWORD",
+    "state": "blank",
+    "detail": "deprecated - webhook is active path"
+  },
+  {
+    "category": "process",
+    "name": "brain",
+    "state": "RUNNING",
+    "detail": "trend_master_brain.py instances=2"
+  },
+  {
+    "category": "endpoint",
+    "name": "webhook local",
+    "state": "OK",
+    "detail": "http://127.0.0.1:5005/health"
+  },
+  {
+    "category": "endpoint",
+    "name": "webhook public",
+    "state": "OK",
+    "detail": "https://shadow-cosmos-unending.ngrok-free.dev/health"
+  },
+  {
+    "category": "endpoint",
+    "name": "dashboard",
+    "state": "OK",
+    "detail": "http://127.0.0.1:8765/api/status"
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Health Watchdog",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Live Dashboard",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Process Watchdog",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Brain Liveness",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Signal Pipeline Monitor",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Junction Guard",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Walkforward Lab",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Reactivate Alerts",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "schtask",
+    "name": "TrendMaster Zero Trades Watchdog",
+    "state": "UNKNOWN",
+    "detail": ""
+  },
+  {
+    "category": "infra",
+    "name": "ngrok.yml",
+    "state": "OK",
+    "detail": "C:\\Users\\Ratanshila\\AppData\\Local\\ngrok\\ngrok.yml"
+  },
+  {
+    "category": "infra",
+    "name": "git",
+    "state": "DIRTY",
+    "detail": "746 uncommitted files"
+  },
+  {
+    "category": "state",
+    "name": "brain_state.json",
+    "state": "OK",
+    "detail": "size=8814 mtime=2026-05-09 16:08"
+  },
+  {
+    "category": "state",
+    "name": "watchdog_state.json",
+    "state": "OK",
+    "detail": "size=372 mtime=2026-05-09 16:08"
+  },
+  {
+    "category": "state",
+    "name": "tv_signals.jsonl",
+    "state": "OK",
+    "detail": "size=7889642 mtime=2026-05-09 01:04"
+  },
+  {
+    "category": "state",
+    "name": "trades.csv",
+    "state": "OK",
+    "detail": "size=1748 mtime=2026-02-13 17:30"
+  },
+  {
+    "category": "optional",
+    "name": "telegram_commands",
+    "state": "NOT_RUNNING",
+    "detail": "0 instances"
+  }
+]

@@ -1,0 +1,40 @@
+terminal_info.data_path: C:\Users\Ratanshila\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075
+terminal_info.commondata_path: C:\Users\Ratanshila\AppData\Roaming\MetaQuotes\Terminal\Common
+terminal_info.name: MetaTrader 5
+terminal_info.path: C:\Program Files\MetaTrader 5
+
+Real MT5 Files dir: C:\Users\Ratanshila\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Files
+Dir exists: True
+
+Files in real dir (26):
+  - py_executor.alive (5s old)
+  - trendmaster_signals.json (65933s old)
+      sig.ts=1778589020, sig_age=65934s, strategy=rocket_prime_chart_ocr
+  - trendmaster_signals.reset_2026-05-06 (584406s old)
+  - trendmaster_signals_AUDJPY.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_AUDUSD.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_BTCUSD.json (63242s old)
+      sig.ts=1778591711, sig_age=63243s, strategy=rocket_prime_chart_ocr
+  - trendmaster_signals_BTCUSD.reset_2026-05-06 (584403s old)
+  - trendmaster_signals_CADJPY.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_ETHUSD.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_EURAUD.stale_2026-05-06 (588431s old)
+  - trendmaster_signals_EURGBP.stale_2026-05-06 (655845s old)
+  - trendmaster_signals_EURJPY.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_EURUSD.reset_2026-05-06 (584405s old)
+  - trendmaster_signals_GBPJPY.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_GBPUSD.reset_2026-05-06 (584404s old)
+  - trendmaster_signals_NZDUSD.stale_2026-05-06 (632949s old)
+  - trendmaster_signals_USDCAD.stale_2026-05-06 (584832s old)
+  - trendmaster_signals_USDCHF.stale_2026-05-06 (612818s old)
+  - trendmaster_signals_USDJPY.reset_2026-05-06 (583450s old)
+  - trendmaster_signals_XAGUSD.stale_2026-05-06 (587592s old)
+  - trendmaster_signals_XBRUSD.json (44341s old)
+      sig.ts=1778610613, sig_age=44341s, strategy=rocket_prime_chart_ocr
+  - trendmaster_signals_XBRUSD.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_XNGUSD.json (57240s old)
+      sig.ts=1778597713, sig_age=57241s, strategy=rocket_prime_chart_ocr
+  - trendmaster_signals_XNGUSD.stale_2026-05-06 (658451s old)
+  - trendmaster_signals_XTIUSD.json (62343s old)
+      sig.ts=1778592610, sig_age=62344s, strategy=rocket_prime_chart_ocr
+  - trendmaster_signals_XTIUSD.stale_2026-05-06 (658451s old)

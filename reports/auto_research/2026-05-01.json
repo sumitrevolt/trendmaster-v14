@@ -1,0 +1,10 @@
+{
+  "ts": "2026-05-01T03:30:02.256153+05:30",
+  "run": {
+    "ok": false,
+    "exit_code": 2,
+    "stdout": "",
+    "stderr": "usage: walkforward_lab.py [-h] [--symbol SYMBOL] [--sl SL] [--tp TP]\n                          [--feature-set {v1,v2}] [--seed SEED]\n                          [--folds FOLDS]\nwalkforward_lab.py: error: unrecognized arguments: --json\n"
+  },
+  "metrics": null
+}

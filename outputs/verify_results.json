@@ -1,0 +1,87 @@
+{
+  "checks": [
+    [
+      "import_safeguards",
+      true
+    ],
+    [
+      "BTCUSD_BUY_usd_side",
+      0,
+      "expected 0"
+    ],
+    [
+      "BTCUSD_SELL_usd_side",
+      0,
+      "expected 0"
+    ],
+    [
+      "ETHUSD_BUY_usd_side",
+      0,
+      "expected 0"
+    ],
+    [
+      "ETHUSD_SELL_usd_side",
+      0,
+      "expected 0"
+    ],
+    [
+      "USDJPY_BUY_usd_side",
+      1,
+      "expected +1 long-USD"
+    ],
+    [
+      "GBPUSD_SELL_usd_side",
+      1,
+      "expected +1 long-USD"
+    ],
+    [
+      "BTCUSD_time_blackout",
+      [
+        false,
+        "time-of-day ok (crypto 24/7 \u2014 exempt)"
+      ],
+      "expected (False, '...exempt...')"
+    ],
+    [
+      "ETHUSD_time_blackout",
+      [
+        false,
+        "time-of-day ok (crypto 24/7 \u2014 exempt)"
+      ],
+      "expected (False, '...exempt...')"
+    ],
+    [
+      "brain_explicitly_agrees_BTCUSD_BUY",
+      [
+        true,
+        "brain agrees: BUY conf=0.75 age=4s"
+      ]
+    ],
+    [
+      "compare_brain_perms",
+      {
+        "brain_agrees_with_signal_blocked": false,
+        "brain_agrees_with_signal_reason": "brain AGREES: BUY conf=0.75",
+        "brain_explicitly_agrees_agreed": true,
+        "brain_explicitly_agrees_reason": "brain agrees: BUY conf=0.75 age=4s"
+      }
+    ],
+    [
+      "brain_state_btc_view",
+      {
+        "direction": "NONE",
+        "confidence": 0.75,
+        "ts": 1778997291
+      }
+    ],
+    [
+      "brain_state_eth_view",
+      {
+        "direction": "NONE",
+        "confidence": 0.55,
+        "ts": 1778997288
+      }
+    ]
+  ],
+  "errors": []
+}

@@ -1,0 +1,110 @@
+{
+  "symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}",
+  "resolution": "5",
+  "condition": {
+    "type": "pine_alert",
+    "frequency": "60",
+    "series": [
+      {
+        "type": "study",
+        "study": "Script@tv-scripting-101",
+        "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+        "pine_version": "1.0",
+        "inputs": {
+          "__fast_calc": false,
+          "__profile": false,
+          "in_0": true,
+          "in_1": "Normal",
+          "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+        }
+      }
+    ],
+    "cross_interval": false,
+    "resolution": "5"
+  },
+  "conditions": [
+    {
+      "type": "pine_alert",
+      "frequency": "60",
+      "series": [
+        {
+          "type": "study",
+          "study": "Script@tv-scripting-101",
+          "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+          "pine_version": "1.0",
+          "inputs": {
+            "__fast_calc": false,
+            "__profile": false,
+            "in_0": true,
+            "in_1": "Normal",
+            "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+          }
+        }
+      ],
+      "cross_interval": false,
+      "resolution": "5"
+    }
+  ],
+  "expiration": "2026-06-04T07:28:18Z",
+  "auto_deactivate": true,
+  "expiration_policy": {
+    "time": "2026-06-04T07:28:18Z",
+    "policy": "fixed_date"
+  },
+  "email": true,
+  "sms_over_email": true,
+  "mobile_push": true,
+  "message": "",
+  "sound_file": "alert/3_notes_reverb",
+  "sound_duration": 30,
+  "popup": true,
+  "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+  "name": null,
+  "alert_id": 4624098622,
+  "cross_interval": false,
+  "type": "indicator",
+  "active": false,
+  "create_time": "2026-05-05T07:28:19Z",
+  "last_fire_time": "2026-05-05T10:40:02Z",
+  "last_fire_bar_time": "2026-05-05T10:35:00Z",
+  "last_error": null,
+  "last_stop_reason": "auto",
+  "complexity": "complex",
+  "presentation_data": {
+    "main_series": {
+      "type": "forex",
+      "formatter": "price",
+      "pricescale": 1000,
+      "minmovement": 1,
+      "minmovement2": 10,
+      "currency-logoid": "country/JP",
+      "base-currency-logoid": "country/US",
+      "logo": {
+        "style": "pair",
+        "logoid": "country/US",
+        "logoid2": "country/JP"
+      }
+    },
+    "studies": {
+      "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+        "description": "Rocket Prime Engine",
+        "short_description": "Rocket Prime Engine",
+        "history_calculation_may_change": true,
+        "has_alert_function": true,
+        "format_type": "price"
+      }
+    },
+    "mutable_study_data": {
+      "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+        "titles": {
+          "title": "Rocket Prime Engine (Normal)",
+          "short_title": "Rocket Prime Engine (Normal)"
+        }
+      }
+    }
+  },
+  "kinds": [
+    "regular"
+  ],
+  "pro_symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}"
+}

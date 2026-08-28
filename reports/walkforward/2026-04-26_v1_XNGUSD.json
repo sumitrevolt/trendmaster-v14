@@ -1,0 +1,23 @@
+{
+  "symbol": "XNGUSD",
+  "team": "COMMODITIES",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4110,
+  "n_trades": 1297,
+  "win_rate": 0.30763299922898996,
+  "expectancy_R": 0.3261372397841172,
+  "max_dd": 18.0,
+  "oos_acc": 0.3437956204379562,
+  "oos_acc_per_fold": [
+    0.327,
+    0.3825,
+    0.3372,
+    0.3285
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

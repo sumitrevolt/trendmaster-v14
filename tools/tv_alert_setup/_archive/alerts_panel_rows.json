@@ -1,0 +1,614 @@
+{
+  "header": [
+    {
+      "al": "Alerts",
+      "dn": "alerts",
+      "txt": "6",
+      "x": 1556,
+      "y": 90,
+      "w": 44,
+      "h": 44
+    },
+    {
+      "al": "Object tree and data window",
+      "dn": "object_tree",
+      "txt": "",
+      "x": 1556,
+      "y": 136,
+      "w": 44,
+      "h": 44
+    },
+    {
+      "al": "Chats",
+      "dn": "union_chats",
+      "txt": "",
+      "x": 1556,
+      "y": 182,
+      "w": 44,
+      "h": 44
+    },
+    {
+      "al": "",
+      "dn": "event-delete-button",
+      "txt": "",
+      "x": 1526,
+      "y": 175,
+      "w": 22,
+      "h": 22
+    }
+  ],
+  "rows": [
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 169,
+      "w": 409,
+      "h": 78,
+      "text": "XAGUSD Crossing 74.43250 XAGUSD 20:06:48 Webhook successfully delivered",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 175,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 247,
+      "w": 409,
+      "h": 78,
+      "text": "XAUUSD Crossing 4,577.840 XAUUSD 20:05:42 Webhook successfully delivered",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 253,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 325,
+      "w": 409,
+      "h": 78,
+      "text": "XAUUSD Crossing 4,576.560 XAUUSD 20:04:26 Webhook successfully delivered",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 331,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 402,
+      "w": 409,
+      "h": 78,
+      "text": "EURUSD Crossing 1.17156 EURUSD 20:02:35 Webhook successfully delivered",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 408,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 480,
+      "w": 409,
+      "h": 78,
+      "text": "EURUSD Crossing 1.17149 EURUSD 20:01:40 Webhook delivery failed \u2014 404 Not Found. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 486,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 558,
+      "w": 409,
+      "h": 78,
+      "text": "XAGUSD Crossing 74.39950 XAGUSD 20:01:23 Webhook delivery failed \u2014 404 Not Found. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 564,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 636,
+      "w": 409,
+      "h": 78,
+      "text": "XAGUSD Crossing 74.40000 XAGUSD 20:01:06 Webhook delivery failed \u2014 404 Not Found. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 642,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 714,
+      "w": 409,
+      "h": 78,
+      "text": "XAGUSD Crossing 74.33350 XAGUSD 20:00:31 Webhook delivery failed \u2014 404 Not Found. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 720,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 791,
+      "w": 409,
+      "h": 78,
+      "text": "XAUUSD Crossing 4,570.545 XAUUSD 20:00:14 Webhook delivery failed \u2014 404 Not Found. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 797,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 869,
+      "w": 409,
+      "h": 78,
+      "text": "XAUUSD Crossing 4,570.805 XAUUSD 19:59:56 Webhook delivery failed \u2014 404 Not Found. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 875,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 947,
+      "w": 409,
+      "h": 78,
+      "text": "XAUUSD Crossing 4,576.510 XAUUSD 19:55:50 Webhook delivery failed \u2014 401 Unauthorized. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 953,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1025,
+      "w": 409,
+      "h": 78,
+      "text": "XAGUSD Crossing 74.59826 XAGUSD 19:52:56 Webhook delivery failed \u2014 401 Unauthorized. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1031,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1103,
+      "w": 409,
+      "h": 78,
+      "text": "XAUUSD Crossing 4,556.300 XAUUSD 19:41:30 Webhook delivery failed \u2014 401 Unauthorized. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1109,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1180,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 18:30:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1186,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1279,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 18:30:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1285,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1378,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 18:30:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1384,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1477,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 17:00:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1483,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1576,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 17:00:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1582,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1674,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 17:00:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1680,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1773,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 15:15:01 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1779,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1872,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 15:15:01 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1878,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 1971,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 15:15:01 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 1977,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 2070,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 06:35:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 2076,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 2168,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 06:35:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 2174,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 2267,
+      "w": 409,
+      "h": 99,
+      "text": "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 06:35:00 Webhook delivery failed \u2014 couldn't find this domain. Learn more",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 2273,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "tag": "DIV",
+      "cls": "itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ",
+      "x": 1145,
+      "y": 2406,
+      "w": 409,
+      "h": 56,
+      "text": "CHFJPY Crossing 200.466 CHFJPY 19:21:51",
+      "buttons": [
+        {
+          "al": "",
+          "dn": "event-delete-button",
+          "cls": "button-IdZQNS1U apply-common-tooltip overlayButton",
+          "btxt": "",
+          "x": 1526,
+          "y": 2412,
+          "w": 22,
+          "h": 22
+        }
+      ],
+      "depth": 0
+    }
+  ]
+}

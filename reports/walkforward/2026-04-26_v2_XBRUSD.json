@@ -1,0 +1,25 @@
+{
+  "symbol": "XBRUSD",
+  "team": "COMMODITIES",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3878,
+  "n_trades": 1055,
+  "win_rate": 0.3090047393364929,
+  "expectancy_R": 0.3355450236966825,
+  "max_dd": 21.0,
+  "oos_acc": 0.3970588235294118,
+  "oos_acc_per_fold": [
+    0.356,
+    0.3947,
+    0.4025,
+    0.435
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

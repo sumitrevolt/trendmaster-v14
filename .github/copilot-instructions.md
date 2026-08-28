@@ -110,4 +110,3 @@ python run_backtest.py  # Test strategy (expect 80%+ WR)
 - `config/settings.py` - Risk & pair settings
 
 ---
-

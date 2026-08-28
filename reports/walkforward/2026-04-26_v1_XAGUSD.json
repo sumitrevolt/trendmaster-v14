@@ -1,0 +1,23 @@
+{
+  "symbol": "XAGUSD",
+  "team": "METALS",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4109,
+  "n_trades": 822,
+  "win_rate": 0.2980535279805353,
+  "expectancy_R": 0.26277372262773724,
+  "max_dd": 30.0,
+  "oos_acc": 0.40716374269005845,
+  "oos_acc_per_fold": [
+    0.4342,
+    0.3538,
+    0.4357,
+    0.405
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

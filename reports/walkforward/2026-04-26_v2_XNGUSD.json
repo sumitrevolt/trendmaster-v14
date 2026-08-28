@@ -1,0 +1,25 @@
+{
+  "symbol": "XNGUSD",
+  "team": "COMMODITIES",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3879,
+  "n_trades": 1249,
+  "win_rate": 0.31865492393915135,
+  "expectancy_R": 0.3522818254603683,
+  "max_dd": 25.0,
+  "oos_acc": 0.35758513931888547,
+  "oos_acc_per_fold": [
+    0.3576,
+    0.3963,
+    0.322,
+    0.3545
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "last_refresh_ts": "2026-04-25T11:32:55.824657+00:00",
+  "source_versions": {
+    "yahoo_chart_v7": "static",
+    "fred_csv": "static"
+  },
+  "rows_per_series": {
+    "dxy_h1": 1187,
+    "vix_h1": 810,
+    "us10y_h1": 16062
+  },
+  "ttl_hours": 6
+}

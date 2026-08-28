@@ -1,0 +1,156 @@
+{
+  "ts": "2026-05-14T22:29:38",
+  "stale_threshold_s": 90,
+  "phase": "done",
+  "errors": [],
+  "sig_dir": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files",
+  "sig_dir_exists": true,
+  "archive_dir": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\stale_archive",
+  "found_count": 9,
+  "files": [
+    {
+      "name": "trendmaster_signals.json",
+      "symbol": "XAUUSD",
+      "direction": "SELL",
+      "file_age_s": 40766,
+      "embedded_age_s": 40766,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals.json"
+    },
+    {
+      "name": "trendmaster_signals_BTCUSD.json",
+      "symbol": "BTCUSD",
+      "direction": "SELL",
+      "file_age_s": 4467,
+      "embedded_age_s": 4467,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_BTCUSD.json"
+    },
+    {
+      "name": "trendmaster_signals_ETHUSD.json",
+      "symbol": "ETHUSD",
+      "direction": "SELL",
+      "file_age_s": 71010,
+      "embedded_age_s": 71010,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_ETHUSD.json"
+    },
+    {
+      "name": "trendmaster_signals_EURUSD.json",
+      "symbol": "EURUSD",
+      "direction": "SELL",
+      "file_age_s": 7467,
+      "embedded_age_s": 7467,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_EURUSD.json"
+    },
+    {
+      "name": "trendmaster_signals_GBPUSD.json",
+      "symbol": "GBPUSD",
+      "direction": "SELL",
+      "file_age_s": 8063,
+      "embedded_age_s": 8063,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_GBPUSD.json"
+    },
+    {
+      "name": "trendmaster_signals_XAGUSD.json",
+      "symbol": "XAGUSD",
+      "direction": "SELL",
+      "file_age_s": 2068,
+      "embedded_age_s": 2068,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_XAGUSD.json"
+    },
+    {
+      "name": "trendmaster_signals_XBRUSD.json",
+      "symbol": "XBRUSD",
+      "direction": "SELL",
+      "file_age_s": 73464,
+      "embedded_age_s": 73464,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_XBRUSD.json"
+    },
+    {
+      "name": "trendmaster_signals_XNGUSD.json",
+      "symbol": "XNGUSD",
+      "direction": "SELL",
+      "file_age_s": 35366,
+      "embedded_age_s": 35366,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_XNGUSD.json"
+    },
+    {
+      "name": "trendmaster_signals_XTIUSD.json",
+      "symbol": "XTIUSD",
+      "direction": "SELL",
+      "file_age_s": 14368,
+      "embedded_age_s": 14368,
+      "stale": true,
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files\\trendmaster_signals_XTIUSD.json"
+    }
+  ],
+  "stale_count": 9,
+  "fresh_count": 0,
+  "moved_count": 9,
+  "moved": [
+    {
+      "symbol": "XAUUSD",
+      "age_s": 40766,
+      "archived_to": "trendmaster_signals_20260514_111012.json"
+    },
+    {
+      "symbol": "BTCUSD",
+      "age_s": 4467,
+      "archived_to": "trendmaster_signals_BTCUSD_20260514_211511.json"
+    },
+    {
+      "symbol": "ETHUSD",
+      "age_s": 71010,
+      "archived_to": "trendmaster_signals_ETHUSD_20260514_024608.json"
+    },
+    {
+      "symbol": "EURUSD",
+      "age_s": 7467,
+      "archived_to": "trendmaster_signals_EURUSD_20260514_202511.json"
+    },
+    {
+      "symbol": "GBPUSD",
+      "age_s": 8063,
+      "archived_to": "trendmaster_signals_GBPUSD_20260514_201515.json"
+    },
+    {
+      "symbol": "XAGUSD",
+      "age_s": 2068,
+      "archived_to": "trendmaster_signals_XAGUSD_20260514_215510.json"
+    },
+    {
+      "symbol": "XBRUSD",
+      "age_s": 73464,
+      "archived_to": "trendmaster_signals_XBRUSD_20260514_020514.json"
+    },
+    {
+      "symbol": "XNGUSD",
+      "age_s": 35366,
+      "archived_to": "trendmaster_signals_XNGUSD_20260514_124012.json"
+    },
+    {
+      "symbol": "XTIUSD",
+      "age_s": 14368,
+      "archived_to": "trendmaster_signals_XTIUSD_20260514_183010.json"
+    }
+  ],
+  "executor_pids": [
+    {
+      "pid": 13596,
+      "uptime_s": 276
+    },
+    {
+      "pid": 25716,
+      "uptime_s": 276
+    }
+  ],
+  "executor_running": true,
+  "sentinel_age_s": 35,
+  "sentinel_alive": true
+}

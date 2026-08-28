@@ -1,0 +1,91 @@
+﻿[D1 COMMIT] Started 2026-04-26 20:22:27
+[1] Pre-fix with ruff...
+C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\python.exe: No module named ruff
+[2] Staging D1 files...
+The following paths are ignored by one of your .gitignore files:
+ai_trading_agents/meta_label_model.lgb
+ai_trading_agents/meta_label_model_COMMODITIES.lgb
+ai_trading_agents/meta_label_model_CRYPTO.lgb
+ai_trading_agents/meta_label_model_FOREX.lgb
+ai_trading_agents/meta_label_model_METALS.lgb
+ai_trading_agents/trend_master_model.lgb
+hint: Use -f if you really want to add them.
+hint: Disable this message with "git config set advice.addIgnoredFile false"
+[3] Staged files:
+CLAUDE.md
+reports/training/2026-04-26_d1_sequential_bootstrap_report.json
+tools/sample_weights.py
+tools/train_v14_b3.py
+tools/train_v14_c1_metalabel.py
+tools/train_v14_c2_metalabel_perteam.py
+[4] First commit attempt...
+[WARNING] Unstaged files detected.
+[INFO] Stashing unstaged files to C:\Users\Ratanshila\.cache\pre-commit\patch1777215149-32468.
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...........................................(no files to check)Skipped
+check toml...........................................(no files to check)Skipped
+check for merge conflicts................................................Passed
+check for added large files..............................................Passed
+detect private key.......................................................Passed
+ruff (legacy alias)......................................................Passed
+ruff format..............................................................Failed
+- hook id: ruff-format
+- files were modified by this hook
+System.Management.Automation.RemoteException
+2 files reformatted, 2 files left unchanged
+System.Management.Automation.RemoteException
+forbid .env files....................................(no files to check)Skipped
+code-review-graph incremental update.....................................Passed
+ai_trading_agents junction guard.........................................Passed
+[INFO] Restored changes from C:\Users\Ratanshila\.cache\pre-commit\patch1777215149-32468.
+COMMIT1_RC=1
+[5] Restoring junction...
+[restore_junction] checking canonical source at C:\TrendMaster_aita_canonical
+[restore_junction] checking junction at C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents
+[restore_junction] junction missing or replaced with a real folder. Rebuilding.
+[restore_junction] creating junction: C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents -> C:\TrendMaster_aita_canonical
+[restore_junction] OK: junction restored. Verify with: dir /A:L "C:\Users\Ratanshila\Documents\autmated trading"
+[6] Re-staging and recommitting...
+The following paths are ignored by one of your .gitignore files:
+ai_trading_agents/meta_label_model.lgb
+ai_trading_agents/meta_label_model_COMMODITIES.lgb
+ai_trading_agents/meta_label_model_CRYPTO.lgb
+ai_trading_agents/meta_label_model_FOREX.lgb
+ai_trading_agents/meta_label_model_METALS.lgb
+ai_trading_agents/trend_master_model.lgb
+hint: Use -f if you really want to add them.
+hint: Disable this message with "git config set advice.addIgnoredFile false"
+[WARNING] Unstaged files detected.
+[INFO] Stashing unstaged files to C:\Users\Ratanshila\.cache\pre-commit\patch1777215159-20984.
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...........................................(no files to check)Skipped
+check toml...........................................(no files to check)Skipped
+check for merge conflicts................................................Passed
+check for added large files..............................................Passed
+detect private key.......................................................Passed
+ruff (legacy alias)......................................................Passed
+ruff format..............................................................Passed
+forbid .env files....................................(no files to check)Skipped
+code-review-graph incremental update.....................................Passed
+ai_trading_agents junction guard.........................................Passed
+[INFO] Restored changes from C:\Users\Ratanshila\.cache\pre-commit\patch1777215159-20984.
+[main ee2e7b9] Phase D1: sequential-bootstrap uniqueness weights (all 5 models PROMOTE)
+ 6 files changed, 364 insertions(+), 52 deletions(-)
+ create mode 100644 reports/training/2026-04-26_d1_sequential_bootstrap_report.json
+ create mode 100644 tools/sample_weights.py
+COMMIT2_RC=0
+[restore_junction] checking canonical source at C:\TrendMaster_aita_canonical
+[restore_junction] checking junction at C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents
+[restore_junction] junction missing or replaced with a real folder. Rebuilding.
+[restore_junction] creating junction: C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents -> C:\TrendMaster_aita_canonical
+[restore_junction] OK: junction restored. Verify with: dir /A:L "C:\Users\Ratanshila\Documents\autmated trading"
+[7] Final git log:
+ee2e7b9 Phase D1: sequential-bootstrap uniqueness weights (all 5 models PROMOTE)
+4c08546 Phase C2: per-team meta-label heads (4x PROMOTE)
+28f9c02 Phase C1: meta-label act/skip head (OOF AUC=0.906)
+69b3d1e Phase B3: triple-barrier V2 retrain on 19 symbols (OOF acc=0.393)
+5b85a21 Phase B2: wire cross-asset smart-money features into brain
+408a919 feat(research): Phase B2-research walkforward v1 vs v2 (COT+EIA, real data) -- see report for verdict
+SCRIPT_DONE

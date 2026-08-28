@@ -1,0 +1,25 @@
+{
+  "symbol": "XTIUSD",
+  "team": "COMMODITIES",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3879,
+  "n_trades": 938,
+  "win_rate": 0.2697228144989339,
+  "expectancy_R": 0.21748400852878466,
+  "max_dd": 32.0,
+  "oos_acc": 0.4160216718266254,
+  "oos_acc_per_fold": [
+    0.4644,
+    0.3251,
+    0.4628,
+    0.4118
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

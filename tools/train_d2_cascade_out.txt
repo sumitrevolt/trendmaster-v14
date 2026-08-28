@@ -1,0 +1,229 @@
+[D2 CASCADE] Started 2026-04-26 21:13:25
+
+=== B3 ===
+Start: 21:13:25
+=================================================================
+Phase B3 — TrendMaster v14 multi-symbol triple-barrier retrain
+  FEATURE_COLS_V2 : 35 cols
+  Symbols         : 19
+  Labels          : triple-barrier TP=2.0*ATR SL=1.0*ATR hold=12H1
+  CV              : purged walk-forward 5-fold
+=================================================================
+
+[1/4] Fetching smart-money data (COT + EIA)…
+  COT  : 851 weekly rows, cols=['GC_spec_delta_z', 'SI_spec_delta_z', '6E_spec_delta_z', '6J_spec_delta_z', '6C_spec_delta_z', 'CL_spec_delta_z', 'BTC_spec_delta_z']
+  EIA fetch failed (EIA_API_KEY not set. Register at https://www.eia.gov/opendata/register.php (free) and either export EIA_API_KEY=... or pass api_key= explicitly.); ng_storage_delta_z will be NaN
+
+[2/4] Building feature pool (19 symbols)…
+  XAUUSD     H1= 4171  clean= 4107  labels={-1: 1014, 0: 1883, 1: 1210}  sm_eff=9/8
+  XAGUSD     H1= 4173  clean= 4109  labels={-1: 1123, 0: 1821, 1: 1165}  sm_eff=9/8
+  GBPJPY     H1= 4184  clean= 4120  labels={-1: 1005, 0: 1956, 1: 1159}  sm_eff=9/8
+  USDCAD     H1= 4183  clean= 4119  labels={-1: 915, 0: 2160, 1: 1044}  sm_eff=9/8
+  USDCHF     H1= 4183  clean= 4119  labels={-1: 1031, 0: 2067, 1: 1021}  sm_eff=9/8
+  EURUSD     H1= 4183  clean= 4119  labels={-1: 1011, 0: 2103, 1: 1005}  sm_eff=9/8
+  GBPUSD     H1= 4184  clean= 4117  labels={-1: 1044, 0: 2096, 1: 977}  sm_eff=9/8
+  AUDUSD     H1= 4183  clean= 4119  labels={-1: 1048, 0: 1956, 1: 1115}  sm_eff=9/8
+  USDJPY     H1= 4184  clean= 4120  labels={-1: 1079, 0: 1904, 1: 1137}  sm_eff=9/8
+  NZDUSD     H1= 4183  clean= 4119  labels={-1: 1139, 0: 1925, 1: 1055}  sm_eff=9/8
+  EURJPY     H1= 4182  clean= 4118  labels={-1: 1045, 0: 1895, 1: 1178}  sm_eff=9/8
+  AUDJPY     H1= 4183  clean= 4119  labels={-1: 1050, 0: 1826, 1: 1243}  sm_eff=9/8
+  CADJPY     H1= 4183  clean= 4119  labels={-1: 1084, 0: 1900, 1: 1135}  sm_eff=9/8
+  EURGBP     H1= 4183  clean= 4119  labels={-1: 938, 0: 2240, 1: 941}  sm_eff=9/8
+  BTCUSD     H1= 4194  clean= 4130  labels={-1: 1146, 0: 1979, 1: 1005}  sm_eff=9/8
+  ETHUSD     H1= 4193  clean= 4129  labels={-1: 1200, 0: 1955, 1: 974}  sm_eff=9/8
+  XTIUSD     H1= 4174  clean= 4110  labels={-1: 1068, 0: 1917, 1: 1125}  sm_eff=9/8
+  XBRUSD     H1= 4173  clean= 4109  labels={-1: 1120, 0: 1833, 1: 1156}  sm_eff=9/8
+  XNGUSD     H1= 4174  clean= 4110  labels={-1: 1164, 0: 1641, 1: 1305}  sm_eff=9/8
+
+  Total pool: 78,231 samples from 19 symbols
+  Effective feature cols: 34 (9 smartmoney cols active)
+  Dropped all-NaN cols  : ['ng_storage_delta_z']
+
+  Final X shape : (73842, 34)
+  Label dist (0=SELL 1=NONE 2=BUY): {np.int64(0): np.int64(19134), np.int64(1): np.int64(34861), np.int64(2): np.int64(19847)}
+  Sample weights: uniq mean=0.0835  combined mean=0.0835  (bagging_fraction replaced by uniqueness weights)
+
+[3/4] Purged walk-forward CV (5 folds, purge=12 bars)…
+  OOF accuracy : 0.3862  (per fold: [0.3881, 0.3753, 0.3673, 0.414])
+  Random baseline : 0.333  |  Target : >= 0.38
+
+  PROMOTE: OOF acc 0.3862 >= 0.38
+
+[4/4] Full-fit on all 73,842 samples…
+
+  Saved → C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\trend_master_model_v2.lgb
+  Feature name round-trip: OK
+
+  Report → C:\Users\Ratanshila\Documents\autmated trading\reports\training\2026-04-26_b3_training_report.json
+  Runtime: 288s
+
+=================================================================
+PROMOTE — to activate the new model:
+  1. copy  ai_trading_agents\trend_master_model_v2.lgb
+           ai_trading_agents\trend_master_model.lgb
+  2. In config/settings.py set: smartmoney_features_enabled = True
+  3. start_brain_clean.cmd
+  4. .venv\Scripts\python.exe tools\diagnose_zero_trades.py
+     → expect MODEL_OK, std > 0.05, non-NONE directions
+=================================================================
+End: 21:18:18  RC=0
+
+=== C1 ===
+Start: 21:18:18
+=================================================================
+Phase C1 -- TrendMaster v14 meta-label head trainer
+  Primary model  : trend_master_model.lgb  (B3, 32 features)
+  Meta features  : 3 B3 probs + 32 V2 cols = 35 total
+  Meta labels    : TP-hit=1 vs SL/timeout=0 (per B3 direction)
+  CV             : purged walk-forward 5-fold
+=================================================================
+
+[1/5] Loading B3 primary model...
+  B3 model: 32 features, mtime=2026-04-26T13:25:59.613057+00:00
+
+[2/5] Fetching smart-money data (COT + EIA)...
+  COT fetch failed (cannot import name 'fetch_cot_data' from 'ai_trading_agents.cross_asset_join' (C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\cross_asset_join.py)); smart-money cols will be NaN
+  EIA fetch failed (cannot access local variable 'fetch_eia_data' where it is not associated with a value); ng_storage_delta_z will be NaN
+
+[3/5] Building meta-feature pool (19 symbols)...
+  XAUUSD     act_rows=2536  TP_rate=83.4%  B3_buy=1407  B3_sell=1129
+  XAGUSD     act_rows=2572  TP_rate=85.9%  B3_buy=1308  B3_sell=1264
+  GBPJPY     act_rows=2367  TP_rate=84.5%  B3_buy=1286  B3_sell=1081
+  USDCAD     act_rows=2107  TP_rate=85.0%  B3_buy=1115  B3_sell=992
+  USDCHF     act_rows=2239  TP_rate=83.0%  B3_buy=1064  B3_sell=1175
+  EURUSD     act_rows=2173  TP_rate=83.9%  B3_buy=1090  B3_sell=1083
+  GBPUSD     act_rows=2117  TP_rate=84.7%  B3_buy=991  B3_sell=1126
+  AUDUSD     act_rows=2392  TP_rate=83.7%  B3_buy=1173  B3_sell=1219
+  USDJPY     act_rows=2533  TP_rate=81.0%  B3_buy=1357  B3_sell=1176
+  NZDUSD     act_rows=2520  TP_rate=82.3%  B3_buy=1186  B3_sell=1334
+  EURJPY     act_rows=2543  TP_rate=83.4%  B3_buy=1362  B3_sell=1181
+  AUDJPY     act_rows=2611  TP_rate=81.6%  B3_buy=1408  B3_sell=1203
+  CADJPY     act_rows=2618  TP_rate=80.4%  B3_buy=1337  B3_sell=1281
+  EURGBP     act_rows=2047  TP_rate=85.3%  B3_buy=1023  B3_sell=1024
+  BTCUSD     act_rows=2364  TP_rate=87.4%  B3_buy=1077  B3_sell=1287
+  ETHUSD     act_rows=2381  TP_rate=88.3%  B3_buy=1069  B3_sell=1312
+  XTIUSD     act_rows=2468  TP_rate=85.1%  B3_buy=1253  B3_sell=1215
+  XBRUSD     act_rows=2496  TP_rate=88.3%  B3_buy=1258  B3_sell=1238
+  XNGUSD     act_rows=2750  TP_rate=88.0%  B3_buy=1453  B3_sell=1297
+
+  Total pool: 45,834 act-rows from 19 symbols
+  Meta features  : 35 cols
+  Overall TP rate: 84.5%  (act=38717  skip=7117)
+  Sample weight  : mean=0.0260  min=0.0153  max=0.2586
+
+[4/5] Purged walk-forward CV (5 folds, purge=12 bars)...
+  OOF AUC   : 0.9078  (per fold: [0.884, 0.9099, 0.9234, 0.9303])
+  Random baseline : 0.500  |  Target : >= 0.55
+  act(TP)=25593  skip(SL/TO)=4963
+
+  PROMOTE: OOF AUC 0.9078 >= 0.55
+
+[5/5] Full-fit on all 45,834 act-rows...
+
+  Saved --> C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\meta_label_model.lgb
+  Feature name round-trip: OK
+  Meta features: ['b3_p_sell', 'b3_p_none', 'b3_p_buy', 'ret_1', 'hl_rng', 'ret_5'] ... (35 total)
+
+  Report --> C:\Users\Ratanshila\Documents\autmated trading\reports\training\2026-04-26_c1_metalabel_report.json
+  Runtime: 326s
+
+=================================================================
+PROMOTE -- to activate the meta-labeller:
+  1. In config/settings.py set: metalabel_enabled = True
+     (also set metalabel_act_threshold = 0.55)
+  2. start_brain_clean.cmd
+  3. .venv\Scripts\python.exe tools\diagnose_zero_trades.py
+     --> expect MODEL_OK, non-NONE directions with P_act filter active
+=================================================================
+End: 21:23:49  RC=0
+
+=== C2 ===
+Start: 21:23:49
+=================================================================
+Phase C2 -- TrendMaster v14 per-team meta-label trainer
+  Primary model  : trend_master_model.lgb  (B3, 32 features)
+  Meta features  : 3 B3 probs + 32 V2 cols = 35 total
+  Teams          : METALS / FOREX / CRYPTO / COMMODITIES
+  CV             : purged walk-forward 5-fold per team
+=================================================================
+
+[1/4] Loading B3 primary model...
+  B3 model: 32 features, mtime=2026-04-26T13:25:59.613057+00:00
+
+[2/4] Fetching smart-money data (COT + EIA)...
+  COT fetch failed (cannot import name 'fetch_cot_data' from 'ai_trading_agents.cross_asset_join' (C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\cross_asset_join.py)); smart-money cols will be NaN
+  EIA fetch failed (cannot access local variable 'fetch_eia_data' where it is not associated with a value); ng_storage_delta_z will be NaN
+
+[3/4] Training per-team meta-label models...
+
+  === METALS (2 symbols) ===
+    XAUUSD     act_rows=2536  TP_rate=83.4%  B3_buy=1407  B3_sell=1129
+    XAGUSD     act_rows=2572  TP_rate=85.9%  B3_buy=1308  B3_sell=1264
+  METALS: 5,108 act-rows  overall TP=84.7%  features=35
+  Sample weight  : mean=0.0256  min=0.0151  max=0.1475
+  METALS OOF AUC: 0.8787  (per fold: [0.8916, 0.9043, 0.871, 0.918])  --> PROMOTE
+  act(TP)=2867  skip(SL/TO)=537
+  Saved --> C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\meta_label_model_METALS.lgb  feature round-trip: OK
+
+  === FOREX (12 symbols) ===
+    GBPJPY     act_rows=2367  TP_rate=84.5%  B3_buy=1286  B3_sell=1081
+    USDCAD     act_rows=2107  TP_rate=85.0%  B3_buy=1115  B3_sell=992
+    USDCHF     act_rows=2239  TP_rate=83.0%  B3_buy=1064  B3_sell=1175
+    EURUSD     act_rows=2173  TP_rate=83.9%  B3_buy=1090  B3_sell=1083
+    GBPUSD     act_rows=2117  TP_rate=84.7%  B3_buy=991  B3_sell=1126
+    AUDUSD     act_rows=2392  TP_rate=83.7%  B3_buy=1173  B3_sell=1219
+    USDJPY     act_rows=2533  TP_rate=81.0%  B3_buy=1357  B3_sell=1176
+    NZDUSD     act_rows=2520  TP_rate=82.3%  B3_buy=1186  B3_sell=1334
+    EURJPY     act_rows=2543  TP_rate=83.4%  B3_buy=1362  B3_sell=1181
+    AUDJPY     act_rows=2611  TP_rate=81.6%  B3_buy=1408  B3_sell=1203
+    CADJPY     act_rows=2618  TP_rate=80.4%  B3_buy=1337  B3_sell=1281
+    EURGBP     act_rows=2047  TP_rate=85.3%  B3_buy=1023  B3_sell=1024
+  FOREX: 28,267 act-rows  overall TP=83.1%  features=35
+  Sample weight  : mean=0.0283  min=0.0169  max=0.2586
+  FOREX OOF AUC: 0.9082  (per fold: [0.8922, 0.9117, 0.9175, 0.9127])  --> PROMOTE
+  act(TP)=15606  skip(SL/TO)=3238
+  Saved --> C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\meta_label_model_FOREX.lgb  feature round-trip: OK
+
+  === CRYPTO (2 symbols) ===
+    BTCUSD     act_rows=2364  TP_rate=87.4%  B3_buy=1077  B3_sell=1287
+    ETHUSD     act_rows=2381  TP_rate=88.3%  B3_buy=1069  B3_sell=1312
+  CRYPTO: 4,745 act-rows  overall TP=87.9%  features=35
+  Sample weight  : mean=0.0203  min=0.0115  max=0.0961
+  CRYPTO OOF AUC: 0.9005  (per fold: [0.8936, 0.8895, 0.9422, 0.9551])  --> PROMOTE
+  act(TP)=2783  skip(SL/TO)=377
+  Saved --> C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\meta_label_model_CRYPTO.lgb  feature round-trip: OK
+
+  === COMMODITIES (3 symbols) ===
+    XTIUSD     act_rows=2468  TP_rate=85.1%  B3_buy=1253  B3_sell=1215
+    XBRUSD     act_rows=2496  TP_rate=88.3%  B3_buy=1258  B3_sell=1238
+    XNGUSD     act_rows=2750  TP_rate=88.0%  B3_buy=1453  B3_sell=1297
+  COMMODITIES: 7,714 act-rows  overall TP=87.2%  features=35
+  Sample weight  : mean=0.0215  min=0.0123  max=0.2586
+  COMMODITIES OOF AUC: 0.9047  (per fold: [0.8894, 0.9392, 0.9449, 0.9264])  --> PROMOTE
+  act(TP)=4536  skip(SL/TO)=604
+  Saved --> C:\Users\Ratanshila\Documents\autmated trading\ai_trading_agents\meta_label_model_COMMODITIES.lgb  feature round-trip: OK
+
+[4/4] Summary
+-------------------------------------------------------
+  METALS        act= 5,108  OOF_AUC=0.8787  PROMOTE
+  FOREX         act=28,267  OOF_AUC=0.9082  PROMOTE
+  CRYPTO        act= 4,745  OOF_AUC=0.9005  PROMOTE
+  COMMODITIES   act= 7,714  OOF_AUC=0.9047  PROMOTE
+-------------------------------------------------------
+
+  Report --> C:\Users\Ratanshila\Documents\autmated trading\reports\training\2026-04-26_c2_metalabel_perteam_report.json
+  Runtime: 258s
+
+=================================================================
+PROMOTED: ['METALS', 'FOREX', 'CRYPTO', 'COMMODITIES']
+
+To activate per-team meta-labelling:
+  1. In config/settings.py set: metalabel_perteam_enabled = True
+     (keep metalabel_enabled = True as the global fallback)
+  2. start_brain_clean.cmd
+  3. .venv\Scripts\python.exe tools\diagnose_zero_trades.py
+=================================================================
+End: 21:28:12  RC=0
+
+[D2 CASCADE DONE] B3=0 C1=0 C2=0
+SCRIPT_DONE 2026-04-26 21:28:12

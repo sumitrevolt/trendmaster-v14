@@ -1,0 +1,23 @@
+{
+  "symbol": "EURGBP",
+  "team": "FOREX",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4119,
+  "n_trades": 781,
+  "win_rate": 0.34827144686299616,
+  "expectancy_R": 0.4238156209987196,
+  "max_dd": 15.0,
+  "oos_acc": 0.5061953352769679,
+  "oos_acc_per_fold": [
+    0.4869,
+    0.5029,
+    0.519,
+    0.516
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

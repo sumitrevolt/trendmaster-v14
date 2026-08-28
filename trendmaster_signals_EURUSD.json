@@ -1,0 +1,33 @@
+{
+  "direction": "NONE",
+  "confidence": 0.87,
+  "ts": 1787658127,
+  "symbol": "EURUSD",
+  "brain": "TrendMaster_v14",
+  "model": "rule",
+  "agents": {
+    "dir": "NONE",
+    "votes": [
+      {
+        "name": "trend_h4",
+        "vote": 0,
+        "reason": "no clean fan"
+      },
+      {
+        "name": "momentum_h1",
+        "vote": 0,
+        "reason": "macd hist flat +0.0001"
+      },
+      {
+        "name": "timing_m30",
+        "vote": 0,
+        "reason": "no trigger rsi=57.5"
+      }
+    ]
+  },
+  "sl_atr_mult": 0.75,
+  "tp_atr_mult": 4.25,
+  "adx_min": 26.0,
+  "require_all_3": false,
+  "max_spread_atr_pct": 0.4
+}

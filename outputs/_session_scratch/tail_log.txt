@@ -1,0 +1,34 @@
+[29-04-2026 11:31:54.60] tail openclaw log 
+ 
+[2026-04-29T11:26:54.380+05:30] starting HTTP server...
+[2026-04-29T11:26:54.402+05:30] canvas host mounted at http://127.0.0.1:18789/__openclaw__/canvas/ (root C:\Users\Ratanshila\.openclaw\canvas)
+[2026-04-29T11:26:54.442+05:30] MCP loopback server listening on http://127.0.0.1:55088/mcp
+[2026-04-29T11:26:54.720+05:30] heartbeat: started
+[2026-04-29T11:26:54.738+05:30] started (interval: 300s, startup-grace: 60s, channel-connect-grace: 120s)
+[2026-04-29T11:26:55.321+05:30] agent model: github-copilot/claude-opus-4.6
+[2026-04-29T11:26:55.325+05:30] ready (6 plugins: acpx, browser, device-pair, phone-control, talk-voice, zalouser; 59.0s)
+[2026-04-29T11:26:55.330+05:30] log file: \tmp\openclaw\openclaw-2026-04-29.log
+[2026-04-29T11:26:55.966+05:30] starting channels and sidecars...
+[2026-04-29T11:26:56.955+05:30] cron: started
+[2026-04-29T11:26:57.046+05:30] loaded 4 internal hook handlers
+[2026-04-29T11:26:59.709+05:30] watchdog detected non-announced service; attempting re-advertise (gateway fqdn=WIN-GT6L1K7NN5H (OpenClaw)._openclaw-gw._tcp.local. host=openclaw.local. port=18789 state=probing)
+[2026-04-29T11:29:23.420+05:30] loading configurationƒ?Ý
+[2026-04-29T11:29:29.209+05:30] resolving authenticationƒ?Ý
+[2026-04-29T11:29:31.728+05:30] starting...
+[2026-04-29T11:30:25.300+05:30] loading configurationƒ?Ý
+[2026-04-29T11:30:29.235+05:30] resolving authenticationƒ?Ý
+[2026-04-29T11:30:30.397+05:30] starting...
+[2026-04-29T11:31:36.819+05:30] starting HTTP server...
+[2026-04-29T11:31:36.837+05:30] canvas host mounted at http://127.0.0.1:18789/__openclaw__/canvas/ (root C:\Users\Ratanshila\.openclaw\canvas)
+[2026-04-29T11:31:36.879+05:30] MCP loopback server listening on http://127.0.0.1:52307/mcp
+[2026-04-29T11:31:37.226+05:30] heartbeat: started
+[2026-04-29T11:31:37.245+05:30] started (interval: 300s, startup-grace: 60s, channel-connect-grace: 120s)
+[2026-04-29T11:31:38.322+05:30] agent model: github-copilot/claude-opus-4.6
+[2026-04-29T11:31:38.327+05:30] ready (6 plugins: acpx, browser, device-pair, phone-control, talk-voice, zalouser; 67.9s)
+[2026-04-29T11:31:38.334+05:30] log file: \tmp\openclaw\openclaw-2026-04-29.log
+[2026-04-29T11:31:39.221+05:30] starting channels and sidecars...
+[2026-04-29T11:31:40.686+05:30] cron: started
+[2026-04-29T11:31:40.772+05:30] loaded 4 internal hook handlers
+[2026-04-29T11:31:44.787+05:30] watchdog detected non-announced service; attempting re-advertise (gateway fqdn=WIN-GT6L1K7NN5H (OpenClaw)._openclaw-gw._tcp.local. host=openclaw.local. port=18789 state=probing)
+ 
+=== Last 5 fresh ports === 

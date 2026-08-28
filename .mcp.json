@@ -7,6 +7,27 @@
         "serve"
       ],
       "type": "stdio"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--headless"
+      ],
+      "type": "stdio"
+    },
+    "pc-control": {
+      "command": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\.venv\\Scripts\\python.exe",
+      "args": [
+        "-m",
+        "tools.mcp_pc_control"
+      ],
+      "type": "stdio",
+      "cwd": "C:\\Users\\Ratanshila\\Documents\\autmated trading",
+      "env": {
+        "PC_CONTROL_BLOCK_FOREGROUND": "Bank;HDFC;ICICI;SBI;Axis"
+      }
     }
   }
 }

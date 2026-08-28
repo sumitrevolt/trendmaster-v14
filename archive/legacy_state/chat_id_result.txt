@@ -1,4 +1,0 @@
-BOT_NAME=@Sumits_jarvis_bot (Jarvis)
-BOT_VALID=True
-UPDATES_COUNT=0
-NO_UPDATES_YET

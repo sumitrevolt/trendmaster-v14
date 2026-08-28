@@ -1,0 +1,121 @@
+// @version=5
+// rocket_prime_alert_bridge.pine — companion indicator that fixes the
+// Rocket Prime "alert() overrides message" bug by re-emitting proper
+// directional alerts via alertcondition().
+//
+// PROBLEM (2026-05-08 → 2026-05-09 incident):
+// ============================================================
+// Rocket Prime indicator's Pine source uses alert() function (the
+// runtime call), which OVERRIDES whatever message template the user
+// types in TradingView's alert dialog. Result: every alert body
+// arrives at the webhook as just "#### {{ticker}} ####" with no
+// direction info. Bot rejects with "REJECT no-direction" and zero
+// trades fire.
+//
+// Pine has TWO alert mechanisms:
+//   1. alert("text", freq) — runtime call, hardcodes the message.
+//      THIS is what RP uses, and it's the bug.
+//   2. alertcondition(cond, "title", "message-template") — declarative,
+//      respects the template you set in TV's alert dialog.
+//
+// SOLUTION:
+// ============================================================
+// This companion reads RP's Buy/Sell observation plot lines as
+// `input.source()` references, then declares two alertcondition()s
+// that fire when those plots flip non-zero. Because alertcondition is
+// declarative, the alert message you type when CREATING the TV alert
+// is respected — including {{plot_0}}, {{ticker}}, {{interval}}
+// substitutions.
+//
+// SETUP (per chart):
+// ============================================================
+// 1. Open the chart for one pair × timeframe (e.g., BTCUSD 5m).
+// 2. RP indicator must already be applied on the chart.
+// 3. Add this "RP Alert Bridge" indicator (paste this Pine into TV
+//    Pine Editor → Save → Add to Chart).
+// 4. In the indicator settings, set:
+//      - "RP Buy plot"  → Rocket Prime's "Buy Observation" or "p0"
+//      - "RP Sell plot" → Rocket Prime's "Sell Observation" or "p1"
+//    (Pick whichever plot the indicator uses for direction. If RP
+//    has labels named differently — e.g. "Long Signal" / "Short
+//    Signal" — pick those.)
+// 5. Click + → Create Alert. In the alert dialog:
+//      - Condition: "RP Alert Bridge" → "BUY signal" (or "SELL signal")
+//      - Message: leave the {{strategy.order.alert_message}} or
+//        manually set:
+//          BUY|{{ticker}}|tf={{interval}}|p0={{plot_0}}|p1={{plot_1}}
+//        for the BUY alert, and
+//          SELL|{{ticker}}|tf={{interval}}|p0={{plot_0}}|p1={{plot_1}}
+//        for the SELL alert.
+//      - Webhook URL: the operator's existing webhook URL (TV_PUBLIC_URL
+//        + "/tv-signal?secret=..." path).
+// 6. Repeat per pair × timeframe.
+//
+// HOW THE BOT PARSES (already supported):
+// ============================================================
+// `tv_webhook_receiver.py` already understands the
+// "BUY|SYMBOL|tf=N|p0=...|p1=..." text format. Direction from the
+// first token, symbol/tf from the next, plots optional. See memory
+// `project_2026-05-07_rocket_prime_plot_direction.md` for parsing rules.
+//
+// MAINTENANCE:
+// ============================================================
+// The companion has zero dependencies on RP's internal state — it just
+// observes whichever plot the user binds. So even if RP is updated, as
+// long as it still has Buy/Sell observation plots, this companion keeps
+// working. Operator only needs to re-bind the input sources if RP's
+// plot names change.
+
+indicator("RP Alert Bridge", overlay=false, max_labels_count=20)
+
+// ── inputs ────────────────────────────────────────────────────────────
+buy_src  = input.source(close, "RP Buy plot",
+            tooltip="Pick Rocket Prime's Buy Observation plot. " +
+                    "Bridge fires BUY when this turns non-zero / crosses up.")
+sell_src = input.source(close, "RP Sell plot",
+            tooltip="Pick Rocket Prime's Sell Observation plot. " +
+                    "Bridge fires SELL when this turns non-zero / crosses up.")
+
+// Threshold style: 0-cross is most common for "Buy Observation"-type
+// plots that are 0 most of the time and spike to a price level on signal.
+// For boolean-style plots (1/0), 0-cross still works.
+threshold = input.float(0.0, "Cross-up threshold",
+            tooltip="Bridge fires when input plot crosses ABOVE this. " +
+                    "Default 0 works for spike-style plots (RP default). " +
+                    "Set to 0.5 for boolean (1/0) plots.")
+
+// ── conditions ────────────────────────────────────────────────────────
+buy_signal  = ta.crossover(buy_src,  threshold)
+sell_signal = ta.crossover(sell_src, threshold)
+
+// ── alertconditions (the actual fix) ─────────────────────────────────
+alertcondition(buy_signal,
+    title="BUY signal",
+    message="BUY|{{ticker}}|tf={{interval}}|p0={{plot_0}}|p1={{plot_1}}")
+
+alertcondition(sell_signal,
+    title="SELL signal",
+    message="SELL|{{ticker}}|tf={{interval}}|p0={{plot_0}}|p1={{plot_1}}")
+
+// ── visual confirmation (so operator can see bridge working) ──────────
+plot(buy_src,  title="p0 (Buy bridge)",  color=color.new(color.green, 0))
+plot(sell_src, title="p1 (Sell bridge)", color=color.new(color.red, 0))
+hline(threshold, title="threshold", color=color.gray, linestyle=hline.style_dotted)
+
+plotshape(buy_signal,  title="BUY fired",  location=location.bottom,
+          color=color.green, style=shape.triangleup,   size=size.small)
+plotshape(sell_signal, title="SELL fired", location=location.top,
+          color=color.red,   style=shape.triangledown, size=size.small)
+
+// ── label history (last 10 firings, helps debug) ──────────────────────
+var label[] firing_labels = array.new_label()
+if buy_signal
+    lbl = label.new(bar_index, low, "BUY", style=label.style_label_up,
+                    color=color.green, textcolor=color.white, size=size.tiny)
+    array.push(firing_labels, lbl)
+if sell_signal
+    lbl = label.new(bar_index, high, "SELL", style=label.style_label_down,
+                    color=color.red, textcolor=color.white, size=size.tiny)
+    array.push(firing_labels, lbl)
+while array.size(firing_labels) > 10
+    label.delete(array.shift(firing_labels))

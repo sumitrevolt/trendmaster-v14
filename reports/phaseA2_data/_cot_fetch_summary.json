@@ -1,0 +1,78 @@
+{
+  "GC": {
+    "n_rows": 851,
+    "start": "2010-01-05",
+    "end": "2026-04-21",
+    "market": "GOLD - COMMODITY EXCHANGE INC."
+  },
+  "SI": {
+    "n_rows": 851,
+    "start": "2010-01-05",
+    "end": "2026-04-21",
+    "market": "SILVER - COMMODITY EXCHANGE INC."
+  },
+  "CL": {
+    "n_rows": 220,
+    "start": "2022-02-08",
+    "end": "2026-04-21",
+    "market": "WTI-PHYSICAL - NEW YORK MERCANTILE EXCHANGE"
+  },
+  "BZ": {
+    "error": "empty result",
+    "market": "BRENT LAST DAY FINANCIAL - NEW YORK MERCANTILE EXCHANGE"
+  },
+  "NG": {
+    "n_rows": 631,
+    "start": "2010-01-05",
+    "end": "2022-02-01",
+    "market": "NATURAL GAS - NEW YORK MERCANTILE EXCHANGE"
+  },
+  "6E": {
+    "n_rows": 851,
+    "start": "2010-01-05",
+    "end": "2026-04-21",
+    "market": "EURO FX - CHICAGO MERCANTILE EXCHANGE"
+  },
+  "6J": {
+    "n_rows": 851,
+    "start": "2010-01-05",
+    "end": "2026-04-21",
+    "market": "JAPANESE YEN - CHICAGO MERCANTILE EXCHANGE"
+  },
+  "6B": {
+    "n_rows": 220,
+    "start": "2022-02-08",
+    "end": "2026-04-21",
+    "market": "BRITISH POUND - CHICAGO MERCANTILE EXCHANGE"
+  },
+  "6A": {
+    "n_rows": 851,
+    "start": "2010-01-05",
+    "end": "2026-04-21",
+    "market": "AUSTRALIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE"
+  },
+  "6N": {
+    "n_rows": 220,
+    "start": "2022-02-08",
+    "end": "2026-04-21",
+    "market": "NZ DOLLAR - CHICAGO MERCANTILE EXCHANGE"
+  },
+  "6C": {
+    "n_rows": 851,
+    "start": "2010-01-05",
+    "end": "2026-04-21",
+    "market": "CANADIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE"
+  },
+  "6S": {
+    "n_rows": 851,
+    "start": "2010-01-05",
+    "end": "2026-04-21",
+    "market": "SWISS FRANC - CHICAGO MERCANTILE EXCHANGE"
+  },
+  "BTC": {
+    "n_rows": 420,
+    "start": "2018-04-10",
+    "end": "2026-04-21",
+    "market": "BITCOIN - CHICAGO MERCANTILE EXCHANGE"
+  }
+}

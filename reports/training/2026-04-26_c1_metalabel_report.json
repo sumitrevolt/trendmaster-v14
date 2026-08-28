@@ -1,7 +1,7 @@
 {
   "phase": "C1",
-  "generated": "2026-04-26T14:03:56.701811+00:00",
-  "runtime_s": 47,
+  "generated": "2026-04-26T15:53:48.729398+00:00",
+  "runtime_s": 326,
   "b3_model": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\trend_master_model.lgb",
   "b3_features": 32,
   "meta_features": 35,
@@ -9,12 +9,12 @@
   "total_act_rows": 45834,
   "overall_tp_rate": 0.8447,
   "cv_folds": 4,
-  "oof_auc": 0.9063,
+  "oof_auc": 0.9078,
   "oof_auc_per_fold": [
-    0.8837,
-    0.911,
-    0.9235,
-    0.9306
+    0.884,
+    0.9099,
+    0.9234,
+    0.9303
   ],
   "deploy_threshold": 0.55,
   "verdict": "PROMOTE",

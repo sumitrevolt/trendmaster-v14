@@ -1,0 +1,33 @@
+{
+  "direction": "NONE",
+  "confidence": 0.72,
+  "ts": 1787658131,
+  "symbol": "USDCHF",
+  "brain": "TrendMaster_v14",
+  "model": "rule",
+  "agents": {
+    "dir": "SELL",
+    "votes": [
+      {
+        "name": "trend_h4",
+        "vote": 0,
+        "reason": "no clean fan"
+      },
+      {
+        "name": "momentum_h1",
+        "vote": -1,
+        "reason": "macd hist falling -0.0001"
+      },
+      {
+        "name": "timing_m30",
+        "vote": -1,
+        "reason": "px<ema20 rsi=36.8"
+      }
+    ]
+  },
+  "sl_atr_mult": 0.75,
+  "tp_atr_mult": 4.25,
+  "adx_min": 26.0,
+  "require_all_3": false,
+  "max_spread_atr_pct": 0.4
+}

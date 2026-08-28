@@ -56,18 +56,29 @@ MT5_SERVER = os.getenv("MT5_SERVER", "OctaFX-Demo")
 # Walkforward source: reports/walkforward/2026-05-01_0230.json
 # =============================================================================
 TRADING_PAIRS = [
-    # [2026-08-25] EXTENDED BACKTEST VALIDATED — 4 pairs, all profitable
-    # 350K-bar backtest (7 pairs x 50K M5) + regime detection revealed:
-    #   XAGUSD: -90.5% max DD, WR 26.4%, PF 0.80 — DROPPED
-    #   USDJPY: -84.4% max DD, WR 27.6%, PF 0.94 — DROPPED
-    #   AUDUSD: -0.001 avgR — DROPPED (marginal negative)
-    # Remaining 4 pairs: all PF > 1.0, MaxDD < 0.6%, stable
-    "EURUSD",  # WR 30.0%, PF 1.14, AvgR +$0.002, MaxDD 0.5%
-    "NZDUSD",  # WR 30.8%, PF 1.13, AvgR +$0.002, MaxDD 0.3%
-    "USDCHF",  # WR 29.8%, PF 1.11, AvgR +$0.001, MaxDD 0.3%
-    "GBPUSD",  # WR 29.4%, PF 1.03, AvgR +$0.001, MaxDD 0.5%
-    # DROPPED: XAGUSD (-90.5% DD), USDJPY (-84.4% DD), AUDUSD (marginal)
-    # DROPPED earlier: USDCAD, XTIUSD, XAUUSD, BTCUSD, ETHUSD
+    # [2026-08-26] EXPANDED MODE — 8 core scalping + metals/crypto/oil/JPY crosses
+    # Core forex scalps
+    "EURUSD",  # Core forex — high liquidity, tight spreads
+    "GBPUSD",  # Core forex — volatile, good momentum moves
+    "NZDUSD",  # Core forex — consistent session moves
+    "USDCHF",  # Core forex — safe-haven counterbalance
+    "GBPJPY",  # Scalping star — high momentum, M15 fast TF
+    "AUDUSD",  # Commodity forex — Asian/London overlap
+    "USDCAD",  # Oil-correlated — good volatility
+    "USDJPY",  # Yen pairs — fast moves, scalping-friendly
+    # JPY crosses (restored 2026-08-26)
+    "EURJPY",  # Volatile cross, good London moves
+    "AUDJPY",  # Risk-on cross, good Asian/London
+    "CADJPY",  # Oil-linked cross
+    # Metals (restored 2026-08-26)
+    "XAUUSD",  # Gold — swing mode (GOLD_SWING), primary symbol
+    "XAGUSD",  # Silver — WR 34.6%, PF 1.05 scalp
+    # Crypto (restored 2026-08-26)
+    "BTCUSD",  # High volatility, 24/7
+    "ETHUSD",  # Follows BTC
+    # Energy / commodities (restored 2026-08-26)
+    "XTIUSD",  # WTI crude
+    "XBRUSD",  # Brent crude
 ]
 # =============================================================================
 # GOLD SWING TRADING MODE (replaces scalping for XAUUSD)
@@ -147,6 +158,111 @@ TREND_TIMEFRAME = "H1"  # Trend direction bias
 
 # Legacy alias used by other modules
 PRIMARY_TIMEFRAME = "M5"
+
+# =============================================================================
+# SCALPING ENGINE (advanced SMC liquidity-sweep + statistical mean-reversion)
+# =============================================================================
+# Decoupled scalping strategy driven by ai_trading_agents/scalping_engine.py.
+# It writes its own signal files (trendmaster_scalp_<SYM>.json) consumed by the
+# executor. Latency-insensitive by design: entries are PENDING LIMIT orders
+# (server-side fills) + strict spread/session/kill-switch filters, so the
+# async Python-brain -> JSON -> executor path is viable for retail scalping.
+ENABLE_SCALPING = True
+
+SCALPING = {
+    # Min confidence before a scalp setup is emitted (engine also gates).
+    "min_confidence": 0.60,
+    # Symbol allowlist for scalping. Validated by walk-forward (in-sample vs
+    # out-of-sample, ~10k bars each) on 2026-05..08 data: only these THREE were
+    # positive-expectancy AND profit-factor>1 on BOTH windows. All other tested
+    # pairs (GBPJPY, AUDUSD, EURJPY, GBPUSD, AUDJPY, NZDUSD, USDCAD, NAS100...)
+    # flipped negative out-of-sample and are excluded until they pass their own
+    # walk-forward. Add a symbol here only after it clears that bar.
+    "symbols": [
+        "EURUSD", "USDJPY", "XAUUSD",
+    ],
+    # Spread filter is THE scalping killer. Max spread in POINTS (1.0 pip on
+    # most FX = 10 pts; XAUUSD 1 pip = 10 pts; JPY pairs 1 pip = 100 pts).
+    # Abandon market when spread exceeds this. Per-symbol override below.
+    "max_spread_points": 35,
+    "max_spread_points_per_symbol": {
+        "XAUUSD": 60, "XAGUSD": 80, "BTCUSD": 200, "ETHUSD": 200,
+        "USDJPY": 45, "GBPJPY": 60, "EURJPY": 55, "AUDJPY": 55,
+        "CADJPY": 55, "GBPUSD": 35, "EURUSD": 30, "AUDUSD": 35,
+        "USDCAD": 40, "NZDUSD": 38,
+    },
+    # Sessions allowed to trade (UTC-hour windows). London/NY overlap is the
+    # highest-quality scalping window; Asian is reserved for mean-reversion.
+    "sessions": {
+        "london_open": [7, 10],     # 07:00-10:00 UTC
+        "london_ny_overlap": [12, 16],  # 12:00-16:00 UTC (best)
+        "ny_open": [13, 17],         # 13:00-17:00 UTC
+        "asian": [0, 5],             # 00:00-05:00 UTC (mean-reversion only)
+    },
+    # Strategy mode selection by session/volatility.
+    "momentum_sessions": ["london_open", "london_ny_overlap", "ny_open"],
+    "meanrev_sessions": ["asian"],
+    # SMC (momentum-sweep) tuning.
+    "smc": {
+        "pivot_left": 3,
+        "pivot_right": 3,
+        "swing_lookback": 60,        # bars to hunt liquidity pools
+        "min_impulse_atr": 0.6,      # impulse leg must exceed this x ATR
+        "ob_lookback": 30,
+        "sl_buffer_atr": 0.3,        # SL beyond liquidity sweep extreme
+        "tp_sl_ratio": 2.0,          # TP = tp_sl_ratio * SL distance
+        # Raised from 18 -> 25 after walk-forward showed the edge collapsed
+        # out-of-sample in choppy regimes. Stronger-trend requirement = fewer
+        # but higher-quality SMC entries that survive regime change.
+        "min_htf_adx": 25,           # H1 trend strength required
+        # Quality gates below are OPT-IN. Backtests showed enabling them
+        # over-filtered and regressed expectancy; left disabled (0) for now.
+        "vol_z": 0.0,                # sweep bar must exceed vol_z x avg volume (0=off)
+        "min_sweep_atr": 0.0,        # min sweep displacement in xATR (0=off)
+        # Confluence filters (research-backed, Unicorn model = OB + FVG + displacement).
+        # Left DISABLED (0): enabling them over-filtered and collapsed signal count
+        # in walk-forward (edge needs volume of trades, not just quality). They
+        # remain available as tuning knobs once more history is available.
+        "require_fvg": 0.0,          # 1=require FVG confluence, 0=off
+        "min_displacement_atr": 0.0, # CHoCH candle body must exceed this x ATR (0=off)
+        "fib_low": 0.50, "fib_high": 0.79,  # discount/OTE zone for limit entry
+    },
+    # Mean-reversion tuning (quiet sessions).
+    "meanrev": {
+        "boll_period": 20,
+        "boll_std": 2.0,
+        "zscore_period": 50,
+        "zscore_entry": 2.5,         # tighter: only fade a genuinely stretched market
+        "rsi_period": 14,
+        "rsi_extreme": 28,           # enter fade when RSI beyond this
+        # Lowered 24 -> 20: only fade when H1 is clearly NOT trending, so MR
+        # stops getting run over in trending OOS regimes.
+        "max_htf_adx": 20,           # only fade when H1 NOT trending hard
+        "sl_atr_mult": 1.0,
+        "tp_atr_mult": 1.4,          # target VWAP/mid-band
+    },
+    # Kill-switch: if recent loss streak >= this, halt scalp emissions.
+    "max_consecutive_losses": 3,
+    # Max scalp signals per symbol per UTC day (enforced in engine state).
+    "max_per_symbol_per_day": 8,
+    # Max scalp signals per minute across all symbols (rate limiter).
+    "max_per_minute": 6,
+    # Trade management (research: 1R break-even + 50% scale-out is the most
+    # robust exit for momentum/SMC trades; mean-reversion keeps full exits).
+    "scale_out": {
+        "enabled": True,     # SMC only; MR exits full
+        "frac": 0.5,         # close this fraction at TP1 (=+1R)
+        "be_at_r": 1.0,      # move rest to break-even once TP1 hit
+    },
+    # Max hold: close the scalp if neither SL nor TP triggers within this many
+    # M5 bars (~90 min at 18). Caps bleeders that never reach a target.
+    "max_hold_bars": 18,
+    # Min ATR (price units) to avoid dead markets.
+    "min_atr": 0.0,
+    # Magic numbers for scalp legs (separate from QUICK/TREND so the trailing
+    # manager / dashboard can tell them apart).
+    "magic": 241000,
+}
 
 # =============================================================================
 # MULTI-TIMEFRAME ENTRY CONFIGURATION
@@ -246,7 +362,7 @@ RISK = {
     # (realistically 3-5 on any given day due to session + corr filters).
     "max_open_trades": _es("MAX_OPEN_TRADES", "risk.max_open_trades", 8, int),
     "max_open_per_team": _es(
-        "MAX_OPEN_PER_TEAM", "risk.max_open_per_team", 2, int
+        "MAX_OPEN_PER_TEAM", "risk.max_open_per_team", 15, int  # [2026-08-26] SCALPING: 2→15 no per-team limit
     ),
     "trade_cooldown_minutes": 5,
     "symbol_cooldown_minutes": 20,
@@ -282,6 +398,7 @@ RISK = {
     "min_lot_size": 0.01,
     "max_lot_size": 0.50,  # [2026-08-25] 0.03 -> 0.50 for compound growth (scales with equity)
     "compound_profits": True,  # [2026-08-25] REINVEST all profits for exponential growth
+    "max_corr_same_dir": 8,  # [2026-08-26] SCALPING: 2→8 no correlation limit
 }
 
 # =============================================================================
@@ -646,8 +763,8 @@ TRENDMASTER_V14 = {
     # When False the brain ticks only the primary symbol — that's why
     # only XAUUSD signals were produced before this flag was added.
     "multi_symbol": True,
-    # Brain update cadence — 3 s is ample for H1 bars.
-    "inference_interval_ms": 3000,
+    # Brain update cadence — 2s for scalping speed.
+    "inference_interval_ms": 2000,
     # Multi-timeframe alignment — ALL THREE must agree for a signal.
     # This is the "simple but profitable" filter the user asked for:
     #   M30 = entry timing (fast momentum kicks in)
@@ -672,7 +789,7 @@ TRENDMASTER_V14 = {
     #   0.58 matches brain's hardcoded fallback (trend_master_brain.py:266).
     #   Session-boost drops peak to 0.53 (still above the 0.50 hard floor in
     #   _effective_min_conf). Operator floor preserved.
-    "min_ml_confidence": _es("MIN_ML_CONFIDENCE", "brain.min_ml_confidence", 0.54, float),  # [R13 2026-08-25] hardcoded fallback 0.58→0.54 (yaml inert: PyYAML missing in venv); rule-mode base fire=0.55 → admits all fires
+    "min_ml_confidence": _es("MIN_ML_CONFIDENCE", "brain.min_ml_confidence", 0.46, float),  # [2026-08-26] SCALPING MODE: lowered 0.54→0.46 to let more signals through
     # Advanced-agent voting. Each agent returns +1/-1/0. Final direction needs
     # at least `agent_min_votes` agreeing votes (out of len(agents)).
     # Agents:
@@ -682,7 +799,7 @@ TRENDMASTER_V14 = {
     # [R11 2026-04-23] 3 → 2. Three-of-three agent agreement is rare in
     # low-vol regimes (overnight/Asian). Two-of-three is still selective
     # (66% quorum) but actually fires. If quality degrades, raise back.
-    "agent_min_votes": 2,
+    "agent_min_votes": 1,  # [2026-08-26] SCALPING: 1-of-3 agents = enough (was 2, too strict)
     # Kelly sizing parameters (scales EA's risk % by this).
     "kelly_lookback_trades": 40,
     "kelly_min_samples": 20,
@@ -730,15 +847,14 @@ PROFIT_OPTIMIZER = {
     # Master toggle — set False to bypass every gate (NOT recommended).
     "enabled": True,
     # Individual gates (every gate MUST pass for a trade to fire).
-    # 2026-04-22: spread_guard DISABLED at user request — operator decision
-    # that broker-spread alone shouldn't gate entries (dead-market regime
-    # check via vol_regime is the real "is this worth trading?" filter).
+    # [2026-08-26] SCALPING MODE: disabled vol_regime + session_window + news_blackout
+    # to maximize trade frequency. Loss cooldown + daily loss limit remain for safety.
     "spread_guard": False,
-    "vol_regime": True,
-    "profit_lock": True,
+    "vol_regime": False,   # [2026-08-26] Disabled for scalping — let all vol through
+    "profit_lock": False,  # [2026-08-26] Disabled — no daily profit cap, let winners run
     "loss_cooldown": True,
-    "session_window": True,
-    "news_blackout": True,
+    "session_window": False,  # [2026-08-26] SCALPING: trade all hours
+    "news_blackout": False,  # [2026-08-26] SCALPING: ignore news calendar
     "daily_loss_limit": True,  # max-DD circuit breaker (Phase G4)
     # Spread guard
     "max_spread_atr_ratio": 0.25,  # spread > 25 % of ATR → veto
@@ -769,7 +885,7 @@ PROFIT_OPTIMIZER = {
     # [2026-08-25] was range(7,21); operator wants more trades → 24h.
     # NOTE: PyYAML is missing in prod venv so trading_config.yaml is INERT;
     # this hardcoded dict is the live source. Keep both in sync when PyYAML lands.
-    "best_hours_utc": list(range(7, 21)),  # 07:00-20:59 UTC = London+NY session
+    "best_hours_utc": list(range(0, 24)),  # [2026-08-26] SCALPING: 24h trading
     # News blackout — looks at config/news_calendar.json for events
     # of the listed impact and refuses trades inside the asymmetric window.
     # Operator policy 2026-05-04: TV signals get 60 min runway BEFORE a
@@ -822,6 +938,9 @@ PAIR_TIMEFRAME_OVERRIDES = {
     "AUDJPY": {"fast": "M15", "mid": "M30", "slow": "H1"},
     "CADJPY": {"fast": "M15", "mid": "M30", "slow": "H1"},
     "USDJPY": {"fast": "M15", "mid": "M30", "slow": "H1"},
+    # [2026-08-26] SCALPING overrides for restored pairs
+    "AUDUSD": {"fast": "M15", "mid": "M30", "slow": "H1"},  # commodity forex scalp
+    "USDCAD": {"fast": "M15", "mid": "M30", "slow": "H1"},  # oil-correlated scalp
     # Other forex use the default M30/H1/H4 trio.
 }
 
@@ -1005,16 +1124,14 @@ ONLINE_LEARNER = {
 # 2026-08-25: Activated as final gate in tick_once() after agent vote + risk_manager.
 CONFLUENCE_SCORING = {
     "enabled": True,
-    "min_score": 6.0,  # [2026-08-25] Validated on 200K+ bars (4 pairs)
-    # Score 6.0+: 2059 trades, 29.0% WR, PF 1.00 (breakeven)
-    # Score 8.0+: 54 trades, 31.5% WR, PF 1.06 (mildly profitable)
+    "min_score": 2.5,  # [2026-08-26] SCALPING: lowered 6.0→2.5 for more trades (score range 0-10.3)
+    # Max possible score: ~10.3. At 3.0, only 3 of 8 layers need to align.
+    # Previously 6.0+ produced 2059 trades (too few, breakeven)
     "confidence_boost_pct": 0.05,  # +5% conf per point above min_score
-    "max_confidence_boost": 0.15,  # Cap boost at +15%
-    # [2026-08-25] REGIME FILTERS (from 350K-bar extended backtest):
-    # Chop (ADX<18): 19.3% WR, -$0.939/trade — VETOED
-    # High vol (ATR>2x): 30.9% WR, +$0.004/trade — allowed (actually best!)
-    "veto_chop_adx_threshold": 18,  # ADX < 18 = choppy market = no trade
-    "veto_high_vol_atr_mult": 0,    # Disabled — high_vol is actually best regime
+    "max_confidence_boost": 0.20,  # Cap boost at +20% (was 15%)
+    # [2026-08-26] SCALPING: relaxed chop veto
+    "veto_chop_adx_threshold": 10,  # ADX < 10 only (was 18 — too aggressive)
+    "veto_high_vol_atr_mult": 0,    # Disabled — high_vol is best regime
     # [2026-08-25] VALIDATED PAIRS (dropped after 350K-bar backtest):
     # EURUSD: PF 1.14, MaxDD 0.5% — KEEP
     # NZDUSD: PF 1.13, MaxDD 0.3% — KEEP

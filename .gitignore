@@ -95,3 +95,12 @@ archive/legacy_state/
 # Retrain produces them; we only check in the registry.json manifest.
 ai_trading_agents/*.lgb
 ai_trading_agents/trend_master_model*.lgb
+
+# Third-party binaries (downloadable tools, not project source — keep repo lean)
+tools/cloudflared.exe
+tools/ngrok.exe
+
+# Browser profiles captured by tv_alert_setup (contain session cookies / cached
+# creds) — NEVER commit these.
+tools/tv_alert_setup/_browser_profile/
+tools/tv_alert_setup/_archive/_browser_profile/

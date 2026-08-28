@@ -1,0 +1,11 @@
+=== BTC trade check — 2026-05-13 15:14:58.306347 ===
+
+Account 213796448 balance=$1077.86 equity=$1073.73
+
+Deals last 2h (0 total):
+
+Open positions:
+  USDJPY     SELL 0.01 @ 157.55600 (opened 20:00:03) | PnL: $-2.20
+  USDJPY     SELL 0.01 @ 157.55100 (opened 20:00:05) | PnL: $-2.24
+  BTCUSD     SELL 0.01 @ 81252.00000 (opened 18:10:16) | PnL: $+0.21
+  BTCUSD     SELL 0.01 @ 81241.06000 (opened 18:10:17) | PnL: $+0.10

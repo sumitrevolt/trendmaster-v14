@@ -1,0 +1,3 @@
+@echo off
+cd /d "C:\Users\Ratanshila\Documents\autmated trading"
+.venv\Scripts\python.exe -c "import psutil, subprocess, time; killed=[]; [killed.append(p.info['pid']) or p.kill() for p in psutil.process_iter(['pid','cmdline']) if 'dashboard_server' in ' '.join(p.info.get('cmdline') or [])]; print(f'killed {killed}'); time.sleep(2); subprocess.Popen([r'C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe', r'C:\Users\Ratanshila\Documents\autmated trading\tools\dashboard_server.py'], cwd=r'C:\Users\Ratanshila\Documents\autmated trading', stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=0x00000008|0x08000000, close_fds=True); print('spawned')" > outputs\dash_restart_out.txt 2>&1

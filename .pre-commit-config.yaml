@@ -94,3 +94,18 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-push]
+
+      # Hard guard: NEVER allow `.resolve()` inside ai_trading_agents/.
+      # The junction at ai_trading_agents/ -> C:\TrendMaster_aita_canonical\
+      # makes Path(__file__).resolve().parent.parent return C:\ instead of the
+      # project root, silently breaking every config-file lookup. This
+      # regression has been hit FOUR times (2026-04-25, 2026-04-30, 2026-05-01,
+      # 2026-05-06). Each time it was a half-day debug session.
+      # See CLAUDE.md "Brain path resolution rule" + 4 postmortems.
+      - id: no-resolve-in-brain
+        name: forbid .resolve() inside ai_trading_agents/
+        entry: python tools/check_no_resolve.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]

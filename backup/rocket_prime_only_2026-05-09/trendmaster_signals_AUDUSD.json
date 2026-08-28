@@ -1,0 +1,1 @@
+{"direction":"SELL","confidence":0.7,"ts":1778268844,"symbol":"AUDUSD","brain":"TrendMaster_v14","model":"tradingview","agents":{"dir":"SELL","votes":[]},"sl_atr_mult":0.75,"tp_atr_mult":4.25,"adx_min":26.0,"source":"tradingview_webhook","require_all_3":false,"max_spread_atr_pct":5.0,"tv_strategy":"local_generator","tv_timeframe":"H4"}

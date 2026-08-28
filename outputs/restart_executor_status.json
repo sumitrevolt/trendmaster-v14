@@ -1,0 +1,32 @@
+{
+  "ts": "2026-05-17T11:26:09",
+  "phases": [
+    "scan: 2 PIDs",
+    "terminate sent to all",
+    "kill-wait done",
+    "lock unlinked",
+    "spawned PID 1324"
+  ],
+  "pids_before": [
+    16400,
+    30056
+  ],
+  "new_pid": 1324,
+  "pids_after": [
+    488,
+    1324
+  ],
+  "alive_after_5s": true,
+  "recent_log_tail": [
+    "2026-05-17 11:26:12,760 [INFO] [OK] safeguards_check loaded (concentration caps + DD + news + spread)",
+    "2026-05-17 11:26:12,761 [INFO] [OK] telegram_notifier loaded  (alerts will reach phone)",
+    "2026-05-17 11:26:12,761 [INFO] [OK] dashboard_config.json present (kill switch usable)",
+    "2026-05-17 11:26:12,762 [INFO] [OK] news_calendar.json present  (59 events)",
+    "2026-05-17 11:26:12,762 [INFO] [OK] ALLOWED_STRATEGIES = ['rocket_prime', 'rocket_prime_chart_ocr', 'rocket_prime_inferred', 'rocket_prime_plot0', 'rocket_prime_plot1', 'rocket_prime_text', 'rocket_prime_url_direction', 'telegram_manual_direction']",
+    "2026-05-17 11:26:12,762 [INFO] ============================================================",
+    "2026-05-17 11:26:12,786 [INFO] MT5 connected: build=5836 account=213796448 balance=1112.13 trade_allowed=True",
+    "2026-05-17 11:26:12,810 [INFO] watching: C:\\Users\\Ratanshila\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Files",
+    "2026-05-17 11:26:12,811 [INFO] polling every 5s, signal age limit 90s, cooldown 300s, fixed lot 0.01, cooldown_loaded=0",
+    "2026-05-17 11:26:12,813 [INFO] heartbeat: iter=1 placed=0 skipped=20  (no_file=20 filtered=0 stale=0) open_positions=6"
+  ]
+}

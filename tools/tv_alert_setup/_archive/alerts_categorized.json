@@ -1,0 +1,263 @@
+{
+  "captured_at": "2026-05-05T07:27:16.865780+00:00",
+  "total": 23,
+  "keep_count": 20,
+  "delete_count": 3,
+  "keep": [
+    {
+      "alert_id": 4622619092,
+      "symbol": "OANDA:EURAUD",
+      "resolution": "5",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-05T03:54:25Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4622576134,
+      "symbol": "OANDA:EURAUD",
+      "resolution": "5",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-05T03:50:04Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620019582,
+      "symbol": "OANDA:USDJPY",
+      "resolution": "60",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:26:07Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620018983,
+      "symbol": "OANDA:USDJPY",
+      "resolution": "15",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:26:05Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620018901,
+      "symbol": "OANDA:GBPUSD",
+      "resolution": "240",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:26:03Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620018436,
+      "symbol": "OANDA:GBPUSD",
+      "resolution": "60",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:26:01Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620018368,
+      "symbol": "OANDA:GBPUSD",
+      "resolution": "15",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:59Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620017852,
+      "symbol": "OANDA:EURUSD",
+      "resolution": "240",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:58Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620017736,
+      "symbol": "OANDA:EURUSD",
+      "resolution": "60",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:56Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620017668,
+      "symbol": "OANDA:EURUSD",
+      "resolution": "15",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:54Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620016923,
+      "symbol": "OANDA:XAGUSD",
+      "resolution": "240",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:52Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620016550,
+      "symbol": "OANDA:XAGUSD",
+      "resolution": "60",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:50Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620016399,
+      "symbol": "OANDA:XAGUSD",
+      "resolution": "15",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:46Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620014311,
+      "symbol": "OANDA:XAUUSD",
+      "resolution": "240",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:44Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620014254,
+      "symbol": "OANDA:XAUUSD",
+      "resolution": "60",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:42Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620014130,
+      "symbol": "OANDA:XAUUSD",
+      "resolution": "15",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:25:40Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4620006205,
+      "symbol": "OANDA:USDCAD",
+      "resolution": "15",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T18:24:31Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "KEEP - non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4617178718,
+      "symbol": "OANDA:XAUUSD",
+      "resolution": "1",
+      "condition_type": "cross",
+      "create_time": "2026-05-04T13:30:20Z",
+      "message_preview": "XAUUSD Crossing 4,540.676",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal",
+      "reason": "KEEP - older (created 2026-05-04T13:30:20Z)"
+    },
+    {
+      "alert_id": 4616955078,
+      "symbol": "OANDA:XAUUSD",
+      "resolution": "5",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T13:11:30Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal",
+      "reason": "KEEP - older (created 2026-05-04T13:11:30Z), non-cross condition (pine_alert)"
+    },
+    {
+      "alert_id": 4616951462,
+      "symbol": "OANDA:XAUUSD",
+      "resolution": "5",
+      "condition_type": "pine_alert",
+      "create_time": "2026-05-04T13:10:58Z",
+      "message_preview": "",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal",
+      "reason": "KEEP - older (created 2026-05-04T13:10:58Z), non-cross condition (pine_alert)"
+    }
+  ],
+  "delete_candidates": [
+    {
+      "alert_id": 4619987525,
+      "symbol": "OANDA:USDCHF",
+      "resolution": "1",
+      "condition_type": "cross",
+      "create_time": "2026-05-04T18:20:40Z",
+      "message_preview": "USDCHF Crossing 0.78015",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "TODAY + cross condition + our hook = AUTO-CREATED bad alert"
+    },
+    {
+      "alert_id": 4619979599,
+      "symbol": "OANDA:USDCHF",
+      "resolution": "1",
+      "condition_type": "cross",
+      "create_time": "2026-05-04T18:19:00Z",
+      "message_preview": "USDCHF Crossing 0.78015",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "TODAY + cross condition + our hook = AUTO-CREATED bad alert"
+    },
+    {
+      "alert_id": 4619964948,
+      "symbol": "OANDA:USDCHF",
+      "resolution": "1",
+      "condition_type": "cross",
+      "create_time": "2026-05-04T18:17:12Z",
+      "message_preview": "USDCHF Crossing 0.78360",
+      "has_our_hook": true,
+      "web_hook_short": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7",
+      "reason": "TODAY + cross condition + our hook = AUTO-CREATED bad alert"
+    }
+  ]
+}

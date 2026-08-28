@@ -1,0 +1,23 @@
+{
+  "symbol": "NZDUSD",
+  "team": "FOREX",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4119,
+  "n_trades": 792,
+  "win_rate": 0.25126262626262624,
+  "expectancy_R": 0.18686868686868688,
+  "max_dd": 41.0,
+  "oos_acc": 0.40160349854227406,
+  "oos_acc_per_fold": [
+    0.4344,
+    0.3994,
+    0.3571,
+    0.4155
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

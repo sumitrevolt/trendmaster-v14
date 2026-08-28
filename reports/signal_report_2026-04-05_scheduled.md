@@ -11,7 +11,7 @@
 - Last Signal: Apr 3
 - Action: Follow first Monday signal
 
-### GBPJPY ✅ IMPROVING  
+### GBPJPY ✅ IMPROVING
 - Recent Accuracy: 75% (last 20)
 - Last Signal: Apr 5
 - Action: Take signals with confidence >50

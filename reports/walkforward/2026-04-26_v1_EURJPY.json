@@ -1,0 +1,23 @@
+{
+  "symbol": "EURJPY",
+  "team": "FOREX",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4118,
+  "n_trades": 981,
+  "win_rate": 0.3241590214067278,
+  "expectancy_R": 0.3659531090723751,
+  "max_dd": 24.0,
+  "oos_acc": 0.41144314868804666,
+  "oos_acc_per_fold": [
+    0.4155,
+    0.4082,
+    0.4067,
+    0.4155
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

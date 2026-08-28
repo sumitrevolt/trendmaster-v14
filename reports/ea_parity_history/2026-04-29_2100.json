@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-04-29T21:00:02.875257+00:00",
+  "symbols": [
+    "XAUUSD",
+    "EURUSD",
+    "GBPUSD",
+    "BTCUSD"
+  ],
+  "per_symbol": [
+    {
+      "symbol": "XAUUSD",
+      "error": "import run_ea_parity_backtest failed: No module named 'ai_trading_agents.multi_agent'"
+    },
+    {
+      "symbol": "EURUSD",
+      "error": "import run_ea_parity_backtest failed: No module named 'ai_trading_agents.multi_agent'"
+    },
+    {
+      "symbol": "GBPUSD",
+      "error": "import run_ea_parity_backtest failed: No module named 'ai_trading_agents.multi_agent'"
+    },
+    {
+      "symbol": "BTCUSD",
+      "error": "import run_ea_parity_backtest failed: No module named 'ai_trading_agents.multi_agent'"
+    }
+  ]
+}

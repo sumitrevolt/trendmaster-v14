@@ -1,0 +1,33 @@
+{
+  "direction": "NONE",
+  "confidence": 0.5,
+  "ts": 1787658129,
+  "symbol": "NZDUSD",
+  "brain": "TrendMaster_v14",
+  "model": "rule",
+  "agents": {
+    "dir": "BUY",
+    "votes": [
+      {
+        "name": "trend_h4",
+        "vote": 1,
+        "reason": "bull fan adx=21.3"
+      },
+      {
+        "name": "momentum_h1",
+        "vote": 1,
+        "reason": "macd hist rising +0.0001"
+      },
+      {
+        "name": "timing_m30",
+        "vote": 1,
+        "reason": "px>ema20 rsi=62.9"
+      }
+    ]
+  },
+  "sl_atr_mult": 0.75,
+  "tp_atr_mult": 4.25,
+  "adx_min": 26.0,
+  "require_all_3": false,
+  "max_spread_atr_pct": 0.4
+}

@@ -73,6 +73,10 @@ if str(_ROOT) not in sys.path:
 
 from config import settings  # noqa: E402
 from ai_trading_agents.multi_agent import vote_all, AgentVote  # noqa: E402
+try:
+    from ai_trading_agents.scalping_engine import ScalpingEngine  # noqa: E402
+except Exception:
+    ScalpingEngine = None
 from ai_trading_agents.profit_filters import evaluate_all  # noqa: E402
 from ai_trading_agents.process_lock import SingleInstanceLock  # noqa: E402
 from ai_trading_agents.state_store import StateStore  # noqa: E402
@@ -365,6 +369,9 @@ def _build_risk_config() -> "_RMRiskConfig":
         kw["min_lot"] = float(RISK_CFG_RAW["min_lot_size"])
     if "max_lot_size" in RISK_CFG_RAW:
         kw["max_lot"] = float(RISK_CFG_RAW["max_lot_size"])
+    # [2026-08-26] SCALPING: configurable correlation cap
+    if "max_corr_same_dir" in RISK_CFG_RAW:
+        kw["max_corr_same_dir"] = int(RISK_CFG_RAW["max_corr_same_dir"])
     return _RMRiskConfig(**kw)
 
 
@@ -1257,10 +1264,24 @@ class TrendMasterBrain:
         if USE_AGENTS:
             agent_dir, agent_votes = self.agent_vote(symbol=sym)
 
-            # Final direction = intersection of ML brain and agent bus.
+            # [2026-08-26] SCALPING FIX: agents-primary signal generation.
+            # Agents drive signals. ML is optional boost, not a gate.
+            #   agent votes BUY/SELL -> fire (agents are the signal source)
+            #   agent votes NONE (tie) -> veto
             ml_sign = {"BUY": +1, "SELL": -1, "NONE": 0}.get(direction, 0)
-            if ml_sign == 0 or agent_dir == 0 or ml_sign != agent_dir:
-                direction = "NONE"
+            if agent_dir == 0:
+                direction = "NONE"  # agents disagree (tie) -> veto
+            else:
+                # Any agent direction wins — agents are the scalping signal source
+                direction = {+1: "BUY", -1: "SELL"}.get(agent_dir, "NONE")
+                # Confidence: blend agent conviction + ML if available
+                agent_agree = sum(1 for v in agent_votes if v.vote != 0 and np.sign(v.vote) == np.sign(agent_dir)) if agent_dir != 0 else 0
+                if ml_sign == agent_dir:
+                    conf = min(1.0, max(conf, 0.55) + 0.10)  # ML agree bonus
+                elif agent_agree >= 2:
+                    conf = max(0.70, conf)  # strong agent conviction
+                else:
+                    conf = max(0.55, conf)  # single agent floor
 
         # [audit-fix 2026-04-22] Portfolio-level risk manager gate.
         # Runs AFTER profit_filters + MTF + agent intersection, BEFORE
@@ -2127,7 +2148,104 @@ class TrendMasterBrain:
                         f"{k}={len(buckets[k])}({','.join(buckets[k][:6])}{'…' if len(buckets[k]) > 6 else ''})"
                     )
             logger.info("tick_all summary: %s", " | ".join(line_parts) or "no symbols")
+        # [2026-08-27] Decoupled advanced scalping scan (SMC + mean-reversion).
+        # Emits its own signal files; never blocks the ML path.
+        try:
+            self.scalp_scan()
+        except Exception as e:
+            logger.debug("scalp_scan tick skipped: %s", e)
+
         return out
+
+    # ─── SCALPING ENGINE (advanced SMC + mean-reversion, pending LIMIT) ─────
+    def scalp_scan(self) -> Dict[str, Optional[Dict]]:
+        """Run the decoupled ScalpEngine across all symbols and emit
+        trendmaster_scalp_<SYM>.json files for the executor. Fully separate
+        from the M5 ML path; only fires when ENABLE_SCALPING and the engine
+        finds a confluence setup that passes spread/session/kill-switch gates.
+        The executor's own safeguards (DD breaker, news, spread, correlation)
+        re-gate every scalp signal before any order is placed."""
+        out: Dict[str, Optional[Dict]] = {}
+        if not getattr(settings, "ENABLE_SCALPING", False) or ScalpingEngine is None:
+            return out
+        eng = getattr(self, "_scalp_engine", None)
+        if eng is None:
+            try:
+                eng = ScalpingEngine(getattr(settings, "SCALPING", {}))
+                self._scalp_engine = eng
+            except Exception as e:
+                logger.warning("scalp engine init failed: %s", e)
+                return out
+        allow = getattr(settings, "SCALPING", {}).get("symbols")
+        for sym in ALL_SYMBOLS:
+            if allow and sym not in allow:
+                continue
+            try:
+                setup = eng.evaluate(sym)
+                if setup is None:
+                    out[sym] = None
+                    continue
+                # Respect the brain's own drawdown lockout (mirror ML gate).
+                if self._scalp_locked_out():
+                    out[sym] = None
+                    continue
+                self._write_scalp_signal(setup)
+                out[sym] = setup
+                if _log_dedup(("__scalp__", sym), interval_s=30.0):
+                    logger.info(
+                        "SCALP %s %s @ %.5f (LIMIT) conf=%.2f mode=%s reasons=%s",
+                        sym, setup["direction"], setup["entry_price"],
+                        setup["confidence"], setup.get("mode"), setup.get("reasons"),
+                    )
+            except Exception as e:
+                logger.debug("[%s] scalp_scan failed: %s", sym, e)
+                out[sym] = None
+        return out
+
+    def _scalp_locked_out(self) -> bool:
+        try:
+            bs = self.state
+            until = getattr(bs, "drawdown_lockout_until", 0) or 0
+            if until and time.time() < float(until):
+                return True
+        except Exception:
+            pass
+        try:
+            p = _ROOT / "logs" / "brain_state.json"
+            if p.exists():
+                data = json.loads(p.read_text(encoding="utf-8"))
+                until = data.get("drawdown_lockout_until", 0) or 0
+                if until and time.time() < float(until):
+                    return True
+        except Exception:
+            pass
+        return False
+
+    def _write_scalp_signal(self, setup: dict) -> None:
+        sym = setup["symbol"]
+        name = f"trendmaster_scalp_{sym}.json"
+        path = self._resolve_signal_path(name)
+        payload = {
+            "direction": setup["direction"],
+            "confidence": setup["confidence"],
+            "ts": int(time.time()),
+            "symbol": sym,
+            "brain": "ScalpEngine",
+            "mode": setup.get("mode"),
+            "entry_price": setup["entry_price"],
+            "order_kind": setup["order_kind"],
+            "sl_atr_mult": setup["sl_atr_mult"],
+            "tp_atr_mult": setup["tp_atr_mult"],
+            "tv_strategy": "scalp",
+            "reasons": setup.get("reasons", []),
+        }
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        # Atomic write (mirrors write_signal).
+        try:
+            tmp.write_text(json.dumps(payload), encoding="utf-8")
+            os.replace(tmp, path)
+        except Exception as e:
+            logger.warning("scalp signal write failed %s: %s", name, e)
 
     def run_forever(self) -> None:
         if not _HAS_MT5:

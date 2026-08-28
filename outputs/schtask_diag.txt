@@ -1,0 +1,63 @@
+
+Folder: \
+HostName:                             LAPTOP-93MJJE8N
+TaskName:                             \TrendMaster Health Watchdog
+Next Run Time:                        13-05-2026 12:42:00
+Status:                               Ready
+Logon Mode:                           Interactive only
+Last Run Time:                        13-05-2026 12:41:01
+Last Result:                          0
+Author:                               LAPTOP-93MJJE8N\Ratanshila
+Task To Run:                          "C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe" "C:\Users\Ratanshila\Documents\autmated trading\tools\health_watchdog.py" --once
+Start In:                             N/A
+Comment:                              N/A
+Scheduled Task State:                 Enabled
+Idle Time:                            Disabled
+Power Management:                     Stop On Battery Mode, No Start On Batteries
+Run As User:                          Ratanshila
+Delete Task If Not Rescheduled:       Disabled
+Stop Task If Runs X Hours and X Mins: 72:00:00
+Schedule:                             Scheduling data is not available in this format.
+Schedule Type:                        One Time Only, Minute 
+Start Time:                           00:09:00
+Start Date:                           09-05-2026
+End Date:                             N/A
+Days:                                 N/A
+Months:                               N/A
+Repeat: Every:                        0 Hour(s), 1 Minute(s)
+Repeat: Until: Time:                  None
+Repeat: Until: Duration:              Disabled
+Repeat: Stop If Still Running:        Disabled
+
+Folder: \
+HostName:                             LAPTOP-93MJJE8N
+TaskName:                             \TrendMaster Process Watchdog
+Next Run Time:                        N/A
+Status:                               Disabled
+Logon Mode:                           Interactive only
+Last Run Time:                        09-05-2026 22:03:01
+Last Result:                          0
+Author:                               LAPTOP-93MJJE8N\Ratanshila
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_process_watchdog.vbs"
+Start In:                             N/A
+Comment:                              N/A
+Scheduled Task State:                 Disabled
+Idle Time:                            Disabled
+Power Management:                     Stop On Battery Mode, No Start On Batteries
+Run As User:                          Ratanshila
+Delete Task If Not Rescheduled:       Disabled
+Stop Task If Runs X Hours and X Mins: 72:00:00
+Schedule:                             Scheduling data is not available in this format.
+Schedule Type:                        One Time Only, Minute 
+Start Time:                           00:09:00
+Start Date:                           09-05-2026
+End Date:                             N/A
+Days:                                 N/A
+Months:                               N/A
+Repeat: Every:                        0 Hour(s), 2 Minute(s)
+Repeat: Until: Time:                  None
+Repeat: Until: Duration:              Disabled
+Repeat: Stop If Still Running:        Disabled
+============================================== 
+ALL TRENDMASTER TASKS 
+============================================== 

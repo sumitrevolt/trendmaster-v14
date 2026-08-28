@@ -1,0 +1,25 @@
+{
+  "symbol": "CADJPY",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3888,
+  "n_trades": 962,
+  "win_rate": 0.3201663201663202,
+  "expectancy_R": 0.39397089397089397,
+  "max_dd": 31.0,
+  "oos_acc": 0.4039351851851852,
+  "oos_acc_per_fold": [
+    0.4167,
+    0.4136,
+    0.375,
+    0.4105
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

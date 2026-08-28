@@ -1,7 +1,7 @@
 {
   "phase": "C2",
-  "generated": "2026-04-26T14:20:59.005394+00:00",
-  "runtime_s": 62,
+  "generated": "2026-04-26T15:58:10.739366+00:00",
+  "runtime_s": 258,
   "b3_model": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\trend_master_model.lgb",
   "b3_features": 32,
   "meta_features": 35,
@@ -23,12 +23,12 @@
       ],
       "n_act_total": 5108,
       "team_tp_rate": 0.8467,
-      "oof_auc": 0.873,
+      "oof_auc": 0.8787,
       "oof_auc_per_fold": [
-        0.8993,
-        0.9135,
-        0.8961,
-        0.9191
+        0.8916,
+        0.9043,
+        0.871,
+        0.918
       ],
       "cv_folds": 4,
       "cv_n_act": 2867,
@@ -102,11 +102,11 @@
       ],
       "n_act_total": 28267,
       "team_tp_rate": 0.8313,
-      "oof_auc": 0.904,
+      "oof_auc": 0.9082,
       "oof_auc_per_fold": [
         0.8922,
-        0.9126,
-        0.9185,
+        0.9117,
+        0.9175,
         0.9127
       ],
       "cv_folds": 4,
@@ -131,12 +131,12 @@
       ],
       "n_act_total": 4745,
       "team_tp_rate": 0.8786,
-      "oof_auc": 0.9124,
+      "oof_auc": 0.9005,
       "oof_auc_per_fold": [
-        0.898,
-        0.9017,
-        0.939,
-        0.9482
+        0.8936,
+        0.8895,
+        0.9422,
+        0.9551
       ],
       "cv_folds": 4,
       "cv_n_act": 2783,
@@ -165,12 +165,12 @@
       ],
       "n_act_total": 7714,
       "team_tp_rate": 0.8717,
-      "oof_auc": 0.9199,
+      "oof_auc": 0.9047,
       "oof_auc_per_fold": [
-        0.8879,
-        0.9418,
-        0.9478,
-        0.9337
+        0.8894,
+        0.9392,
+        0.9449,
+        0.9264
       ],
       "cv_folds": 4,
       "cv_n_act": 4536,

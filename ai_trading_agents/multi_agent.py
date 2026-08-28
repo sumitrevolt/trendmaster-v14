@@ -154,9 +154,13 @@ def vote_all(frames: Dict[str, pd.DataFrame], min_votes: int = 3) -> tuple[int, 
     ]
     buys = sum(1 for v in votes if v.vote == 1)
     sells = sum(1 for v in votes if v.vote == -1)
-    if buys >= min_votes and sells == 0:
+    # [2026-08-26] SCALPING FIX: removed unanimity requirement (sells==0/buys==0).
+    # Old logic required ZERO opposing votes — this killed signals whenever
+    # trend and momentum disagreed (which is ~80% of the time on M5/M15).
+    # New logic: majority wins as long as min_votes agree.
+    if buys >= min_votes and buys > sells:
         return +1, votes
-    if sells >= min_votes and buys == 0:
+    if sells >= min_votes and sells > buys:
         return -1, votes
     return 0, votes
 

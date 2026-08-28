@@ -1,0 +1,328 @@
+{
+  "generated_at": "2026-04-25T11:39:50.553769+00:00",
+  "params": {
+    "sl_atr_mult": 1.0,
+    "tp_atr_mult": 2.5
+  },
+  "results": [
+    {
+      "symbol": "XAUUSD",
+      "team": "METALS",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7313,
+      "wins": 2235,
+      "losses": 5078,
+      "win_rate": 0.3056201285382196,
+      "expectancy_R": 0.06906092686870405,
+      "gross_R": 505.0425581908327,
+      "sharpe_proxy": 0.04286082131128612,
+      "error": null,
+      "notes": []
+    },
+    {
+      "symbol": "XAGUSD",
+      "team": "METALS",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7199,
+      "wins": 2120,
+      "losses": 5079,
+      "win_rate": 0.2944853451868315,
+      "expectancy_R": 0.029130704065149535,
+      "gross_R": 209.7119385650115,
+      "sharpe_proxy": 0.018283732035158907,
+      "error": null,
+      "notes": [
+        "near-zero expectancy - no edge"
+      ]
+    },
+    {
+      "symbol": "GBPJPY",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7103,
+      "wins": 1954,
+      "losses": 5149,
+      "win_rate": 0.2750950302689005,
+      "expectancy_R": -0.04027497507003343,
+      "gross_R": -286.07314792244745,
+      "sharpe_proxy": -0.0258321442123276,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "USDCAD",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7295,
+      "wins": 1931,
+      "losses": 5364,
+      "win_rate": 0.2647018505825908,
+      "expectancy_R": -0.07523457769801072,
+      "gross_R": -548.8362443069882,
+      "sharpe_proxy": -0.048788408691063635,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "USDCHF",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7971,
+      "wins": 2348,
+      "losses": 5623,
+      "win_rate": 0.294567808305106,
+      "expectancy_R": 0.02416437636930007,
+      "gross_R": 192.61424403969087,
+      "sharpe_proxy": 0.015217332309096065,
+      "error": null,
+      "notes": [
+        "near-zero expectancy - no edge"
+      ]
+    },
+    {
+      "symbol": "EURUSD",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7655,
+      "wins": 2169,
+      "losses": 5486,
+      "win_rate": 0.28334421946440236,
+      "expectancy_R": -0.01135725154436605,
+      "gross_R": -86.93976057212211,
+      "sharpe_proxy": -0.007221335945035193,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "GBPUSD",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7785,
+      "wins": 2100,
+      "losses": 5685,
+      "win_rate": 0.2697495183044316,
+      "expectancy_R": -0.058132580847963085,
+      "gross_R": -452.56214190139264,
+      "sharpe_proxy": -0.03750732674272,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "AUDUSD",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7440,
+      "wins": 2092,
+      "losses": 5348,
+      "win_rate": 0.28118279569892474,
+      "expectancy_R": -0.018494777918002116,
+      "gross_R": -137.60114770993573,
+      "sharpe_proxy": -0.011781799849623301,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "USDJPY",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7446,
+      "wins": 2054,
+      "losses": 5392,
+      "win_rate": 0.27585280687617514,
+      "expectancy_R": -0.03696893456718955,
+      "gross_R": -275.27068678729336,
+      "sharpe_proxy": -0.023688295318020476,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "NZDUSD",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7504,
+      "wins": 2113,
+      "losses": 5391,
+      "win_rate": 0.2815831556503198,
+      "expectancy_R": -0.016352465631673786,
+      "gross_R": -122.70890210008008,
+      "sharpe_proxy": -0.010403983443520583,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "EURJPY",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 6988,
+      "wins": 1897,
+      "losses": 5091,
+      "win_rate": 0.2714653692043503,
+      "expectancy_R": -0.050814492026221576,
+      "gross_R": -355.0916702792364,
+      "sharpe_proxy": -0.03267007140001929,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "AUDJPY",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7404,
+      "wins": 2079,
+      "losses": 5325,
+      "win_rate": 0.2807941653160454,
+      "expectancy_R": -0.02041154110598321,
+      "gross_R": -151.1270503486997,
+      "sharpe_proxy": -0.013009503620658043,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "CADJPY",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7731,
+      "wins": 2232,
+      "losses": 5499,
+      "win_rate": 0.28870779976717115,
+      "expectancy_R": 0.00912679311925268,
+      "gross_R": 70.55923760494247,
+      "sharpe_proxy": 0.005760240046436211,
+      "error": null,
+      "notes": [
+        "near-zero expectancy - no edge"
+      ]
+    },
+    {
+      "symbol": "EURGBP",
+      "team": "FOREX",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 6712,
+      "wins": 1674,
+      "losses": 5038,
+      "win_rate": 0.24940405244338498,
+      "expectancy_R": -0.12986566441328434,
+      "gross_R": -871.6583395419646,
+      "sharpe_proxy": -0.08596113123885481,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "BTCUSD",
+      "team": "CRYPTO",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7750,
+      "wins": 2243,
+      "losses": 5507,
+      "win_rate": 0.2894193548387097,
+      "expectancy_R": 0.010835232324556875,
+      "gross_R": 83.97305051531578,
+      "sharpe_proxy": 0.006837512984713349,
+      "error": null,
+      "notes": [
+        "near-zero expectancy - no edge"
+      ]
+    },
+    {
+      "symbol": "ETHUSD",
+      "team": "CRYPTO",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7761,
+      "wins": 2332,
+      "losses": 5429,
+      "win_rate": 0.30047674268779795,
+      "expectancy_R": 0.04762797932974134,
+      "gross_R": 369.64074757812256,
+      "sharpe_proxy": 0.029762296316261334,
+      "error": null,
+      "notes": [
+        "near-zero expectancy - no edge"
+      ]
+    },
+    {
+      "symbol": "XTIUSD",
+      "team": "COMMODITIES",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7229,
+      "wins": 2001,
+      "losses": 5228,
+      "win_rate": 0.27680177064600914,
+      "expectancy_R": -0.03548902638898967,
+      "gross_R": -256.5501717660063,
+      "sharpe_proxy": -0.022760010266258228,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "XBRUSD",
+      "team": "COMMODITIES",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7343,
+      "wins": 1969,
+      "losses": 5374,
+      "win_rate": 0.2681465341141223,
+      "expectancy_R": -0.06567549942367965,
+      "gross_R": -482.25519226807967,
+      "sharpe_proxy": -0.04252276004624526,
+      "error": null,
+      "notes": [
+        "negative expectancy - rule has anti-edge here"
+      ]
+    },
+    {
+      "symbol": "XNGUSD",
+      "team": "COMMODITIES",
+      "rows": 50000,
+      "bars_scanned": 0,
+      "trades": 7582,
+      "wins": 2369,
+      "losses": 5213,
+      "win_rate": 0.31245054075441836,
+      "expectancy_R": 0.08831798809542488,
+      "gross_R": 669.6269857395114,
+      "sharpe_proxy": 0.05462228384835283,
+      "error": null,
+      "notes": []
+    }
+  ]
+}

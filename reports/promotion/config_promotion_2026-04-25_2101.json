@@ -1,0 +1,178 @@
+[
+  {
+    "team": "METALS",
+    "candidate": {
+      "name": "v14.5",
+      "n_folds": 10,
+      "trades": 16890,
+      "wr": 0.4209,
+      "exp_R": 0.0738,
+      "mean_fold_sharpe": 0.9213,
+      "stdev_fold_sharpe": 0.8625,
+      "stability_ok": false
+    },
+    "baseline": {
+      "name": "v14.4 baseline",
+      "n_folds": 10,
+      "trades": 13784,
+      "wr": 0.4207,
+      "exp_R": 0.0479,
+      "mean_fold_sharpe": 0.626,
+      "stdev_fold_sharpe": 0.7782,
+      "stability_ok": false
+    },
+    "delta_sharpe": 0.2953,
+    "verdict": "PROMOTE",
+    "min_volume_required": 4135,
+    "config_v14_5": {
+      "sl_atr_mult": 3.0,
+      "tp_atr_mult": 5.0,
+      "adx_min": 15,
+      "st_mult": 3.0,
+      "bb_width_floor_pct": 1.0,
+      "expected_wr": 0.478,
+      "expected_exp": 1.971,
+      "trades_bt": 14512,
+      "sharpe": 0.67
+    },
+    "config_v14_4": {
+      "sl_atr_mult": 2.0,
+      "tp_atr_mult": 3.0,
+      "adx_min": 22.0,
+      "st_mult": 3.0,
+      "bb_width_floor_pct": 0.9
+    }
+  },
+  {
+    "team": "FOREX",
+    "candidate": {
+      "name": "v14.5",
+      "n_folds": 60,
+      "trades": 65451,
+      "wr": 0.4382,
+      "exp_R": -0.0413,
+      "mean_fold_sharpe": -0.6893,
+      "stdev_fold_sharpe": 1.2851,
+      "stability_ok": false
+    },
+    "baseline": {
+      "name": "v14.4 baseline",
+      "n_folds": 60,
+      "trades": 84827,
+      "wr": 0.3866,
+      "exp_R": -0.0436,
+      "mean_fold_sharpe": -0.6431,
+      "stdev_fold_sharpe": 1.1893,
+      "stability_ok": false
+    },
+    "delta_sharpe": -0.0462,
+    "verdict": "HOLD",
+    "min_volume_required": 25448,
+    "config_v14_5": {
+      "sl_atr_mult": 2.5,
+      "tp_atr_mult": 3.0,
+      "adx_min": 25,
+      "st_mult": 3.0,
+      "bb_width_floor_pct": 1.0,
+      "expected_wr": 0.477,
+      "expected_exp": 0.918,
+      "trades_bt": 90034,
+      "sharpe": 0.46
+    },
+    "config_v14_4": {
+      "sl_atr_mult": 2.0,
+      "tp_atr_mult": 3.0,
+      "adx_min": 22.0,
+      "st_mult": 3.0,
+      "bb_width_floor_pct": 0.9
+    }
+  },
+  {
+    "team": "CRYPTO",
+    "candidate": {
+      "name": "v14.5",
+      "n_folds": 10,
+      "trades": 6026,
+      "wr": 0.4739,
+      "exp_R": 0.0384,
+      "mean_fold_sharpe": 0.5431,
+      "stdev_fold_sharpe": 1.3769,
+      "stability_ok": false
+    },
+    "baseline": {
+      "name": "v14.4 baseline",
+      "n_folds": 10,
+      "trades": 14568,
+      "wr": 0.4101,
+      "exp_R": 0.0167,
+      "mean_fold_sharpe": 0.1856,
+      "stdev_fold_sharpe": 0.8073,
+      "stability_ok": false
+    },
+    "delta_sharpe": 0.3575,
+    "verdict": "PROMOTE",
+    "min_volume_required": 4370,
+    "config_v14_5": {
+      "sl_atr_mult": 2.5,
+      "tp_atr_mult": 3.0,
+      "adx_min": 35,
+      "st_mult": 2.5,
+      "bb_width_floor_pct": 1.0,
+      "expected_wr": 0.513,
+      "expected_exp": 1.057,
+      "trades_bt": 15511,
+      "sharpe": 0.53
+    },
+    "config_v14_4": {
+      "sl_atr_mult": 2.0,
+      "tp_atr_mult": 3.0,
+      "adx_min": 22.0,
+      "st_mult": 3.0,
+      "bb_width_floor_pct": 0.9
+    }
+  },
+  {
+    "team": "COMMODITIES",
+    "candidate": {
+      "name": "v14.5",
+      "n_folds": 15,
+      "trades": 11651,
+      "wr": 0.4688,
+      "exp_R": 0.0278,
+      "mean_fold_sharpe": 0.3965,
+      "stdev_fold_sharpe": 1.0522,
+      "stability_ok": false
+    },
+    "baseline": {
+      "name": "v14.4 baseline",
+      "n_folds": 15,
+      "trades": 21172,
+      "wr": 0.4013,
+      "exp_R": -0.0032,
+      "mean_fold_sharpe": -0.0679,
+      "stdev_fold_sharpe": 0.9413,
+      "stability_ok": false
+    },
+    "delta_sharpe": 0.4644,
+    "verdict": "PROMOTE",
+    "min_volume_required": 6351,
+    "config_v14_5": {
+      "sl_atr_mult": 2.5,
+      "tp_atr_mult": 3.0,
+      "adx_min": 30,
+      "st_mult": 2.0,
+      "bb_width_floor_pct": 1.0,
+      "expected_wr": 0.483,
+      "expected_exp": 0.945,
+      "trades_bt": 22154,
+      "sharpe": 0.48
+    },
+    "config_v14_4": {
+      "sl_atr_mult": 2.0,
+      "tp_atr_mult": 3.0,
+      "adx_min": 22.0,
+      "st_mult": 3.0,
+      "bb_width_floor_pct": 0.9
+    }
+  }
+]

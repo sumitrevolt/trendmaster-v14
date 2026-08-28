@@ -1,0 +1,25 @@
+{
+  "symbol": "BTCUSD",
+  "team": "CRYPTO",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3899,
+  "n_trades": 994,
+  "win_rate": 0.2806841046277666,
+  "expectancy_R": 0.27867203219315895,
+  "max_dd": 33.0,
+  "oos_acc": 0.4302773497688752,
+  "oos_acc_per_fold": [
+    0.4253,
+    0.4314,
+    0.3991,
+    0.4653
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

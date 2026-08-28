@@ -854,7 +854,7 @@ class EconomicCalendarAgent:
                     result["minutes_until"] = int(diff_minutes)
                     result["event_impact"] = "HIGH"
                     result["affected_symbols"] = affected
-                    
+
                     time_msg = f"in {int(diff_minutes)} min" if diff_minutes > 0 else f"{abs(int(diff_minutes))} min ago"
                     result["reasons"].append(
                         f"⛔ HIGH-IMPACT EVENT {time_msg}: "

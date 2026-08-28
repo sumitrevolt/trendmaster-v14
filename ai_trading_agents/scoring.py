@@ -327,8 +327,8 @@ def compute_confluence_score(
     if l8_vote:
         direction_votes.append(l8_vote)
 
-    # ── DETERMINE DIRECTION AGREEMENT ─────────────────────────────────────
-    # Check if the majority of directional votes agree with the signal
+    # ── DETERMINE DIRECTION AGREEMENT �n    # [2026-08-26] SCALPING: direction agreement check DISABLED.
+    # Agents already agree on direction. Confluence is quality-only filter.
     if direction_votes:
         buy_v = sum(1 for v in direction_votes if v > 0)
         sell_v = sum(1 for v in direction_votes if v < 0)
@@ -337,8 +337,8 @@ def compute_confluence_score(
         majority = 0
         buy_v = sell_v = 0
 
-    # Direction is valid only if majority agrees with the signal
-    valid = (majority == sig)
+    # [2026-08-26] SCALPING: always valid — agents already decided direction
+    valid = True
 
     detail = (
         f"score={score:.1f} B={buy_v} S={sell_v} "

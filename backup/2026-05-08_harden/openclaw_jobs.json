@@ -1,0 +1,246 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "bd072dc4-8ae0-46c1-89ce-c7fb1de076cb",
+      "agentId": "trader",
+      "name": "trendmaster-health-check",
+      "enabled": true,
+      "createdAtMs": 1777388755541,
+      "updatedAtMs": 1777660527069,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 3600000,
+        "anchorMs": 1777541080404
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: .venv\\Scripts\\python.exe tools\\openclaw_brief.py. Read the output. Then APPEND ONE LINE to logs/runtime_handoff.jsonl with the format {\"ts\":\"<ISO>\",\"runtime\":\"openclaw_trader\",\"agent_id\":\"trader\",\"event\":\"heartbeat\",\"summary\":\"<status>\"} where <status> is either the literal word OK (when brain alive=true and no anomaly) or a 1-sentence description of the issue (when brain dead during market hours, dd>3%, or brain.err has new lines). Do not reply to the channel; only write the file. After writing, return the literal word DONE."
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1777664127069,
+        "lastRunAtMs": 1777656927065,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 3600004,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 10,
+        "lastErrorReason": "timeout",
+        "runningAtMs": 1777664127086
+      },
+      "description": "TrendMaster passive watchdog. Runs every 30 min, writes to logs/runtime_handoff.jsonl. No channel delivery (Telegram disabled per operator policy)."
+    },
+    {
+      "id": "1c8e5f4a-2b3d-4e5f-9a01-aabbccddeeff",
+      "agentId": "trader",
+      "name": "trendmaster-morning-brief",
+      "enabled": true,
+      "createdAtMs": 1777470000000,
+      "updatedAtMs": 1777612511703,
+      "schedule": {
+        "kind": "cron",
+        "tz": "Asia/Kolkata",
+        "expr": "30 8 * * *"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Generate the daily 08:30 IST morning briefing. Steps: (1) read logs/watchpets_state.json for overall verdict and any non-OK checks; (2) find the most recent file in reports/daily/ and read it; (3) read the last 5 lines of logs/runtime_handoff.jsonl. Then APPEND ONE LINE to logs/runtime_handoff.jsonl: {\"ts\":\"<ISO>\",\"runtime\":\"openclaw_trader\",\"agent_id\":\"trader\",\"event\":\"morning_brief\",\"summary\":\"<3-bullet brief>\"}. The summary must be a single string with three bullets separated by ' | ': (a) overall watchpets verdict + non-OK checks count; (b) yesterday's trade count and net P&L if findable; (c) one open question or action item for today. Be terse. After writing, return the literal word DONE."
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1777690800000,
+        "lastRunAtMs": 1777608911898,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 3599805,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 1,
+        "lastError": "cron: job execution timed out",
+        "lastErrorReason": "timeout"
+      },
+      "description": "Daily 08:30 IST morning briefing. Trader agent reads watchpets + previous daily summary + handoff log, writes 3-bullet brief to logs/runtime_handoff.jsonl."
+    },
+    {
+      "id": "a4c7e2d8-1f3b-4a90-b6c5-architect00w1",
+      "agentId": "architect",
+      "name": "trendmaster-architect-weekly",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "tz": "Asia/Kolkata",
+        "expr": "0 9 * * 0"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Weekly architect run. Read docs/AI_ORG_CHARTER.md (your role section) and docs/team/architect/README.md for output format. Steps: (1) `.venv\\Scripts\\python.exe tools\\team_handoff.py digest --hours 168` → read the team's last week. (2) Read the most recent 3 files in reports/daily/ and any new docs/POSTMORTEMS/*.md from the past week. (3) `gh issue list --label agent-task:architect --state open --json title,number,body` → pull operator-assigned tasks. (4) Decide: ADR, strategy proposal, or no-op week (see README). (5) Write the file at docs/team/architect/weekly_<YYYY-MM-DD>.md. (6) `.venv\\Scripts\\python.exe tools\\team_handoff.py append --json '{\"agent\":\"architect\",\"event\":\"weekly_proposal\",\"summary\":\"<terse summary>\",\"outputs\":[\"<path>\"],\"severity\":\"info\"}'`. Return literal word DONE."
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "description": "Architect weekly run — ADRs, strategy proposals, no-op weeks.",
+      "createdAtMs": 1777538425373,
+      "updatedAtMs": 1777539326252,
+      "state": {
+        "nextRunAtMs": 1777779000000,
+        "lastRunAtMs": 1777539172707,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 153545,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0,
+        "lastError": "⚠️ ✉️ Message failed",
+        "lastDelivered": false,
+        "lastDeliveryError": "⚠️ ✉️ Message failed"
+      }
+    },
+    {
+      "id": "b5d8f3e9-2a4c-4b91-c7d6-research00w2",
+      "agentId": "researcher",
+      "name": "trendmaster-researcher-weekly",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "tz": "Asia/Kolkata",
+        "expr": "0 10 * * 6"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Weekly researcher run. Read docs/AI_ORG_CHARTER.md and docs/team/researcher/README.md for output format. Steps: (1) Pick ONE of: literature scan, walkforward analysis, or replay study. (2) Use web_search and web_fetch tools (gemini long-context) for literature scans. (3) For walkforward: run `.venv\\Scripts\\python.exe tools\\walkforward_lab.py --symbol all` and parse the report. (4) Write docs/team/researcher/weekly_<YYYY-MM-DD>.md in the README's prescribed 4-section format. (5) Append a 'research' event to handoff log. Return literal word DONE."
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "description": "Researcher weekly digest — literature, walkforward, or replay.",
+      "createdAtMs": 1777538425373,
+      "updatedAtMs": 1777539440258,
+      "state": {
+        "nextRunAtMs": 1777696200000,
+        "lastRunAtMs": 1777539326252,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 114006,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0,
+        "lastErrorReason": "rate_limit",
+        "lastError": "⚠️ API rate limit reached. Please try again later.",
+        "lastDelivered": false,
+        "lastDeliveryError": "⚠️ API rate limit reached. Please try again later."
+      }
+    },
+    {
+      "id": "c6e9f4f0-3b5d-4c92-d8e7-reviewer006h",
+      "agentId": "reviewer",
+      "name": "trendmaster-reviewer-6h",
+      "enabled": true,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 43200000,
+        "anchorMs": 1777541080404
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "6-hour reviewer audit. Read docs/AI_ORG_CHARTER.md and docs/team/reviewer/README.md. Steps: (1) `git log --since='6 hours ago' --pretty='%h %ai %s' main` for new commits. (2) For each commit, `git show <hash>` and skim for: hardcoded creds, Path(__file__).resolve() inside ai_trading_agents/ (refuse — see CLAUDE.md), tests removed, schema changes to brain_state.json or team_handoff.jsonl, stray print() in production paths. (3) Write docs/team/reviewer/audit_<YYYY-MM-DD>_<HH>.md with per-commit verdicts. (4) For any flagged commit, leave a `gh pr review --comment` or open an `agent-escalation` issue. (5) Append 'review' event to handoff log. If 0 commits since last audit, write a single-line file 'No commits since <last_audit>' and exit. Return DONE."
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "description": "Reviewer 6h commit audit. Refuses to merge or approve, comments only.",
+      "createdAtMs": 1777538425373,
+      "updatedAtMs": 1777642520468,
+      "state": {
+        "nextRunAtMs": 1777682120292,
+        "lastRunAtMs": 1777638920292,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 3600176,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 3,
+        "lastErrorReason": "timeout",
+        "lastError": "cron: job execution timed out"
+      }
+    },
+    {
+      "id": "d7f0a5a1-4c6e-4d93-e9f8-debugger001h",
+      "agentId": "debugger",
+      "name": "trendmaster-debugger-hourly",
+      "enabled": true,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 21600000,
+        "anchorMs": 1777541080404
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Hourly debugger triage — GATED. Step 0: check `Get-Item logs\\trend_master_brain.err | Select-Object Length` and `Get-ChildItem docs\\POSTMORTEMS\\_draft_*.md`. If brain.err is 0 bytes AND no fresh draft postmortem, exit silently — DO NOT write a triage file, DO NOT append to handoff. Else: read docs/AI_ORG_CHARTER.md and docs/team/debugger/README.md. (1) Read last 200 lines of logs/trend_master_brain.err. (2) Group identical stack traces; count occurrences. (3) For each group, use code-review-graph MCP semantic_search_nodes_tool to locate offending function. Identify root cause + propose minimal patch. (4) Write docs/team/debugger/triage_<YYYY-MM-DD>_<HH>.md per the README format. (5) For confidence != high groups, `gh issue create --label agent-task:debugger`. (6) Append 'triage' event to handoff log. Return DONE (or DONE_NO_TRIAGE if exited at step 0)."
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "description": "Hourly brain.err triage. Skips silently when err is empty.",
+      "createdAtMs": 1777538425373,
+      "updatedAtMs": 1777649724902,
+      "state": {
+        "nextRunAtMs": 1777667724909,
+        "lastRunAtMs": 1777646124909,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 3599993,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 3,
+        "lastErrorReason": "timeout",
+        "lastError": "cron: job execution timed out"
+      }
+    },
+    {
+      "id": "e8a1b6b2-5d7f-4e94-f0a9-writerdaily0",
+      "agentId": "writer",
+      "name": "trendmaster-writer-daily",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "tz": "Asia/Kolkata",
+        "expr": "0 23 * * *"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Daily writer digest. Read docs/AI_ORG_CHARTER.md and docs/team/writer/README.md. Steps: (1) `.venv\\Scripts\\python.exe tools\\team_handoff.py digest --hours 24` → markdown content. (2) Append 'Trade activity' from logs/brain_state.json recent_results filtered to today. (3) Append 'Open escalations' from `gh issue list --label agent-escalation --state open --json number,title,assignees`. (4) Append 'Tomorrow's events' from config/news_calendar.json (tier-1 only). (5) Write docs/team/writer/digest_<YYYY-MM-DD>.md (~150 words). (6) Append 'digest' event to handoff log. (7) `git checkout -B team-outputs origin/team-outputs && git add docs/team && git commit -m 'writer: daily digest <date>' && git push origin team-outputs` (continue on push failure, just log it). Return DONE."
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "description": "Daily writer digest — rolls up handoff log, escalations, news.",
+      "createdAtMs": 1777538425373,
+      "updatedAtMs": 1777656704023,
+      "state": {
+        "nextRunAtMs": 1777743000000,
+        "lastRunAtMs": 1777656600034,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 103989,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 1,
+        "lastError": "FailoverError: fetch failed",
+        "lastErrorReason": "timeout"
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "symbol": "XAGUSD",
+  "team": "METALS",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3878,
+  "n_trades": 919,
+  "win_rate": 0.28944504896626766,
+  "expectancy_R": 0.25680087051142547,
+  "max_dd": 38.0,
+  "oos_acc": 0.39086687306501544,
+  "oos_acc_per_fold": [
+    0.3824,
+    0.356,
+    0.4257,
+    0.3994
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

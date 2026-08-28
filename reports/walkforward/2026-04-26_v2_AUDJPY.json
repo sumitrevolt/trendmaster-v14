@@ -1,0 +1,25 @@
+{
+  "symbol": "AUDJPY",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3888,
+  "n_trades": 870,
+  "win_rate": 0.35517241379310344,
+  "expectancy_R": 0.4413793103448276,
+  "max_dd": 21.0,
+  "oos_acc": 0.4058641975308642,
+  "oos_acc_per_fold": [
+    0.4213,
+    0.4074,
+    0.3951,
+    0.3997
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

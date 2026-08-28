@@ -33,3 +33,11 @@ colorlog>=6.10.1
 # Development / Testing
 pytest>=9.0.3
 pytest-cov>=7.1.0
+
+# Dashboard / async stack (added 2026-04-25 to align with sub-package requirements)
+fastapi>=0.110
+uvicorn>=0.27
+httpx>=0.27
+websockets>=12.0
+psutil
+pyarrow 

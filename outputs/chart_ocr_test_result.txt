@@ -1,0 +1,24 @@
+Running OCR smoke test on EURUSD M15... 
+Start: 12-05-2026 17:41:30.31 
+ 
+2026-05-12 17:41:43,590 [INFO] chart_scrape_ocr: OCR-SCRAPE SELL for EURUSD tf=M15 (green_px=0 red_px=2034 conf=high elapsed=10.1s)
+{
+  "direction": "SELL",
+  "meta": {
+    "url": "https://www.tradingview.com/chart/?symbol=OANDA:EURUSD&interval=15",
+    "elapsed_s": 10.14,
+    "out_path": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\logs\\rp_screenshots\\EURUSD_M15_1778587890.png",
+    "image_size": [
+      1600,
+      900
+    ],
+    "right_crop_px": 583200,
+    "green_label_px": 0,
+    "red_label_px": 2034,
+    "confidence": "high",
+    "direction": "SELL"
+  }
+}
+ 
+End: 12-05-2026 17:41:43.80 
+Exit code: 0 

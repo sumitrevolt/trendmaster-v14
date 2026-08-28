@@ -1,0 +1,63 @@
+=== Bot status — 2026-05-13 14:28:53 ===
+
+============================================================
+1. RUNNING COMPONENTS
+============================================================
+
+  [OK  ] TV Webhook Receiver              PID 1516 (87.7min old), PID 13588 (87.7min old), PID 20256 (49.6min old), PID 21084 (49.6min old), PID 24364 (49.6min old)
+  [OK  ] Python Signal Executor           PID 11796 (19.6min old), PID 12632 (19.6min old)
+  [OK  ] Trailing Stop Manager            PID 14968 (87.7min old), PID 19352 (87.7min old)
+  [OK  ] Telegram Direction Listener      PID 20748 (36.0min old), PID 26988 (36.0min old)
+  [DEAD] Dashboard Server                 (none running)
+  [OK  ] Ngrok Tunnel                     PID 15244 (49.5min old), PID 27104 (49.5min old)
+
+============================================================
+2. WEBHOOK HEALTH CHECK
+============================================================
+
+  [OK] http://127.0.0.1:5005/health → {"status":"ok","ts":1778662735}
+
+============================================================
+3. DASHBOARD HEALTH CHECK
+============================================================
+
+  [DEAD] port 8765: URLError
+  [DEAD] port 8080: URLError
+  [DEAD] port 8088: URLError
+  [DEAD] port 5000: URLError
+  [DEAD] port 5050: URLError
+
+============================================================
+4. MT5 CONNECTION + OPEN POSITIONS
+============================================================
+
+  [OK] Account 213796448 balance=$1077.86 equity=$1074.52
+      profit_today=$-3.34 margin_free=$1064.52
+
+  Open positions (2):
+    USDJPY   SELL 0.01 lots @ 157.55600 | PnL: $-1.65
+    USDJPY   SELL 0.01 lots @ 157.55100 | PnL: $-1.69
+
+============================================================
+5. RECENT WEBHOOK ACTIVITY (last 30 min)
+============================================================
+
+  No events in last 30 min — webhook idle but listening.
+
+============================================================
+6. RECENT EXECUTOR HEARTBEAT (last)
+============================================================
+
+  Last 3 heartbeats:
+    2026-05-13 14:26:33,391 [INFO] heartbeat: iter=205 placed=0 skipped=20  (no_file=15 filtered=0 stale=5) open_positions=2
+    2026-05-13 14:27:33,450 [INFO] heartbeat: iter=217 placed=0 skipped=20  (no_file=15 filtered=0 stale=5) open_positions=2
+    2026-05-13 14:28:33,504 [INFO] heartbeat: iter=229 placed=0 skipped=20  (no_file=15 filtered=0 stale=5) open_positions=2
+
+============================================================
+7. TELEGRAM LISTENER HEARTBEAT
+============================================================
+
+  Last 3 entries:
+    2026-05-13 14:26:10,893 [INFO] heartbeat: iter=76 last_uid=0 pending=0
+    2026-05-13 14:27:29,727 [INFO] heartbeat: iter=79 last_uid=0 pending=0
+    2026-05-13 14:28:48,069 [INFO] heartbeat: iter=82 last_uid=0 pending=0

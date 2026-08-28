@@ -80,7 +80,7 @@ class Governance:
     """Load / mutate / save the governance.json registry."""
 
     def __init__(self, models_dir: Optional[Path] = None):
-        self.dir = Path(models_dir) if models_dir else (Path(__file__).resolve().parent / "ml_models")
+        self.dir = Path(models_dir) if models_dir else (Path(__file__).parent / "ml_models")
         self.dir.mkdir(parents=True, exist_ok=True)
         self.cards_dir = self.dir / "cards"
         self.cards_dir.mkdir(parents=True, exist_ok=True)

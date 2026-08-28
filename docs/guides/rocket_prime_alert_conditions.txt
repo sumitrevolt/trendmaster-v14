@@ -1,0 +1,127 @@
+=== Rocket Prime alert conditions inspection ===
+Generated: 2026-05-09 01:21:26
+
+Logged in: True
+
+[!] /pine-facade/translate returned 404
+
+=== get_alert_series (status=200) ===
+{"s":"error","id":"emqr-30510759","r":null,"errmsg":"code=no_such_endpoint, err=no such endpoint: GET /get_alert_series","err":{"code":"no_such_endpoint"}}
+
+=== metainfo (status=200) ===
+{"success":true,"result":{"IL":"bmI9Ks46_Pg3cEYPgo9MhjjTOk85YVg==_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
+
+=== DOM inspection of alert dialog ===
+{
+  "found": [
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal\nCAD"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal\nCAD"
+    },
+    {
+      "tag": "DIV",
+      "role": "region",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal\nCAD"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal\nCAD"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal\nCAD"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "U\nU.S. Dollar / Canadian Dollar\n5\nOANDA\nO\n1.36309\nH\n1.36320\nL\n1.36290\nC\n1.36296\n\u22120.00014 (\u22120.01%)\n1.36811\nSELL\n1.6\n1.36827\nBUY\nRocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "Rocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "Rocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "toolbar",
+      "name": "",
+      "text": "Rocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "Rocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "Rocket Prime Engine\nNormal"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "Rocket Prime Engine"
+    },
+    {
+      "tag": "DIV",
+      "role": "",
+      "name": "",
+      "text": "Rocket Prime Engine"
+    }
+  ],
+  "menus": [
+    {
+      "role": "",
+      "data_name": "save-load-menu",
+      "text_preview": ""
+    },
+    {
+      "role": "",
+      "data_name": "date-ranges-menu",
+      "text_preview": ""
+    },
+    {
+      "role": "",
+      "data_name": "time-zone-menu",
+      "text_preview": "01:21:52 UTC+5:30"
+    }
+  ]
+}
+
+Screenshot saved: C:\Users\Ratanshila\Documents\autmated trading\docs\guides\rocket_prime_alert_dialog.png

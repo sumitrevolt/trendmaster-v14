@@ -1,0 +1,25 @@
+{
+  "symbol": "AUDUSD",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3888,
+  "n_trades": 1139,
+  "win_rate": 0.27568042142230026,
+  "expectancy_R": 0.27568042142230026,
+  "max_dd": 34.0,
+  "oos_acc": 0.3823302469135803,
+  "oos_acc_per_fold": [
+    0.3889,
+    0.3395,
+    0.3951,
+    0.4059
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

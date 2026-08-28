@@ -1,0 +1,2 @@
+<input         > [ 856, 437    0x 28] Value                                                        | class='input-RUSovanF size-small-RUSovanF readonlyInput-VfhgWFqC with-start-slot-RUSovanF with-end-slot-RUS'
+<input         > [ 870, 437  119x 28] 4,605.671                                                    | type='text' class='input-RUSovanF size-small-RUSovanF with-end-slot-RUSovanF'

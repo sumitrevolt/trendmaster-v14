@@ -1,0 +1,450 @@
+[
+  {
+    "symbol": "USDJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "USDJPY",
+    "full_symbol": "OANDA:USDJPY",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "USDCHF",
+    "exchange": "OANDA",
+    "broker_symbol": "USDCHF",
+    "full_symbol": "OANDA:USDCHF",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "USDCHF",
+    "exchange": "OANDA",
+    "broker_symbol": "USDCHF",
+    "full_symbol": "OANDA:USDCHF",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "USDCHF",
+    "exchange": "OANDA",
+    "broker_symbol": "USDCHF",
+    "full_symbol": "OANDA:USDCHF",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "USDCHF",
+    "exchange": "OANDA",
+    "broker_symbol": "USDCHF",
+    "full_symbol": "OANDA:USDCHF",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "USDCAD",
+    "exchange": "OANDA",
+    "broker_symbol": "USDCAD",
+    "full_symbol": "OANDA:USDCAD",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "USDCAD",
+    "exchange": "OANDA",
+    "broker_symbol": "USDCAD",
+    "full_symbol": "OANDA:USDCAD",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "USDCAD",
+    "exchange": "OANDA",
+    "broker_symbol": "USDCAD",
+    "full_symbol": "OANDA:USDCAD",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "AUDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDUSD",
+    "full_symbol": "OANDA:AUDUSD",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "AUDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDUSD",
+    "full_symbol": "OANDA:AUDUSD",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "AUDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDUSD",
+    "full_symbol": "OANDA:AUDUSD",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "AUDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDUSD",
+    "full_symbol": "OANDA:AUDUSD",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "NZDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "NZDUSD",
+    "full_symbol": "OANDA:NZDUSD",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "NZDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "NZDUSD",
+    "full_symbol": "OANDA:NZDUSD",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "NZDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "NZDUSD",
+    "full_symbol": "OANDA:NZDUSD",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "NZDUSD",
+    "exchange": "OANDA",
+    "broker_symbol": "NZDUSD",
+    "full_symbol": "OANDA:NZDUSD",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "EURJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "EURJPY",
+    "full_symbol": "OANDA:EURJPY",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "EURJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "EURJPY",
+    "full_symbol": "OANDA:EURJPY",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "EURJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "EURJPY",
+    "full_symbol": "OANDA:EURJPY",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "EURJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "EURJPY",
+    "full_symbol": "OANDA:EURJPY",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "GBPJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "GBPJPY",
+    "full_symbol": "OANDA:GBPJPY",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "GBPJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "GBPJPY",
+    "full_symbol": "OANDA:GBPJPY",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "GBPJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "GBPJPY",
+    "full_symbol": "OANDA:GBPJPY",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "GBPJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "GBPJPY",
+    "full_symbol": "OANDA:GBPJPY",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "AUDJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDJPY",
+    "full_symbol": "OANDA:AUDJPY",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "AUDJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDJPY",
+    "full_symbol": "OANDA:AUDJPY",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "AUDJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDJPY",
+    "full_symbol": "OANDA:AUDJPY",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "AUDJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "AUDJPY",
+    "full_symbol": "OANDA:AUDJPY",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "CADJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "CADJPY",
+    "full_symbol": "OANDA:CADJPY",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "CADJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "CADJPY",
+    "full_symbol": "OANDA:CADJPY",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "CADJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "CADJPY",
+    "full_symbol": "OANDA:CADJPY",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "CADJPY",
+    "exchange": "OANDA",
+    "broker_symbol": "CADJPY",
+    "full_symbol": "OANDA:CADJPY",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "EURGBP",
+    "exchange": "OANDA",
+    "broker_symbol": "EURGBP",
+    "full_symbol": "OANDA:EURGBP",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "EURGBP",
+    "exchange": "OANDA",
+    "broker_symbol": "EURGBP",
+    "full_symbol": "OANDA:EURGBP",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "EURGBP",
+    "exchange": "OANDA",
+    "broker_symbol": "EURGBP",
+    "full_symbol": "OANDA:EURGBP",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "EURGBP",
+    "exchange": "OANDA",
+    "broker_symbol": "EURGBP",
+    "full_symbol": "OANDA:EURGBP",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "BTCUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "BTCUSD",
+    "full_symbol": "BINANCE:BTCUSD",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "BTCUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "BTCUSD",
+    "full_symbol": "BINANCE:BTCUSD",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "BTCUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "BTCUSD",
+    "full_symbol": "BINANCE:BTCUSD",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "BTCUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "BTCUSD",
+    "full_symbol": "BINANCE:BTCUSD",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "ETHUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "ETHUSD",
+    "full_symbol": "BINANCE:ETHUSD",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "ETHUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "ETHUSD",
+    "full_symbol": "BINANCE:ETHUSD",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "ETHUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "ETHUSD",
+    "full_symbol": "BINANCE:ETHUSD",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "ETHUSD",
+    "exchange": "BINANCE",
+    "broker_symbol": "ETHUSD",
+    "full_symbol": "BINANCE:ETHUSD",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "XTIUSD",
+    "exchange": "TVC",
+    "broker_symbol": "USOIL",
+    "full_symbol": "TVC:USOIL",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "XTIUSD",
+    "exchange": "TVC",
+    "broker_symbol": "USOIL",
+    "full_symbol": "TVC:USOIL",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "XTIUSD",
+    "exchange": "TVC",
+    "broker_symbol": "USOIL",
+    "full_symbol": "TVC:USOIL",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "XTIUSD",
+    "exchange": "TVC",
+    "broker_symbol": "USOIL",
+    "full_symbol": "TVC:USOIL",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "XBRUSD",
+    "exchange": "TVC",
+    "broker_symbol": "UKOIL",
+    "full_symbol": "TVC:UKOIL",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "XBRUSD",
+    "exchange": "TVC",
+    "broker_symbol": "UKOIL",
+    "full_symbol": "TVC:UKOIL",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "XBRUSD",
+    "exchange": "TVC",
+    "broker_symbol": "UKOIL",
+    "full_symbol": "TVC:UKOIL",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "XBRUSD",
+    "exchange": "TVC",
+    "broker_symbol": "UKOIL",
+    "full_symbol": "TVC:UKOIL",
+    "tf": "H4",
+    "resolution": "240"
+  },
+  {
+    "symbol": "XNGUSD",
+    "exchange": "TVC",
+    "broker_symbol": "NATGASUSD",
+    "full_symbol": "TVC:NATGASUSD",
+    "tf": "M5",
+    "resolution": "5"
+  },
+  {
+    "symbol": "XNGUSD",
+    "exchange": "TVC",
+    "broker_symbol": "NATGASUSD",
+    "full_symbol": "TVC:NATGASUSD",
+    "tf": "M15",
+    "resolution": "15"
+  },
+  {
+    "symbol": "XNGUSD",
+    "exchange": "TVC",
+    "broker_symbol": "NATGASUSD",
+    "full_symbol": "TVC:NATGASUSD",
+    "tf": "H1",
+    "resolution": "60"
+  },
+  {
+    "symbol": "XNGUSD",
+    "exchange": "TVC",
+    "broker_symbol": "NATGASUSD",
+    "full_symbol": "TVC:NATGASUSD",
+    "tf": "H4",
+    "resolution": "240"
+  }
+]

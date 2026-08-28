@@ -1,0 +1,25 @@
+{
+  "symbol": "GBPUSD",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3886,
+  "n_trades": 721,
+  "win_rate": 0.29542302357836336,
+  "expectancy_R": 0.32038834951456313,
+  "max_dd": 29.0,
+  "oos_acc": 0.4741112828438949,
+  "oos_acc_per_fold": [
+    0.5054,
+    0.4451,
+    0.4838,
+    0.4621
+  ],
+  "nan_drop_rows": 284,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

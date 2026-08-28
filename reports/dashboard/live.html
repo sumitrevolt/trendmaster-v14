@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang='en'><head><meta charset='utf-8'>
+<title>TrendMaster Live Dashboard</title>
+<meta http-equiv='refresh' content='60'>
+<style>
+
+      :root { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+      body { margin: 0; background: #0b1220; color: #e5e7eb; }
+      header { background: #111827; padding: 16px 24px; border-bottom: 1px solid #1f2937; display: flex; align-items: center; gap: 16px; }
+      header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+      header .stamp { margin-left: auto; color: #9ca3af; font-size: 13px; }
+      .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-weight: 600; font-size: 13px; }
+      main { padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+      .card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 16px; }
+      .card h2 { margin: 0 0 12px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #93c5fd; }
+      .check-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #1f2937; font-size: 14px; }
+      .check-row:last-child { border-bottom: none; }
+      .check-name { flex: 0 0 96px; font-weight: 600; }
+      .check-sev { flex: 0 0 80px; font-weight: 600; font-size: 12px; padding: 2px 6px; border-radius: 4px; text-align: center; }
+      .check-msg { flex: 1; color: #d1d5db; }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #1f2937; }
+      th { color: #9ca3af; font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+      .tiny { font-size: 12px; color: #9ca3af; }
+      .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; }
+      .kv dt { color: #9ca3af; font-weight: 500; }
+      .kv dd { margin: 0; color: #e5e7eb; font-family: ui-monospace, "Cascadia Code", monospace; }
+      .sparkline { display: flex; gap: 2px; align-items: flex-end; height: 32px; padding: 4px 0; }
+      .sparkline .pt { width: 6px; background: #374151; border-radius: 1px; }
+      .sparkline .OK { background: #10b981; height: 100%; }
+      .sparkline .INFO { background: #6b7280; height: 100%; }
+      .sparkline .WARN { background: #f59e0b; height: 100%; }
+      .sparkline .ERROR { background: #ef4444; height: 100%; }
+      .sparkline .CRITICAL { background: #dc2626; height: 100%; }
+      a { color: #60a5fa; text-decoration: none; } a:hover { text-decoration: underline; }
+      ul.tight { padding-left: 18px; margin: 4px 0; }
+      ul.tight li { margin: 2px 0; font-size: 13px; }
+      footer { color: #6b7280; padding: 16px 24px; border-top: 1px solid #1f2937; font-size: 12px; }
+    
+</style></head><body>
+<header>
+<h1>TrendMaster Live</h1>
+<span class='badge' style='background:#f59e0b;color:#fff'>WARN</span>
+<span class='stamp'>watchpet ts: 2026-04-29T19:23:23+05:30</span>
+<span class='stamp'>generated: 2026-04-29 19:26:39 IST</span>
+</header>
+<main>
+<section class='card'><h2>Watch-pet checks</h2>
+<div class='check-row'>
+<div class='check-name'>brain</div>
+<div class='check-sev' style='background:#f59e0b;color:#fff'>WARN</div>
+<div class='check-msg'>liveness check stale: 866s</div>
+</div>
+<div class='check-row'>
+<div class='check-name'>drawdown</div>
+<div class='check-sev' style='background:#6b7280;color:#fff'>INFO</div>
+<div class='check-msg'>DD not measurable (session uninitialized)</div>
+</div>
+<div class='check-row'>
+<div class='check-name'>junction</div>
+<div class='check-sev' style='background:#10b981;color:#fff'>OK</div>
+<div class='check-msg'>junction OK</div>
+</div>
+<div class='check-row'>
+<div class='check-name'>disk</div>
+<div class='check-sev' style='background:#10b981;color:#fff'>OK</div>
+<div class='check-msg'>disk free 10.8 GB, logs 0.61 GB</div>
+</div>
+<div class='check-row'>
+<div class='check-name'>gateway</div>
+<div class='check-sev' style='background:#10b981;color:#fff'>OK</div>
+<div class='check-msg'>gateway healthy</div>
+</div>
+<div class='check-row'>
+<div class='check-name'>signals</div>
+<div class='check-sev' style='background:#10b981;color:#fff'>OK</div>
+<div class='check-msg'>latest signal 1s old</div>
+</div>
+<div class='check-row'>
+<div class='check-name'>trades</div>
+<div class='check-sev' style='background:#f59e0b;color:#fff'>WARN</div>
+<div class='check-msg'>last trade 7.2 days ago</div>
+</div>
+<div class='check-row'>
+<div class='check-name'>alerts</div>
+<div class='check-sev' style='background:#10b981;color:#fff'>OK</div>
+<div class='check-msg'>no active alerts</div>
+</div>
+</section>
+<section class='card'><h2>Severity history (last 50)</h2>
+<div class='sparkline'>
+<div class='pt CRITICAL' title='2026-04-29T15:58:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:03:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:08:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:13:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:18:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:23:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:28:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:33:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:38:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:43:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:48:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:53:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T16:58:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:03:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:08:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:13:25+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:18:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:23:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:28:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:33:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:38:27+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:43:24+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:48:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:53:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T17:58:23+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T18:03:25+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T18:08:25+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T18:09:39+05:30 CRITICAL'></div>
+<div class='pt CRITICAL' title='2026-04-29T18:10:50+05:30 CRITICAL'></div>
+<div class='pt ERROR' title='2026-04-29T18:11:52+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:13:25+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:15:51+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:18:25+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:23:28+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:28:23+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:33:23+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:38:23+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:43:23+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:48:23+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:53:23+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T18:58:23+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T19:03:28+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T19:06:00+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T19:07:17+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T19:08:17+05:30 ERROR'></div>
+<div class='pt ERROR' title='2026-04-29T19:08:23+05:30 ERROR'></div>
+<div class='pt WARN' title='2026-04-29T19:08:57+05:30 WARN'></div>
+<div class='pt WARN' title='2026-04-29T19:13:23+05:30 WARN'></div>
+<div class='pt WARN' title='2026-04-29T19:18:23+05:30 WARN'></div>
+<div class='pt WARN' title='2026-04-29T19:23:23+05:30 WARN'></div>
+</div>
+<div class='tiny'>each bar = one watch_pets cycle (every 5 min)</div>
+</section>
+<section class='card'><h2>Brain</h2>
+<dl class='kv'>
+<dt>restart_count</dt><dd>40</dd>
+<dt>trading_paused</dt><dd>False</dd>
+<dt>SoD equity</dt><dd>546.55</dd>
+<dt>session high</dt><dd>0.0</dd>
+<dt>session low</dt><dd>0.0</dd>
+<dt>signals tracked</dt><dd>19 symbols</dd>
+<dt>direction mix</dt><dd>{&#x27;NONE&#x27;: 14, &#x27;BUY&#x27;: 3, &#x27;SELL&#x27;: 2}</dd>
+<dt>last trade</dt><dd>ETHUSD pnl=-0.69</dd>
+</dl></section>
+<section class='card'><h2>Scheduled-task health</h2>
+<div class='tiny'>tracked: 17, issues: 0</div>
+<div style='color:#10b981; font-weight:600;'>all tracked tasks healthy</div>
+</section>
+<section class='card'><h2>Latest daily report</h2>
+<div><a href='../daily/2026-04-29.md'>2026-04-29.md</a></div>
+<pre class='tiny' style='white-space:pre-wrap; color:#9ca3af; max-height:120px; overflow:auto;'>
+# Daily summary - 2026-04-29
+
+_Generated 2026-04-29 18:13:29 India Standard Time_
+
+## Brain
+- pid: `23888`
+</pre>
+</section>
+<section class='card'><h2>Recent postmortems</h2>
+<ul class='tight'>
+<li>[2026-04-29 - 16-hour brain silent termination (RESOLVED; first incident detected end-to-end by watch_pets.py)](2026-04-29_brain_silent_termination.md)</li>
+<li>[2026-04-28 - Orphaned D2 model + dead-market lockout (RESOLVED via `.lgb` file rename + vol_min_quantile loosen)](2026-04-28_orphaned_d2_model_and_dead_market_lockout.md)</li>
+<li>[2026-04-26 - Pre-commit/junction breakage during Phase B1 commit (RESOLVED via restore_junction.cmd + check_junction.py guard)](2026-04-26_pre_commit_junction_breakage.md)</li>
+<li>[2026-04-25 - God-mode round 2 consolidation (latent bug fixes, CI sentinel, archive cleanup)](2026-04-25_godmode_round2_consolidation.md)</li>
+<li>[2026-04-25 - Phantom file-deletion incident (RESOLVED via NTFS junction)](2026-04-25_phantom_deletion_incident.md)</li>
+</ul>
+</section>
+</main>
+<footer>
+Auto-refresh every 60s. Source: TrendMaster v14 + watch_pets.py + schtasks_audit.py + daily_summary.py.
+</footer>
+</body></html>

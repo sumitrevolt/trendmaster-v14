@@ -1,0 +1,31 @@
+=== Cleanup stale signals (Python direct) ===
+Target dir: C:\Users\Ratanshila\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Files
+Dir exists: True
+
+Total entries in dir: 21
+  - py_executor.alive (8s old, 10 bytes)
+  - trendmaster_signals.reset_2026-05-06 (518270s old, 336 bytes)
+  - trendmaster_signals_AUDJPY.stale_2026-05-06 (592315s old, 336 bytes)
+  - trendmaster_signals_AUDUSD.stale_2026-05-06 (592315s old, 336 bytes)
+  - trendmaster_signals_BTCUSD.reset_2026-05-06 (518267s old, 337 bytes)
+  - trendmaster_signals_CADJPY.stale_2026-05-06 (592315s old, 336 bytes)
+  - trendmaster_signals_ETHUSD.stale_2026-05-06 (592315s old, 337 bytes)
+  - trendmaster_signals_EURAUD.stale_2026-05-06 (522295s old, 324 bytes)
+  - trendmaster_signals_EURGBP.stale_2026-05-06 (589709s old, 315 bytes)
+  - trendmaster_signals_EURJPY.stale_2026-05-06 (592315s old, 336 bytes)
+  - trendmaster_signals_EURUSD.reset_2026-05-06 (518269s old, 338 bytes)
+  - trendmaster_signals_GBPJPY.stale_2026-05-06 (592315s old, 336 bytes)
+  - trendmaster_signals_GBPUSD.reset_2026-05-06 (518268s old, 338 bytes)
+  - trendmaster_signals_NZDUSD.stale_2026-05-06 (566812s old, 324 bytes)
+  - trendmaster_signals_USDCAD.stale_2026-05-06 (518696s old, 324 bytes)
+  - trendmaster_signals_USDCHF.stale_2026-05-06 (546682s old, 322 bytes)
+  - trendmaster_signals_USDJPY.reset_2026-05-06 (517314s old, 324 bytes)
+  - trendmaster_signals_XAGUSD.stale_2026-05-06 (521456s old, 322 bytes)
+  - trendmaster_signals_XBRUSD.stale_2026-05-06 (592315s old, 337 bytes)
+  - trendmaster_signals_XNGUSD.stale_2026-05-06 (592315s old, 337 bytes)
+  - trendmaster_signals_XTIUSD.stale_2026-05-06 (592315s old, 337 bytes)
+
+=== Per-symbol check ===
+
+=== Result: 0 files cleaned up ===
+Executor should now report no_file=20 stale=0 for these symbols.

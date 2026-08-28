@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-26T12:27:41.041447+00:00",
+  "generated_at": "2026-04-26T13:14:39.585780+00:00",
   "feature_set": "v1",
   "seed": 42,
   "folds": 5,
-  "runtime_sec": 69.54,
+  "runtime_sec": 160.7,
   "aggregate": {
     "per_team": {
       "METALS": {

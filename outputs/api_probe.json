@@ -1,0 +1,118 @@
+{
+  "account_keys": [
+    "connected",
+    "trade_allowed",
+    "build",
+    "balance",
+    "equity",
+    "margin",
+    "margin_free",
+    "floating_pl",
+    "n_positions",
+    "positions"
+  ],
+  "n_positions": 5,
+  "positions_count": 5,
+  "positions_sample": [
+    {
+      "ticket": 5667590405,
+      "symbol": "BTCUSD",
+      "dir": "SELL",
+      "leg": "QUICK",
+      "lots": 0.01,
+      "open": 81004.5,
+      "current": 81487.0,
+      "sl": 82464.83,
+      "tp": 80274.33,
+      "profit": -4.83,
+      "age_min": -145,
+      "duration": "-8666s",
+      "open_time": "00:15:13",
+      "pct_move": -0.596,
+      "r_progress": -0.33,
+      "comment": "PyExec-QUICK-S-M",
+      "digits": 2
+    },
+    {
+      "ticket": 5667590410,
+      "symbol": "BTCUSD",
+      "dir": "SELL",
+      "leg": "TREND",
+      "lots": 0.01,
+      "open": 81007.0,
+      "current": 81487.0,
+      "sl": 82467.83,
+      "tp": 78573.61,
+      "profit": -4.8,
+      "age_min": -145,
+      "duration": "-8667s",
+      "open_time": "00:15:14",
+      "pct_move": -0.593,
+      "r_progress": -0.33,
+      "comment": "PyExec-TREND-S-M",
+      "digits": 2
+    }
+  ],
+  "deals_count": 3,
+  "deals_stats": {
+    "n": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "total_pl": 20.49,
+    "avg_win": 10.55,
+    "avg_loss": -0.61,
+    "profit_factor": 34.59
+  },
+  "deals_sample": [
+    {
+      "time": "11:23:33",
+      "ts": 1778738013,
+      "symbol": "XTIUSD",
+      "dir": "BUY",
+      "trade_dir": "SELL",
+      "lots": 0.01,
+      "profit": 12.3,
+      "entry_price": null,
+      "exit_price": 97.34,
+      "duration_min": null,
+      "exit_reason": "?",
+      "comment": "[sl 97.36]"
+    },
+    {
+      "time": "00:49:27",
+      "ts": 1778699967,
+      "symbol": "XTIUSD",
+      "dir": "BUY",
+      "trade_dir": "SELL",
+      "lots": 0.01,
+      "profit": 8.8,
+      "entry_price": null,
+      "exit_price": 97.71,
+      "duration_min": null,
+      "exit_reason": "?",
+      "comment": "[tp 97.71]"
+    }
+  ],
+  "recent_skips_count": 9,
+  "recent_skips_sample": [
+    {
+      "ts": "2026-05-14 21:50:48",
+      "symbol": "ETHUSD",
+      "direction": "?",
+      "category": "STALE",
+      "reason": "signal 68680s old (limit 90s)",
+      "explain": "Signal file exists but its timestamp is older than 90 seconds. Executor refuses to act on old data.",
+      "action": "Usually means executor was down when signal arrived. Health Watchdog should respawn within 60 sec."
+    },
+    {
+      "ts": "2026-05-14 21:50:48",
+      "symbol": "XTIUSD",
+      "direction": "?",
+      "category": "STALE",
+      "reason": "signal 12038s old (limit 90s)",
+      "explain": "Signal file exists but its timestamp is older than 90 seconds. Executor refuses to act on old data.",
+      "action": "Usually means executor was down when signal arrived. Health Watchdog should respawn within 60 sec."
+    }
+  ]
+}

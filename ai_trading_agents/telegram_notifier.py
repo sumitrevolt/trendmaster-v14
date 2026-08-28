@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -50,7 +51,7 @@ def _load_env() -> None:
         from dotenv import load_dotenv  # type: ignore
     except ImportError:
         return
-    here = Path(__file__).resolve().parent
+    here = Path(__file__).parent
     root = here.parent
     for cand in (root / ".env", root / "config" / ".env", here / ".env"):
         if cand.exists():
@@ -87,7 +88,11 @@ class TelegramNotifier:
         timeout_s: float = 5.0,
     ):
         self.token = (token or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
-        self.chat_id = (chat_id or os.getenv("TELEGRAM_CHAT_ID", "")).strip()
+        raw_chat = (chat_id or os.getenv("TELEGRAM_CHAT_ID", "")).strip()
+        # Comma/semicolon-separated recipients are supported: "id1,id2,id3".
+        # `chat_id` keeps the first value for backwards compatibility.
+        self.chat_ids = [c.strip() for c in re.split(r"[,;]", raw_chat) if c.strip()]
+        self.chat_id = self.chat_ids[0] if self.chat_ids else ""
         if enabled is None:
             enabled = os.getenv("TELEGRAM_ENABLED", "false").strip().lower() == "true"
         self.enabled = bool(enabled and self.token and self.chat_id and _HAS_REQ)
@@ -100,7 +105,12 @@ class TelegramNotifier:
         self._last_ts: Dict[str, float] = {}  # symbol -> last send wall-clock
 
         if self.enabled:
-            logger.info("Telegram notifier enabled (chat_id=%s, min_interval=%.1fs)", self.chat_id, self.min_interval_s)
+            logger.info(
+                "Telegram notifier enabled (recipients=%d: %s, min_interval=%.1fs)",
+                len(self.chat_ids),
+                ",".join(self.chat_ids),
+                self.min_interval_s,
+            )
         else:
             why = []
             if not _HAS_REQ:
@@ -115,25 +125,28 @@ class TelegramNotifier:
 
     # ─── low-level send ───────────────────────────────────────────────────
     def send(self, text: str, parse_mode: str = "HTML") -> bool:
-        """Best-effort send. Returns True on success, False otherwise."""
+        """Best-effort fan-out to every configured chat. Returns True if at
+        least one recipient accepted the message."""
         if not self.enabled:
             return False
         url = _TG_API.format(token=self.token, method="sendMessage")
-        payload = {
-            "chat_id": self.chat_id,
-            "text": text,
-            "parse_mode": parse_mode,
-            "disable_web_page_preview": True,
-        }
-        try:
-            r = requests.post(url, json=payload, timeout=self.timeout_s)
-            if r.status_code == 200 and r.json().get("ok"):
-                return True
-            logger.warning("Telegram send failed: %s %s", r.status_code, r.text[:200])
-            return False
-        except Exception as e:
-            logger.warning("Telegram send error: %s", e)
-            return False
+        ok_any = False
+        for cid in self.chat_ids:
+            payload = {
+                "chat_id": cid,
+                "text": text,
+                "parse_mode": parse_mode,
+                "disable_web_page_preview": True,
+            }
+            try:
+                r = requests.post(url, json=payload, timeout=self.timeout_s)
+                if r.status_code == 200 and r.json().get("ok"):
+                    ok_any = True
+                else:
+                    logger.warning("Telegram send failed (chat %s): %s %s", cid, r.status_code, r.text[:200])
+            except Exception as e:
+                logger.warning("Telegram send error (chat %s): %s", cid, e)
+        return ok_any
 
     # ─── high-level: signal alert with throttling ─────────────────────────
     def notify_signal(

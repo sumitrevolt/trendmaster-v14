@@ -1,0 +1,23 @@
+{
+  "symbol": "XAUUSD",
+  "team": "METALS",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4107,
+  "n_trades": 1049,
+  "win_rate": 0.35271687321258344,
+  "expectancy_R": 0.4671115347950429,
+  "max_dd": 16.0,
+  "oos_acc": 0.4199561403508772,
+  "oos_acc_per_fold": [
+    0.402,
+    0.3991,
+    0.4561,
+    0.4225
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

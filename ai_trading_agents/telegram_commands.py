@@ -46,6 +46,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import threading
 import time
 from datetime import datetime, timezone
@@ -113,8 +114,11 @@ class TelegramCommandListener:
     ):
         # Re-use the same env vars the notifier reads, so a single .env wires
         # both sides (push notifier + pull command listener).
+        # Comma/semicolon-separated recipients are supported: "id1,id2,id3".
         self.token = (token or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
-        self.chat_id = (chat_id or os.getenv("TELEGRAM_CHAT_ID", "")).strip()
+        raw_chat = (chat_id or os.getenv("TELEGRAM_CHAT_ID", "")).strip()
+        self.chat_ids = [c.strip() for c in re.split(r"[,;]", raw_chat) if c.strip()]
+        self.chat_id = self.chat_ids[0] if self.chat_ids else ""
         self.poll_timeout_s = int(poll_timeout_s)
         self.http_timeout_s = float(http_timeout_s)
         self.enabled = bool(self.token and self.chat_id and _HAS_REQ)
@@ -179,20 +183,23 @@ class TelegramCommandListener:
         return "<b>TrendMaster v14 commands</b>\n" + "\n".join(rows)
 
     # ─── send helper ────────────────────────────────────────────────────
-    def _send(self, text: str) -> None:
+    def _send(self, text: str, chat_id: Optional[str] = None) -> None:
+        """Send to `chat_id`, or fan-out to every configured chat when None."""
         if not self.enabled:
             return
+        targets = [chat_id] if chat_id else self.chat_ids
         url = _TG_API.format(token=self.token, method="sendMessage")
-        payload = {
-            "chat_id": self.chat_id,
-            "text": text,
-            "parse_mode": "HTML",
-            "disable_web_page_preview": True,
-        }
-        try:
-            requests.post(url, json=payload, timeout=self.http_timeout_s)
-        except Exception as e:
-            logger.debug("command reply send failed: %s", e)
+        for cid in targets:
+            payload = {
+                "chat_id": cid,
+                "text": text,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True,
+            }
+            try:
+                requests.post(url, json=payload, timeout=self.http_timeout_s)
+            except Exception as e:
+                logger.debug("command reply send failed (chat %s): %s", cid, e)
 
     # ─── poll loop ──────────────────────────────────────────────────────
     def _poll_loop(self) -> None:
@@ -256,9 +263,9 @@ class TelegramCommandListener:
         if not text or not text.startswith("/"):
             return
 
-        # Authorisation: only honour messages from the configured chat.
+        # Authorisation: only honour messages from configured chats.
         # str() compare because Telegram returns int chat ids.
-        if str(chat.get("id")) != str(self.chat_id):
+        if str(chat.get("id")) not in {str(c) for c in self.chat_ids}:
             logger.warning("Ignoring command from unauthorised chat id=%s", chat.get("id"))
             return
 
@@ -273,7 +280,7 @@ class TelegramCommandListener:
 
         fn = self._handlers.get(cmd)
         if fn is None:
-            self._send(f"(<code>/{cmd}</code> not wired into this brain build)")
+            self._send(f"(<code>/{cmd}</code> not wired into this brain build)", chat_id=str(chat.get("id")))
             return
         try:
             # Backwards-compatible dispatch. Most handlers were written for
@@ -298,13 +305,13 @@ class TelegramCommandListener:
                     reply = fn()
         except Exception as e:
             logger.warning("command /%s handler raised: %s", cmd, e)
-            self._send(f"(internal error running <code>/{cmd}</code>)")
+            self._send(f"(internal error running <code>/{cmd}</code>)", chat_id=str(chat.get("id")))
             return
         if not reply:
-            self._send(f"(no data for <code>/{cmd}</code>)")
+            self._send(f"(no data for <code>/{cmd}</code>)", chat_id=str(chat.get("id")))
             return
         ts_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-        self._send(f"{reply}\n\n<i>{ts_utc}</i>")
+        self._send(f"{reply}\n\n<i>{ts_utc}</i>", chat_id=str(chat.get("id")))
 
 
 # ─── module-level singleton ────────────────────────────────────────────────

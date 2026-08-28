@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>TrendMaster Live Dashboard</title>
+<meta http-equiv="refresh" content="5">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #0a0e17; color: #e0e0e0; padding: 20px; }
+h1 { color: #00d4ff; text-align: center; margin-bottom: 20px; font-size: 28px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
+.card { background: #111827; border-radius: 12px; padding: 20px; border: 1px solid #1f2937; }
+.card h2 { color: #60a5fa; font-size: 16px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.card.green { border-color: #10b981; }
+.card.red { border-color: #ef4444; }
+.card.yellow { border-color: #f59e0b; }
+.status { font-size: 24px; font-weight: bold; }
+.status.online { color: #10b981; }
+.status.offline { color: #ef4444; }
+.metric { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1f2937; }
+.metric:last-child { border-bottom: none; }
+.metric .label { color: #9ca3af; }
+.metric .value { font-weight: 600; }
+.metric .value.green { color: #10b981; }
+.metric .value.red { color: #ef4444; }
+.metric .value.blue { color: #60a5fa; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 8px; color: #9ca3af; font-size: 12px; text-transform: uppercase; }
+td { padding: 8px; border-top: 1px solid #1f2937; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.badge.buy { background: #065f46; color: #34d399; }
+.badge.sell { background: #7f1d1d; color: #fca5a5; }
+.badge.none { background: #374151; color: #9ca3af; }
+.refresh { text-align: center; color: #6b7280; margin-top: 20px; font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>🤖 TrendMaster v14 — Live Dashboard</h1>
+
+<div class="grid">
+  <!-- Brain Status -->
+  <div class="card green">
+    <h2>🧠 Brain Status</h2>
+    <div class="metric"><span class="label">Status</span><span class="value online" id="brain-status">● LIVE</span></div>
+    <div class="metric"><span class="label">PID</span><span class="value" id="brain-pid">476</span></div>
+    <div class="metric"><span class="label">Tick Rate</span><span class="value">3s</span></div>
+    <div class="metric"><span class="label">Model</span><span class="value">Rule-based</span></div>
+    <div class="metric"><span class="label">Pairs Monitored</span><span class="value blue">4</span></div>
+  </div>
+
+  <!-- Account -->
+  <div class="card">
+    <h2>💰 Account</h2>
+    <div class="metric"><span class="label">Account</span><span class="value">213796448</span></div>
+    <div class="metric"><span class="label">Server</span><span class="value">OctaFX-Demo</span></div>
+    <div class="metric"><span class="label">Balance</span><span class="value green">$1,884.70</span></div>
+    <div class="metric"><span class="label">Equity</span><span class="value" id="equity">$1,880.60</span></div>
+    <div class="metric"><span class="label">Free Margin</span><span class="value">$1,866.96</span></div>
+    <div class="metric"><span class="label">Leverage</span><span class="value">1:200</span></div>
+  </div>
+
+  <!-- Live Signals -->
+  <div class="card" style="grid-column: span 2;">
+    <h2>📡 Live Signals (auto-refresh 5s)</h2>
+    <table>
+      <tr><th>Pair</th><th>Direction</th><th>Confidence</th><th>Agent Dir</th><th>SL/TP</th><th>Age</th></tr>
+      <tr id="sig-EURUSD"><td>EURUSD</td><td><span class="badge none">NONE</span></td><td>0.720</td><td>0</td><td>0.8/4.3</td><td>-</td></tr>
+      <tr id="sig-GBPUSD"><td>GBPUSD</td><td><span class="badge none">NONE</span></td><td>0.870</td><td>0</td><td>0.8/4.3</td><td>-</td></tr>
+      <tr id="sig-NZDUSD"><td>NZDUSD</td><td><span class="badge none">NONE</span></td><td>0.500</td><td>0</td><td>0.8/4.3</td><td>-</td></tr>
+      <tr id="sig-USDCHF"><td>USDCHF</td><td><span class="badge none">NONE</span></td><td>0.720</td><td>0</td><td>0.8/4.3</td><td>-</td></tr>
+    </table>
+  </div>
+
+  <!-- Open Positions -->
+  <div class="card">
+    <h2>📊 Open Positions</h2>
+    <table>
+      <tr><th>Pair</th><th>Dir</th><th>Lots</th><th>Entry</th><th>PnL</th></tr>
+      <tr><td>GBPJPY</td><td><span class="badge buy">BUY</span></td><td>0.01</td><td>217.467</td><td class="red">-$2.05</td></tr>
+      <tr><td>GBPJPY</td><td><span class="badge buy">BUY</span></td><td>0.01</td><td>217.467</td><td class="red">-$2.05</td></tr>
+    </table>
+  </div>
+
+  <!-- Strategy Config -->
+  <div class="card">
+    <h2>⚙️ Strategy Config</h2>
+    <div class="metric"><span class="label">Risk Per Trade</span><span class="value">3.0%</span></div>
+    <div class="metric"><span class="label">Leverage</span><span class="value">1:500</span></div>
+    <div class="metric"><span class="label">Compound</span><span class="value green">ON</span></div>
+    <div class="metric"><span class="label">Min Confluence Score</span><span class="value">6.0</span></div>
+    <div class="metric"><span class="label">Chop Veto (ADX)</span><span class="value">&lt; 18</span></div>
+    <div class="metric"><span class="label">Kelly Sizing</span><span class="value green">LIVE</span></div>
+    <div class="metric"><span class="label">Online Learning</span><span class="value green">ON</span></div>
+    <div class="metric"><span class="label">Rolling Correlation</span><span class="value green">ON</span></div>
+  </div>
+
+  <!-- Spreads -->
+  <div class="card">
+    <h2>📈 Live Spreads</h2>
+    <div class="metric"><span class="label">EURUSD</span><span class="value">14 pips</span></div>
+    <div class="metric"><span class="label">GBPUSD</span><span class="value">17 pips</span></div>
+    <div class="metric"><span class="label">USDCHF</span><span class="value">17 pips</span></div>
+    <div class="metric"><span class="label">NZDUSD</span><span class="value">23 pips</span></div>
+  </div>
+</div>
+
+<div class="refresh">Auto-refreshes every 5 seconds | Brain PID: 476 | Started: <span id="start-time"></span></div>
+
+<script>
+document.getElementById('start-time').textContent = new Date().toLocaleString();
+</script>
+</body>
+</html>

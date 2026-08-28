@@ -1,0 +1,2850 @@
+{
+  "s": "ok",
+  "id": "nchn-100741974",
+  "r": [
+    {
+      "symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-04T07:28:18Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T07:28:18Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4624098622,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": false,
+      "create_time": "2026-05-05T07:28:19Z",
+      "last_fire_time": "2026-05-05T10:40:02Z",
+      "last_fire_bar_time": "2026-05-05T10:35:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/JP",
+          "base-currency-logoid": "country/US",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/US",
+            "logoid2": "country/JP"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-04T07:28:16Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T07:28:16Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4624098534,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": false,
+      "create_time": "2026-05-05T07:28:17Z",
+      "last_fire_time": "2026-05-05T09:40:00Z",
+      "last_fire_bar_time": "2026-05-05T09:35:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/GB",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/GB",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-04T07:28:14Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T07:28:14Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4624097195,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-05T07:28:15Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/EU",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/EU",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-04T07:28:11Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T07:28:11Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4624096842,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": false,
+      "create_time": "2026-05-05T07:28:13Z",
+      "last_fire_time": "2026-05-05T10:35:00Z",
+      "last_fire_bar_time": "2026-05-05T10:30:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/silver",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/silver"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:EURAUD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"AUD\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-05T03:53:28Z",
+      "auto_deactivate": false,
+      "expiration_policy": {
+        "time": "2026-06-05T03:53:28Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": false,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": "Rocket Prime Engine (Normal): Any alert() function call ",
+      "alert_id": 4622619092,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-05T03:54:25Z",
+      "last_fire_time": "2026-05-05T14:10:00Z",
+      "last_fire_bar_time": "2026-05-05T14:05:00Z",
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/AU",
+          "base-currency-logoid": "country/EU",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/EU",
+            "logoid2": "country/AU"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:EURAUD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"AUD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:EURAUD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"AUD\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-05T03:48:49Z",
+      "auto_deactivate": false,
+      "expiration_policy": {
+        "time": "2026-06-05T03:48:49Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": false,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": "Rocket Prime Engine (Normal): Any alert() function call",
+      "alert_id": 4622576134,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-05T03:50:04Z",
+      "last_fire_time": "2026-05-05T14:10:00Z",
+      "last_fire_bar_time": "2026-05-05T14:05:00Z",
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/AU",
+          "base-currency-logoid": "country/EU",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/EU",
+            "logoid2": "country/AU"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:EURAUD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"AUD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}",
+      "resolution": "60",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "60"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "60"
+        }
+      ],
+      "expiration": "2026-06-03T18:26:05Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:26:05Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620019582,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:26:07Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/JP",
+          "base-currency-logoid": "country/US",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/US",
+            "logoid2": "country/JP"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}",
+      "resolution": "15",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "15"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "15"
+        }
+      ],
+      "expiration": "2026-06-03T18:26:04Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:26:04Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620018983,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:26:05Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/JP",
+          "base-currency-logoid": "country/US",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/US",
+            "logoid2": "country/JP"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:USDJPY\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"JPY\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "240",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "240"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "240"
+        }
+      ],
+      "expiration": "2026-06-03T18:26:02Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:26:02Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620018901,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:26:03Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/GB",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/GB",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "60",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "60"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "60"
+        }
+      ],
+      "expiration": "2026-06-03T18:26:01Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:26:01Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620018436,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:26:01Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/GB",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/GB",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "15",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "15"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "15"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:58Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:58Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620018368,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:59Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/GB",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/GB",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:GBPUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "240",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "240"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "240"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:57Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:57Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620017852,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:58Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/EU",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/EU",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "60",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "60"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "60"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:55Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:55Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620017736,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:56Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/EU",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/EU",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "15",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "15"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "15"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:53Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:53Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620017668,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": false,
+      "create_time": "2026-05-04T18:25:54Z",
+      "last_fire_time": "2026-05-04T20:15:01Z",
+      "last_fire_bar_time": "2026-05-04T20:00:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/US",
+          "base-currency-logoid": "country/EU",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/EU",
+            "logoid2": "country/US"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:EURUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "240",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "240"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "240"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:51Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:51Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620016923,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:52Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/silver",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/silver"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "60",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "60"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "60"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:47Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:47Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620016550,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:50Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/silver",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/silver"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "15",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "15"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "15"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:45Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:45Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620016399,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": false,
+      "create_time": "2026-05-04T18:25:46Z",
+      "last_fire_time": "2026-05-04T21:01:00Z",
+      "last_fire_bar_time": "2026-05-04T20:45:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/silver",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/silver"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAGUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "240",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "240"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "240"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:43Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:43Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620014311,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:44Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/gold",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/gold"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "60",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "60"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "60"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:41Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:41Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620014254,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:42Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/gold",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/gold"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "15",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "15"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "15"
+        }
+      ],
+      "expiration": "2026-06-03T18:25:38Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:25:38Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620014130,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T18:25:40Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/gold",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/gold"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:USDCAD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CAD\"}",
+      "resolution": "15",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "15"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "15"
+        }
+      ],
+      "expiration": "2026-06-03T18:24:29Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-03T18:24:29Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4620006205,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": false,
+      "create_time": "2026-05-04T18:24:31Z",
+      "last_fire_time": "2026-05-04T19:30:01Z",
+      "last_fire_bar_time": "2026-05-04T19:15:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/CA",
+          "base-currency-logoid": "country/US",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/US",
+            "logoid2": "country/CA"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:USDCAD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CAD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:USDCHF\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CHF\"}",
+      "resolution": "1",
+      "condition": {
+        "type": "cross",
+        "frequency": "on_first_fire",
+        "series": [
+          {
+            "type": "barset"
+          },
+          {
+            "type": "value",
+            "value": 0.78015
+          }
+        ],
+        "cross_interval": true,
+        "resolution": "1"
+      },
+      "conditions": [
+        {
+          "type": "cross",
+          "frequency": "on_first_fire",
+          "series": [
+            {
+              "type": "barset"
+            },
+            {
+              "type": "value",
+              "value": 0.78015
+            }
+          ],
+          "cross_interval": true,
+          "resolution": "1"
+        }
+      ],
+      "expiration": "2026-06-04T18:20:37Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T18:20:37Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "USDCHF Crossing 0.78015",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4619987525,
+      "cross_interval": true,
+      "type": "price",
+      "active": true,
+      "create_time": "2026-05-04T18:20:40Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "primitive",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/CH",
+          "base-currency-logoid": "country/US",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/US",
+            "logoid2": "country/CH"
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:USDCHF\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CHF\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:USDCHF\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CHF\"}",
+      "resolution": "1",
+      "condition": {
+        "type": "cross",
+        "frequency": "on_first_fire",
+        "series": [
+          {
+            "type": "barset"
+          },
+          {
+            "type": "value",
+            "value": 0.78015
+          }
+        ],
+        "cross_interval": true,
+        "resolution": "1"
+      },
+      "conditions": [
+        {
+          "type": "cross",
+          "frequency": "on_first_fire",
+          "series": [
+            {
+              "type": "barset"
+            },
+            {
+              "type": "value",
+              "value": 0.78015
+            }
+          ],
+          "cross_interval": true,
+          "resolution": "1"
+        }
+      ],
+      "expiration": "2026-06-04T18:18:57Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T18:18:57Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "USDCHF Crossing 0.78015",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4619979599,
+      "cross_interval": true,
+      "type": "price",
+      "active": true,
+      "create_time": "2026-05-04T18:19:00Z",
+      "last_fire_time": null,
+      "last_fire_bar_time": null,
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "primitive",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/CH",
+          "base-currency-logoid": "country/US",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/US",
+            "logoid2": "country/CH"
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:USDCHF\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CHF\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:USDCHF\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CHF\"}",
+      "resolution": "1",
+      "condition": {
+        "type": "cross",
+        "frequency": "on_first_fire",
+        "series": [
+          {
+            "type": "barset"
+          },
+          {
+            "type": "value",
+            "value": 0.7836
+          }
+        ],
+        "cross_interval": true,
+        "resolution": "1"
+      },
+      "conditions": [
+        {
+          "type": "cross",
+          "frequency": "on_first_fire",
+          "series": [
+            {
+              "type": "barset"
+            },
+            {
+              "type": "value",
+              "value": 0.7836
+            }
+          ],
+          "cross_interval": true,
+          "resolution": "1"
+        }
+      ],
+      "expiration": "2026-06-04T18:17:09Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T18:17:09Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "USDCHF Crossing 0.78360",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}",
+      "name": null,
+      "alert_id": 4619964948,
+      "cross_interval": true,
+      "type": "price",
+      "active": false,
+      "create_time": "2026-05-04T18:17:12Z",
+      "last_fire_time": "2026-05-04T18:30:01Z",
+      "last_fire_bar_time": "2026-05-04T18:30:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "primitive",
+      "presentation_data": {
+        "main_series": {
+          "type": "forex",
+          "formatter": "price",
+          "pricescale": 100000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "currency-logoid": "country/CH",
+          "base-currency-logoid": "country/US",
+          "logo": {
+            "style": "pair",
+            "logoid": "country/US",
+            "logoid2": "country/CH"
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:USDCHF\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"CHF\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "1",
+      "condition": {
+        "type": "cross",
+        "frequency": "on_first_fire",
+        "series": [
+          {
+            "type": "barset"
+          },
+          {
+            "type": "value",
+            "value": 4540.676
+          }
+        ],
+        "cross_interval": true,
+        "resolution": "1"
+      },
+      "conditions": [
+        {
+          "type": "cross",
+          "frequency": "on_first_fire",
+          "series": [
+            {
+              "type": "barset"
+            },
+            {
+              "type": "value",
+              "value": 4540.676
+            }
+          ],
+          "cross_interval": true,
+          "resolution": "1"
+        }
+      ],
+      "expiration": "2026-06-04T13:30:11Z",
+      "auto_deactivate": true,
+      "expiration_policy": {
+        "time": "2026-06-04T13:30:11Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "XAUUSD Crossing 4,540.676",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal",
+      "name": null,
+      "alert_id": 4617178718,
+      "cross_interval": true,
+      "type": "price",
+      "active": false,
+      "create_time": "2026-05-04T13:30:20Z",
+      "last_fire_time": "2026-05-04T15:19:55Z",
+      "last_fire_bar_time": "2026-05-04T15:19:00Z",
+      "last_error": null,
+      "last_stop_reason": "auto",
+      "complexity": "primitive",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/gold",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/gold"
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-04T12:58:35Z",
+      "auto_deactivate": false,
+      "expiration_policy": {
+        "time": "2026-06-04T12:58:35Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal",
+      "name": "Rocket Prime Engine (Normal): Any alert() function call",
+      "alert_id": 4616955078,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T13:11:30Z",
+      "last_fire_time": "2026-05-05T13:05:00Z",
+      "last_fire_bar_time": "2026-05-05T13:00:00Z",
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/gold",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/gold"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    },
+    {
+      "symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}",
+      "resolution": "5",
+      "condition": {
+        "type": "pine_alert",
+        "frequency": "60",
+        "series": [
+          {
+            "type": "study",
+            "study": "Script@tv-scripting-101",
+            "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+            "pine_version": "1.0",
+            "inputs": {
+              "__fast_calc": false,
+              "__profile": false,
+              "in_0": true,
+              "in_1": "Normal",
+              "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+            }
+          }
+        ],
+        "cross_interval": false,
+        "resolution": "5"
+      },
+      "conditions": [
+        {
+          "type": "pine_alert",
+          "frequency": "60",
+          "series": [
+            {
+              "type": "study",
+              "study": "Script@tv-scripting-101",
+              "pine_id": "PUB;56f0fb74de7f4eed9325b987428b727e",
+              "pine_version": "1.0",
+              "inputs": {
+                "__fast_calc": false,
+                "__profile": false,
+                "in_0": true,
+                "in_1": "Normal",
+                "pineFeatures": "{\"import\":1,\"indicator\":1,\"str\":1,\"ta\":1,\"math\":1,\"alert\":1,\"label\":1,\"table\":1,\"type\":1,\"user_methods\":1}"
+              }
+            }
+          ],
+          "cross_interval": false,
+          "resolution": "5"
+        }
+      ],
+      "expiration": "2026-06-04T13:01:46Z",
+      "auto_deactivate": false,
+      "expiration_policy": {
+        "time": "2026-06-04T13:01:46Z",
+        "policy": "fixed_date"
+      },
+      "email": true,
+      "sms_over_email": true,
+      "mobile_push": true,
+      "message": "",
+      "sound_file": "alert/3_notes_reverb",
+      "sound_duration": 30,
+      "popup": true,
+      "web_hook": "https://shadow-cosmos-unending.ngrok-free.dev/tv-signal",
+      "name": "{\"secret\":\"5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14\",\"symbol\":\"XAUUSD\",\"direction\":\"buy\",\"price\":{{close}},\"tv_strategy\":\"manual_capture\",\"tv_alert_ts\":{{timenow}},\"tv_timeframe\":\"{{interval}}\"}",
+      "alert_id": 4616951462,
+      "cross_interval": false,
+      "type": "indicator",
+      "active": true,
+      "create_time": "2026-05-04T13:10:58Z",
+      "last_fire_time": "2026-05-05T13:05:00Z",
+      "last_fire_bar_time": "2026-05-05T13:00:00Z",
+      "last_error": null,
+      "last_stop_reason": null,
+      "complexity": "complex",
+      "presentation_data": {
+        "main_series": {
+          "type": "commodity",
+          "formatter": "price",
+          "pricescale": 1000,
+          "minmovement": 1,
+          "minmovement2": 10,
+          "logoid": "metal/gold",
+          "currency-logoid": "country/US",
+          "logo": {
+            "style": "single",
+            "logoid": "metal/gold"
+          }
+        },
+        "studies": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0": {
+            "description": "Rocket Prime Engine",
+            "short_description": "Rocket Prime Engine",
+            "history_calculation_may_change": true,
+            "has_alert_function": true,
+            "format_type": "price"
+          }
+        },
+        "mutable_study_data": {
+          "Script$PUB;56f0fb74de7f4eed9325b987428b727e@tv-scripting-101_1.0_0_cond-0": {
+            "titles": {
+              "title": "Rocket Prime Engine (Normal)",
+              "short_title": "Rocket Prime Engine (Normal)"
+            }
+          }
+        }
+      },
+      "kinds": [
+        "regular"
+      ],
+      "pro_symbol": "={\"symbol\":\"OANDA:XAUUSD\",\"adjustment\":\"splits\",\"session\":\"regular\",\"currency-id\":\"USD\"}"
+    }
+  ]
+}

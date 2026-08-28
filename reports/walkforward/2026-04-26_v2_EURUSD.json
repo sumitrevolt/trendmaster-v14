@@ -1,0 +1,25 @@
+{
+  "symbol": "EURUSD",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3888,
+  "n_trades": 817,
+  "win_rate": 0.2594859241126071,
+  "expectancy_R": 0.24112607099143207,
+  "max_dd": 27.0,
+  "oos_acc": 0.4375,
+  "oos_acc_per_fold": [
+    0.3611,
+    0.4799,
+    0.4753,
+    0.4336
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

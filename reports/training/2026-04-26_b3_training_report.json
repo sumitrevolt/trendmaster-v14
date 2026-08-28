@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-26T13:25:59.731492+00:00",
+  "generated_at": "2026-04-26T15:48:17.199150+00:00",
   "phase": "B3",
   "feature_set": "v2",
-  "n_features": 32,
+  "n_features": 34,
   "dropped_cols": [
     "ng_storage_delta_z"
   ],
@@ -16,23 +16,24 @@
     "BTC_spec_delta_z"
   ],
   "n_symbols": 19,
-  "n_samples_total": 78231,
+  "n_samples_total": 73842,
   "cv": {
-    "oof_acc": 0.3929667126859948,
+    "oof_acc": 0.38616234663199805,
     "oof_acc_per_fold": [
-      0.3808,
-      0.3981,
-      0.3854,
-      0.4075
+      0.3881,
+      0.3753,
+      0.3673,
+      0.414
     ],
     "folds": 4
   },
-  "oof_acc": 0.3929667126859948,
+  "oof_acc": 0.38616234663199805,
   "deploy_threshold": 0.38,
   "promote": true,
+  "uniqueness_weighted": true,
   "model_path": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\ai_trading_agents\\trend_master_model_v2.lgb",
   "feature_name_roundtrip_ok": true,
-  "runtime_sec": 49.9,
+  "runtime_sec": 288.2,
   "symbol_stats": {
     "XAUUSD": {
       "status": "ok",
@@ -226,8 +227,8 @@
     }
   },
   "label_dist": {
-    "0": 20224,
-    "1": 37057,
-    "2": 20950
+    "0": 19134,
+    "1": 34861,
+    "2": 19847
   }
 }

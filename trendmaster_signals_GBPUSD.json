@@ -1,0 +1,33 @@
+{
+  "direction": "NONE",
+  "confidence": 0.62,
+  "ts": 1787658134,
+  "symbol": "GBPUSD",
+  "brain": "TrendMaster_v14",
+  "model": "rule",
+  "agents": {
+    "dir": "NONE",
+    "votes": [
+      {
+        "name": "trend_h4",
+        "vote": 1,
+        "reason": "bull fan adx=22.1"
+      },
+      {
+        "name": "momentum_h1",
+        "vote": 0,
+        "reason": "macd hist flat +0.0001"
+      },
+      {
+        "name": "timing_m30",
+        "vote": -1,
+        "reason": "px<ema20 rsi=54.1"
+      }
+    ]
+  },
+  "sl_atr_mult": 0.75,
+  "tp_atr_mult": 4.25,
+  "adx_min": 26.0,
+  "require_all_3": false,
+  "max_spread_atr_pct": 0.4
+}

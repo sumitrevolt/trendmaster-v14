@@ -1,0 +1,51 @@
+=== Popup-source diagnostic — 2026-05-13 13:14:43.499025 ===
+
+============================================================
+PART 1: schtasks that could pop windows
+============================================================
+  Found 3 potential popup-causing schtasks:
+
+  TASK: \Microsoft\Windows\Hotpatch\Monitoring
+    Status:   Ready
+    Schedule: At system start up
+    Run:      %systemroot%\system32\cmd.exe /d /c %systemroot%\system32\hpatchmonTask.cmd
+    Risk:     cmd.exe direct
+
+  TASK: \Microsoft\Windows\Hotpatch\Monitoring
+    Status:   Ready
+    Schedule: At logon time
+    Run:      %systemroot%\system32\cmd.exe /d /c %systemroot%\system32\hpatchmonTask.cmd
+    Risk:     cmd.exe direct
+
+  TASK: \Microsoft\Windows\Hotpatch\Monitoring
+    Status:   Ready
+    Schedule: One Time Only, Hourly 
+    Run:      %systemroot%\system32\cmd.exe /d /c %systemroot%\system32\hpatchmonTask.cmd
+    Risk:     cmd.exe direct
+
+============================================================
+PART 2: Currently running terminal-related processes
+============================================================
+  Found 6 terminal processes:
+
+  PID  25724 | conhost.exe            | age=    10s | \??\C:\WINDOWS\system32\conhost.exe 0x4
+  PID  18320 | conhost.exe            | age=   367s | \??\C:\WINDOWS\system32\conhost.exe 0x4
+  PID  17204 | conhost.exe            | age=  5151s | 
+  PID  21036 | conhost.exe            | age=  5351s | \??\C:\WINDOWS\system32\conhost.exe 0x4
+  PID  10508 | conhost.exe            | age=  5399s | \??\C:\WINDOWS\system32\conhost.exe 0x4
+  PID   4308 | conhost.exe            | age=  5401s | 
+
+============================================================
+PART 3: TrendMaster-related python(w) processes
+============================================================
+  Found 8 TrendMaster python processes:
+
+  PID   1516 | pythonw.exe    | C:\Users\Ratanshila\AppData\Local\Programs\Python\Python311\pythonw.exe -m ai_trading_agents.tv_webhook_receiver
+  PID   5904 | python.exe     | C:\Users\Ratanshila\AppData\Local\Programs\Python\Python311\python.exe C:\Users\Ratanshila\Documents\autmated trading\outputs\find_popup_culprit.py
+  PID   5940 | pythonw.exe    | C:\Users\Ratanshila\AppData\Local\Programs\Python\Python311\pythonw.exe C:\Users\Ratanshila\Documents\autmated trading\tools\python_signal_executor.py
+  PID  13588 | pythonw.exe    | C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe -m ai_trading_agents.tv_webhook_receiver
+  PID  14968 | pythonw.exe    | C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe C:\Users\Ratanshila\Documents\autmated trading\tools\trailing_stop_manager.py
+  PID  19352 | pythonw.exe    | C:\Users\Ratanshila\AppData\Local\Programs\Python\Python311\pythonw.exe C:\Users\Ratanshila\Documents\autmated trading\tools\trailing_stop_manager.py
+  PID  27028 | pythonw.exe    | C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe C:\Users\Ratanshila\Documents\autmated trading\tools\python_signal_executor.py
+  PID  27820 | python.exe     | C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\python.exe C:\Users\Ratanshila\Documents\autmated trading\outputs\find_popup_culprit.py
+

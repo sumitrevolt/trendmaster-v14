@@ -27,42 +27,42 @@ def main():
 
     with open(TRAINING_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
-    
+
     trades = data.get("trades", [])
     print(f"Loaded {len(trades)} trades.")
-    
+
     if len(trades) < 100:
         print("Insufficient trades to perform machine learning optimization. Need at least 100.")
         return
 
     # Convert to DataFrame for easier manipulation
     df = pd.DataFrame(trades)
-    
+
     # Target label: 1 if WIN, 0 if LOSS
     if "outcome" not in df.columns:
         print("No outcome column found in training data.")
         return
-    
+
     df["y"] = df["outcome"].apply(lambda x: 1 if x == "WIN" else 0)
-    
+
     # Features to rely on exclusively (No external API elements)
     features_cols = ["score", "rsi", "adx", "hour_utc", "confidence"]
-    
+
     # Ensure they exist and handle missing values
     for col in features_cols:
         if col not in df.columns:
             df[col] = 0
         else:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-            
+
     X = df[features_cols]
     y = df["y"]
-    
+
     print("Splitting data into train/test sets...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-    
+
     print("Training RandomForest Local AI...")
-    
+
     # We want a shallow tree so we can extract readable thresholds later if needed,
     # or just use the model to predict.
     param_grid = {
@@ -70,18 +70,18 @@ def main():
         'max_depth': [3, 5, 10],
         'min_samples_split': [10, 50, 100]
     }
-    
+
     rf = RandomForestClassifier(random_state=42, class_weight="balanced")
     grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=3, scoring='accuracy', n_jobs=-1, verbose=1)
-    
+
     print("Starting Grid Search (this may take a minute)...")
     grid_search.fit(X_train, y_train)
-    
+
     best_model = grid_search.best_estimator_
     best_params = grid_search.best_params_
-    
+
     print(f"\nBest Parameters Found: {best_params}")
-    
+
     y_pred = best_model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     print(f"\nTest Set Accuracy: {acc * 100:.2f}%")
@@ -99,10 +99,10 @@ def main():
     df_test = X_test.copy()
     df_test['true_y'] = y_test
     df_test['pred_y'] = y_pred
-    
+
     # High probability winning conditions
     winners = df_test[(df_test['true_y'] == 1) & (df_test['pred_y'] == 1)]
-    
+
     if len(winners) > 0:
         optimal_settings = {
             "last_trained_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -124,7 +124,7 @@ def main():
     print(f"\nExporting Local AI Optimization guide to {OUTPUT_FILE}...")
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(optimal_settings, f, indent=4)
-        
+
     print("Done. You can now inject these optimized thresholds into main.py or ai_swarm_main.py!")
 
 if __name__ == "__main__":

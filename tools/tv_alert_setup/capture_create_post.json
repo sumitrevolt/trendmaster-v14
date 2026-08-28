@@ -1,0 +1,30 @@
+[
+  {
+    "method": "POST",
+    "url": "https://pricealerts.tradingview.com/create_alert?log_username=sumitrevolt23&maintenance_unset_reason=initial_operated&build_time=2026-05-04T09%3A00%3A16",
+    "headers": {
+      "sec-ch-ua-platform": "\"Windows\"",
+      "referer": "https://www.tradingview.com/",
+      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "sec-ch-ua": "\"Chromium\";v=\"147\", \"Not.A/Brand\";v=\"8\"",
+      "content-type": "text/plain;charset=UTF-8",
+      "sec-ch-ua-mobile": "?0"
+    },
+    "post_data": "{\"payload\":{\"symbol\":\"={\\\"currency-id\\\":\\\"CHF\\\",\\\"session\\\":\\\"regular\\\",\\\"symbol\\\":\\\"OANDA:USDCHF\\\"}\",\"resolution\":\"1\",\"message\":\"USDCHF Crossing 0.78015\",\"sound_file\":\"alert/3_notes_reverb\",\"sound_duration\":30,\"popup\":true,\"expiration\":\"2026-06-04T18:20:37.535Z\",\"auto_deactivate\":true,\"email\":true,\"sms_over_email\":true,\"mobile_push\":true,\"web_hook\":\"https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}\",\"name\":null,\"conditions\":[{\"type\":\"cross\",\"frequency\":\"on_first_fire\",\"series\":[{\"type\":\"barset\"},{\"type\":\"value\",\"value\":0.78015}],\"resolution\":\"1\"}],\"active\":true,\"ignore_warnings\":true}}",
+    "ts": 1777918840.6317263
+  },
+  {
+    "method": "POST",
+    "url": "https://pricealerts.tradingview.com/create_alert?log_username=sumitrevolt23&maintenance_unset_reason=initial_operated&build_time=2026-05-04T09%3A00%3A16",
+    "headers": {
+      "sec-ch-ua-platform": "\"Windows\"",
+      "referer": "https://www.tradingview.com/",
+      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "sec-ch-ua": "\"Chromium\";v=\"147\", \"Not.A/Brand\";v=\"8\"",
+      "content-type": "text/plain;charset=UTF-8",
+      "sec-ch-ua-mobile": "?0"
+    },
+    "post_data": "{\"payload\":{\"symbol\":\"={\\\"currency-id\\\":\\\"CHF\\\",\\\"session\\\":\\\"regular\\\",\\\"symbol\\\":\\\"OANDA:USDCHF\\\"}\",\"resolution\":\"1\",\"message\":\"USDCHF Crossing 0.78015\",\"sound_file\":\"alert/3_notes_reverb\",\"sound_duration\":30,\"popup\":true,\"expiration\":\"2026-06-04T18:20:37.535Z\",\"auto_deactivate\":true,\"email\":true,\"sms_over_email\":true,\"mobile_push\":true,\"web_hook\":\"https://shadow-cosmos-unending.ngrok-free.dev/tv-signal?secret=5a36fc80ccbdb6ef7b813d7820170c581e5b13dd99649f14&symbol={{ticker}}\",\"name\":null,\"conditions\":[{\"type\":\"cross\",\"frequency\":\"on_first_fire\",\"series\":[{\"type\":\"barset\"},{\"type\":\"value\",\"value\":0.78015}],\"resolution\":\"1\"}],\"active\":true,\"ignore_warnings\":true}}",
+    "ts": 1777918840.6377673
+  }
+]

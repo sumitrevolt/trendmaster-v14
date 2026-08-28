@@ -1,6 +1,6 @@
 # TrendMaster v14 — Setup & Operations Guide
 
-**Date:** 2026-04-20  
+**Date:** 2026-04-20
 **Purpose:** Fix the 36.4% M5 accuracy problem by replacing three conflicting entry systems with a single, tightly-integrated MT5 EA + Python ML brain, driven by a strict 3-of-3 confirmation gate.
 
 ---

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tools\\crg_hook.cmd",
+            "command": "tools/crg_hook.cmd",
             "timeout": 30
           }
         ]

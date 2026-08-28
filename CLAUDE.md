@@ -6,6 +6,127 @@
 
 # TrendMaster v14 — Claude collaboration brief
 
+## ⚡ 2026-05-17 FLIP-BRAIN-AGREE + CRYPTO EXEMPTIONS (operator policy)
+
+Three trading-logic changes shipped 2026-05-17 (Sunday) after operator caught
+Sat-Sun crypto signals not trading. See memory
+`project_2026-05-17_flip_brain_agree_plus_crypto_exemptions.md` for full
+context.
+
+**1. BTC/ETH exempt from USD-side cap** — `tools/safeguards.py::_usd_side()`
+returns 0 for `BTCUSD/ETHUSD`. They're own asset class, not USD-correlated like
+USDJPY/GBPUSD. Other commodities (XTIUSD/XBRUSD/XNGUSD/XAUUSD/XAGUSD) still
+count toward USD-cap. **CRYPTO cluster cap (max 2 same-direction) remains
+the real concentration guard for crypto.**
+
+**2. BTC/ETH exempt from ALL time-of-day blackouts** — `tools/safeguards.py
+::time_of_day_blackout()` returns early `(False, "crypto 24/7 exempt")` for
+BTCUSD/ETHUSD. They trade 24/7, no weekend gap, no FX session opens.
+
+**3. Flip-on-opposite requires EXPLICIT brain agreement** — operator wants
+"agar brain agree kare to" (only if brain agrees). New function
+`safeguards.brain_explicitly_agrees(symbol, direction)` is STRICTER than
+`brain_agrees_with_signal`. Returns `(True, reason)` ONLY if brain has fresh
+view (<1hr) with conf>=0.55 AND direction matches new signal. No-view /
+stale / weak / NONE all return False. Wired in
+`tools/python_signal_executor.py::place_order()` BEFORE
+`close_opposite_positions` runs. If brain doesn't explicitly endorse the new
+direction, the FLIP is BLOCKED and the existing position is kept — logged as
+`FLIP BLOCKED <SYM> <DIR>: <reason>` (dashboard category `FLIP_BLOCKED`,
+pink chip).
+
+**Rollback knobs:** `BRAIN_EXPLICIT_AGREE_MIN_CONF` in safeguards.py
+(default 0.55). To disable strict flip entirely, comment out the
+`brain_explicitly_agrees` call block in `place_order()`. To re-enable crypto
+USD-cap, delete the `if s in ("BTCUSD", "ETHUSD"): return 0` line in
+`_usd_side`.
+
+**Verify after edits:** `outputs\verify_safeguards_changes.py` — 13 checks.
+
+## ⛔ 2026-05-11 CORRECTION — METHOD 99 FAILED
+
+Method 99 (URL plot placeholders) was shipped 2026-05-10 22:20 IST and
+**failed empirically by 2026-05-11**. The hypothesis "Pine alert() only
+overrides body, not URL" is **WRONG**. Evidence from
+`logs/tv_webhook_unparsed_bodies.log`:
+
+```
+URL query: ...&p0={{plot_0}}&p1={{plot_1}}&p2={{plot_2}}...
+                            ↑ LITERAL strings, NOT substituted!
+Body: #### EURUSD ####
+```
+
+`{{ticker}}` and `{{interval}}` DO substitute (always-on TV
+placeholders). `{{plot_N}}` does NOT substitute when indicator uses
+`alert()`. RP uses `alert()`.
+
+**Current state of RP signals:**
+- All RP alerts continue to arrive with no direction → `REJECT
+  no-direction` in webhook log → no MT5 trade
+- 8+ RP alerts in 24h after Method 99 deploy → ZERO RP-driven trades
+
+**What DID work in last 24h:**
+The bot is still profitable because the BRAIN'S RULE-BASED engine fires
+trades independently from RP. Memory + settings changes 2026-05-10
+unblocked the rules path:
+- `vol_min_quantile` 0.10 → 0.05 (admits more low-vol periods)
+- `max_consec_losses` 3 → 60 (bypasses stale 50-loss streak from dupe-exec era)
+- `recent_results=[]`, `last_processed_deal_ts` bumped to fresh
+- `tools/trade_tracker.py` patched to honor bookmark
+
+Net P&L 2026-05-11 from rule-based trades: roughly +$13-14
+(XAGUSD +$56, GBPJPY +$5.6, multiple small wins; XAUUSD -$65 biggest loss).
+
+**Files left over from failed Method 99 (harmless, do not extend):**
+- `tools/tv_alert_setup/recreate_rp_with_plot_url.py`
+- `outputs/recreate_rp_url_placeholders.cmd`
+- `tv_webhook_receiver.py` Priority 0 URL-parse block — runs but never
+  finds plot values since TV doesn't substitute them under alert()
+
+**Open paths for RP direction (operator must choose):**
+1. Telegram BUY/SELL inline-button helper (new code, ~2h dev)
+2. OCR `{{chart.image}}` + label parsing (heavy, ~1-2h dev)
+3. Switch indicator (operator declined: "use RP only")
+4. Manual trading on chart visuals (no automation)
+5. INFERRED with 3-candle momentum safety (operator declined twice)
+
+Memory: `method_99_rp_url_placeholder.md` has full failure analysis +
+lessons learned. Skill `docs/skills/trading-tv-rp-alert-setup/SKILL.md`
+needs update to remove "BREAKTHROUGH" claim.
+
+## ⭐ 2026-05-10 ROCKET PRIME ALERT DIRECTION — SOLVED AUTONOMOUSLY
+
+After hours of false starts (full Playwright UI automation, plot-crossing
+condition pivot, INFERRED guessing), the actual fix is a 5-line code patch
++ a one-shot script:
+
+**Insight:** TV substitutes `{{plot_0}}..{{plot_19}}` in the WEBHOOK URL,
+not just message body. Pine `alert()` overrides the body only — URL is
+separate. Putting plot placeholders in URL bypasses the override.
+
+**Shipped 2026-05-10 22:20 IST:**
+- `tools/tv_alert_setup/recreate_rp_with_plot_url.py` — TV API call to
+  delete+recreate 20 RP alerts with webhook URL containing
+  `&p0={{plot_0}}&p1={{plot_1}}..&p9={{plot_9}}`. Uses persistent browser
+  cookies, no operator clicks.
+- `ai_trading_agents/tv_webhook_receiver.py` patched: Priority 0 extracts
+  plot values from URL query first (new), then body (legacy).
+- Heuristic: `p0 > 0 and p1 == 0` → BUY. `p1 > 0 and p0 == 0` → SELL.
+- Diagnostic dump in `logs/tv_plot_values.jsonl` records every signal's
+  raw plot map for forensic correlation.
+
+**To re-apply if alerts get deactivated or cookies expire:**
+```cmd
+outputs\recreate_rp_url_placeholders.cmd
+outputs\force_restart_webhook.cmd
+```
+
+Skill: `docs/skills/trading-tv-rp-alert-setup/SKILL.md` (top of file —
+"2026-05-10 BREAKTHROUGH" section).
+
+⚠️ The section above describes the FAILED hypothesis. Kept here as
+historical context for the corrected analysis above.
+
 ## What this project is
 
 Live MT5 algorithmic trading bot. Python brain in `ai_trading_agents/`
@@ -13,6 +134,41 @@ talks to an MQL5 EA (`AI_SUPERBB_v14_TrendMaster.mq5`) via a JSON
 signal file. Brain scans 19 symbols every ~3 s on H1 timeframe across
 4 teams: METALS, FOREX, CRYPTO, COMMODITIES. Single operator (Sumit),
 running on Windows + OctaFX-Demo broker.
+
+## ⚡ 2026-05-09 DUPE-EXECUTOR FIX + WATCHDOG REDUNDANCY (read this first if seeing 4× duplicate trades)
+
+After laptop restart on 2026-05-09 morning, brain.out showed deal_id pairs of 4 (e.g., AUDJPY 733164796–9 within 2 sec, all losses). 4 logical executors running same signal 4× simultaneously caused USD-cap breach (long-USD=4/3, short-USD=4/3) by 04:30 IST.
+
+Root cause: TWO redundant Windows schtasks BOTH watching python_signal_executor + trailing_stop_manager + tv_webhook + ctrader. 100% overlap, both spawning duplicates after boot:
+- `TrendMaster Health Watchdog` (`tools/health_watchdog.py`, 1-min)
+- `TrendMaster Process Watchdog` (`tools/process_watchdog.py`, 2-min) ← **DISABLED 2026-05-09 22:03 IST**
+
+Plus a secondary bug: health_watchdog `check_executor()` was unlinking the lock file synchronously after `taskkill /F` returned (which is async on Windows). Old process kept its file handle to the now-deleted lock file inode, while a fresh spawn created a NEW inode and locked byte 0 alongside it → orphan-lock state, both processes "thought" they had exclusive lock. **Patched 2026-05-09 in `tools/health_watchdog.py`** to wait up to 8s for PIDs to actually disappear before unlinking + spawning.
+
+**Forensic gotcha:** every logical Python script on Windows shows up as **2 PIDs** in psutil — the `.venv\Scripts\pythonw.exe` shim launcher PLUS its `Python311\pythonw.exe` exec'd child. So 4 PIDs of `python_signal_executor` may be 2 logical instances (2 venv pairs) or 4 logical (4 separate launches) — only `psutil.Process.children()` / ppid graph distinguishes. See `outputs/verify_singleton_logical.py` (groups by ppid chain). When killing dupes, `taskkill /F /T /PID <root>` propagates to children.
+
+To re-enable Process Watchdog (only after modifying it to skip components Health already covers — leave it on dashboard_server.py only): `schtasks /Change /TN "\TrendMaster Process Watchdog" /ENABLE`
+
+Diagnostic scripts (kept in `outputs/`):
+- `audit_dupe_root_cause.py` — lists schtasks + groups by target script, flags overlaps
+- `diag_status_2026-05-09.py` — process listing + MT5 positions + USD-cap check
+- `verify_singleton_logical.py` — parent-child grouping
+- `fix_dupe_root_cause_2026-05-09.py` — disable redundant schtasks + clean up dupes
+
+## ⚡ 2026-05-07 PIPELINE RECOVERY (read this first if you're picking up post-incident)
+
+After ~24h of zero trades, the silent blockers were:
+1. `config/trading_config.yaml` had `daily_max_loss_pct: 3.0` overriding settings.py (5.0). YAML wins per `shared_config_loader` priority. **Now patched to 5.0**, same with `intraday_dd_pct` 2.0→3.0.
+2. `start_of_day_equity` in `logs/brain_state.json` was wedged at $1145.73 vs current $1059.20 → DD=7.55% > 3% cap → every signal rejected with `daily_dd_breached`. **Now rebased to current equity** via `outputs\fix_no_trades.cmd`.
+3. Brain crashed instantly on first `profit_gate veto` log line because `profit_filters.py` used `≥`/`≤` symbols and Windows cp1252 logging FileHandler can't encode them. **Now ASCII `>=`/`<=`** in canonical.
+
+New permanent infrastructure:
+- `tools/health_watchdog.py` — 6-component auto-restart watchdog (webhook local + ngrok public, executor heartbeat, trailing-stop, ctrader, MT5 terminal). Anti-thrash with 5-min cooldown per component. Telegram alert on first failure.
+- Windows scheduled task `TrendMaster Health Watchdog` — 1-min interval, /RL LIMITED, persists across reboots. Install: `outputs\install_watchdog_task.cmd`.
+- `outputs\check_gate.py` — quick DD-gate diagnostic (equity, sod, dd%, cap, gate state).
+- `outputs\resume_ctrader_oauth.cmd` — resume cTrader IC Markets OAuth flow whenever ready (currently parked: redirect_uri likely needs to be `http://127.0.0.1:8766/ctrader-oauth/callback` exactly in cTrader app settings).
+
+The watchdog is the new safety net. Trust its `logs/watchdog_state.json` for ground truth on component health. Run `--status` for human-readable summary.
 
 ## Current state (snapshot — verify against logs/, don't trust this past 24h)
 
@@ -96,6 +252,29 @@ running on Windows + OctaFX-Demo broker.
   activate; run `diagnose_zero_trades.py` after restart to confirm MODEL_OK.
   See `docs/POSTMORTEMS/2026-04-26_pre_commit_junction_breakage.md` for
   the junction-related drama during the B1/B2 commit cycles.
+
+## Concentration safeguards (in `tools/safeguards.py`)
+
+Before placing any trade, `python_signal_executor.py` calls
+`safeguards.check_all(symbol, direction)` which enforces these caps. Operator
+must know about them when troubleshooting "why no trade" — they're the
+silent #1 cause:
+
+| Cap | Counts | Limit |
+|---|---|---|
+| **long-USD positions** | Open trades that result in being long USD: USDJPY BUY, GBPUSD SELL, EURUSD SELL, AUDUSD SELL, NZDUSD SELL, XAUUSD SELL, XAGUSD SELL, XTIUSD SELL, etc. | **3** |
+| **short-USD positions** | Open trades that result in being short USD: USDJPY SELL, GBPUSD BUY, EURUSD BUY, etc. | **3** |
+| (others) | News blackout, spread guard, daily DD breaker | per `tools/safeguards.py` |
+
+**Real example 2026-05-06:** XAUUSD M15 SELL Rocket Prime signal arrived at
+23:45:08, written to MT5 file correctly, but executor logged
+`SAFEGUARD BLOCK XAUUSD SELL: already 4 long-USD positions (cap 3)` —
+because 2 USDJPY BUY + 2 GBPUSD SELL = 4 long-USD already, adding XAUUSD SELL
+would make 5. Resolution: close some long-USD positions to free capacity.
+
+**Diagnostic:** all skip reasons now log explicitly in
+`logs/python_executor.log` (patched 2026-05-06). Look for
+`SAFEGUARD BLOCK` or `skip <SYM> <DIR>: ...` lines.
 
 ## Tools you must use BEFORE Grep/Read for code exploration
 

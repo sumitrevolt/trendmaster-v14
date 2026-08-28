@@ -1,0 +1,1 @@
+{"direction":"NONE","confidence":0.95,"ts":1778184761,"symbol":"BTCUSD","brain":"TrendMaster_v14","model":"tradingview","agents":{"dir":"NONE","votes":[]},"sl_atr_mult":0.75,"tp_atr_mult":5.0,"adx_min":30.0,"source":"tradingview_webhook","require_all_3":false,"max_spread_atr_pct":5.0,"tv_strategy":"rocket_prime_text","tv_timeframe":"M15"}

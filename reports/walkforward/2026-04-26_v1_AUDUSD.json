@@ -1,0 +1,23 @@
+{
+  "symbol": "AUDUSD",
+  "team": "FOREX",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4119,
+  "n_trades": 928,
+  "win_rate": 0.28771551724137934,
+  "expectancy_R": 0.30387931034482757,
+  "max_dd": 23.0,
+  "oos_acc": 0.41144314868804666,
+  "oos_acc_per_fold": [
+    0.3921,
+    0.3994,
+    0.4271,
+    0.4271
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

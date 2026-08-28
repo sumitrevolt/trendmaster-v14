@@ -1,0 +1,23 @@
+{
+  "symbol": "CADJPY",
+  "team": "FOREX",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4119,
+  "n_trades": 985,
+  "win_rate": 0.2730964467005076,
+  "expectancy_R": 0.27411167512690354,
+  "max_dd": 38.0,
+  "oos_acc": 0.3837463556851312,
+  "oos_acc_per_fold": [
+    0.3178,
+    0.4198,
+    0.3834,
+    0.414
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

@@ -1,0 +1,30 @@
+
+Folder: \
+HostName:                             LAPTOP-93MJJE8N
+TaskName:                             \TrendMaster Live Dashboard
+Next Run Time:                        14-05-2026 15:49:00
+Status:                               Ready
+Logon Mode:                           Interactive only
+Last Run Time:                        14-05-2026 15:44:01
+Last Result:                          0
+Author:                               LAPTOP-93MJJE8N\Ratanshila
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_dashboard.vbs"
+Start In:                             N/A
+Comment:                              N/A
+Scheduled Task State:                 Enabled
+Idle Time:                            Disabled
+Power Management:                     Stop On Battery Mode, No Start On Batteries
+Run As User:                          Ratanshila
+Delete Task If Not Rescheduled:       Disabled
+Stop Task If Runs X Hours and X Mins: 72:00:00
+Schedule:                             Scheduling data is not available in this format.
+Schedule Type:                        One Time Only, Minute 
+Start Time:                           00:09:00
+Start Date:                           09-05-2026
+End Date:                             N/A
+Days:                                 N/A
+Months:                               N/A
+Repeat: Every:                        0 Hour(s), 5 Minute(s)
+Repeat: Until: Time:                  None
+Repeat: Until: Duration:              Disabled
+Repeat: Stop If Still Running:        Disabled

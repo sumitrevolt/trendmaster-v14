@@ -24,8 +24,8 @@ def create_market_dashboard():
 
     # Create subplot layout
     fig = make_subplots(
-        rows=2, cols=1, 
-        shared_xaxes=True, 
+        rows=2, cols=1,
+        shared_xaxes=True,
         vertical_spacing=0.05,
         subplot_titles=('XAUUSD (Gold) - M15 Smart Money Chart', 'ETHUSD (Ethereum) - M15 Smart Money Chart'),
         row_heights=[0.5, 0.5]
@@ -37,13 +37,13 @@ def create_market_dashboard():
         df = fetcher.refresh_data(symbol, 'M15')
         if df is None or df.empty:
             continue
-            
+
         print(f"Agent 'StrategyBrain' analyzing {symbol} Liquidity/FVGs...")
         analyzed_df = analyzer.analyze(df)
-        
+
         # Plot Candlestick
         recent_df = analyzed_df.tail(100)  # Last 100 candles
-        
+
         fig.add_trace(go.Candlestick(
             x=recent_df.index,
             open=recent_df['open'],
@@ -52,7 +52,7 @@ def create_market_dashboard():
             close=recent_df['close'],
             name=f'{symbol} Price'
         ), row=i+1, col=1)
-        
+
         # Add EMA 50 (Trend Context)
         fig.add_trace(go.Scatter(
             x=recent_df.index,
@@ -89,7 +89,7 @@ def create_market_dashboard():
     filename = "AI_Swarm_Live_Chart.html"
     fig.write_html(filename)
     print(f"\n✅ Live Data Map generated perfectly. Opened {filename}")
-    
+
     # Open the generated HTML map
     import webbrowser
     import os

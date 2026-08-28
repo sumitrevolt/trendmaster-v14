@@ -1,7 +1,7 @@
 # TrendMaster v14 — Install Log (what I already did for you)
 
-**Date:** 2026-04-20  
-**Machine:** `C:\Users\Ratanshila\Documents\autmated trading`  
+**Date:** 2026-04-20
+**Machine:** `C:\Users\Ratanshila\Documents\autmated trading`
 **MT5 data_path:** `C:\Users\Ratanshila\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075`
 
 ---
@@ -17,8 +17,8 @@
 | Verify signal file refreshes | Confirmed — `trendmaster_signals.json` updates every 250 ms |
 | Verify legacy `main.py` / `ai_swarm_main.py` are gated | Both exit with the "LEGACY disabled" banner |
 
-The brain log lives at `logs\trend_master_brain.err` (Python logging writes to stderr).  
-The signal file lives at  
+The brain log lives at `logs\trend_master_brain.err` (Python logging writes to stderr).
+The signal file lives at
 `C:\Users\Ratanshila\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Files\trendmaster_signals.json`.
 
 Example current contents:
@@ -52,7 +52,7 @@ These steps require manual interaction with the MT5 terminal UI — I can't drag
 
 ### 3. Enable AutoTrading
 - Top toolbar → click the **AutoTrading** button (becomes green).
-- In the EA's chart header, within a minute you should see a line like:  
+- In the EA's chart header, within a minute you should see a line like:
   `TrendMaster v14 | C1:OK C2:-- C3:OK | AI:BUY 0.71`.
 
 ### 4. Verify the handshake
@@ -63,10 +63,10 @@ These steps require manual interaction with the MT5 terminal UI — I can't drag
 
 ## 🛠 Operating it day-to-day
 
-**Start the brain:** double-click `START_TRENDMASTER_v14.bat`  
-**Stop the brain:**  double-click `STOP_TRENDMASTER_v14.bat`  
-**Re-compile EA:** open MetaEditor (F4 in MT5), open the `.mq5` file, press F7.  
-**Watch the brain log:** `type logs\trend_master_brain.err` (or tail it in PowerShell:  
+**Start the brain:** double-click `START_TRENDMASTER_v14.bat`
+**Stop the brain:**  double-click `STOP_TRENDMASTER_v14.bat`
+**Re-compile EA:** open MetaEditor (F4 in MT5), open the `.mq5` file, press F7.
+**Watch the brain log:** `type logs\trend_master_brain.err` (or tail it in PowerShell:
 `Get-Content logs\trend_master_brain.err -Wait -Tail 20`).
 
 ---

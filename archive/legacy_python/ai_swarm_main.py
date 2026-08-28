@@ -76,7 +76,7 @@ class DataOracleAgent:
     def __init__(self, data_fetcher: DataFetcher):
         self.fetcher = data_fetcher
         self.logger = logging.getLogger("DataOracle")
-        
+
     def fetch_market_context(self, symbol: str, entry_tf: str, trend_tf: str):
         self.logger.info(f"Oracle: Fetching real-time context for {symbol} on {entry_tf}...")
         df_entry = self.fetcher.refresh_data(symbol, entry_tf)
@@ -180,7 +180,7 @@ class VertexStrategyAgent:
         self.analyzer = AMDAnalyzer()
         self.strategy = strategy
         self.logger = logging.getLogger("StrategyBrain")
-        
+
     def analyze_opportunity(self, symbol: str, df_entry, df_trend, entry_tf: str, df_m5=None) -> Optional[Dict]:
         self.logger.info(f"StrategyBrain: Analyzing liquidity and order blocks for {symbol}...")
         if df_entry is None or df_entry.empty or df_trend is None or df_trend.empty:
@@ -294,16 +294,16 @@ class VertexStrategyAgent:
             # Common MT5 Data Folder Path for sharing between Python and MT5 Terminals
             common_data_path = os.path.join(os.environ['APPDATA'], 'MetaQuotes', 'Terminal', 'Common', 'Files')
             os.makedirs(common_data_path, exist_ok=True)
-            
+
             signal_file = os.path.join(common_data_path, 'ai_swarm_signals.csv')
-            
+
             # Extract footprints for the last 150 candles
             signals_to_draw = []
             recent_df = df_analyzed.tail(150)
-            
+
             for index, row in recent_df.iterrows():
                 candle_time = index.strftime('%Y.%m.%d %H:%M')
-                
+
                 if row.get('bullish_fvg', False):
                     signals_to_draw.append(f"FVG_BUY,{candle_time},{row['low']},Buy FVG")
                 if row.get('bearish_fvg', False):
@@ -311,13 +311,13 @@ class VertexStrategyAgent:
                 if row.get('bullish_manipulation', False) or row.get('bearish_manipulation', False):
                     price = row['low'] if row.get('bullish_manipulation', False) else row['high']
                     signals_to_draw.append(f"LIQ_SWEEP,{candle_time},{price},Liquidity Sweep")
-                
+
             if signals_to_draw:
                 # Overwrite the CSV for the indicator to fetch cleanly
                 with open(signal_file, 'w', newline='\n') as f:
                     for s in signals_to_draw:
                         f.write(s + '\n')
-                        
+
         except Exception as e:
             self.logger.debug(f"Could not bridge to MT5 Common Directory: {e}")
 
@@ -476,10 +476,10 @@ class ExecutionShieldAgent:
                 tick = mt5.symbol_info_tick(pos.symbol)
                 if tick:
                     current_price = tick.bid if pos.type == mt5.ORDER_TYPE_BUY else tick.ask
-                    
+
                     take_partial = ticket not in self._position_partial_taken
                     result = self.executor.move_stop_to_breakeven(ticket, current_price, atr, take_partial=take_partial)
-                    
+
                     if result and result.get('partial_taken'):
                         self._position_partial_taken.add(ticket)
 
@@ -592,13 +592,13 @@ class MasterCoordinatorAgent:
         if not self.mt5:
             logger.error("Coordinator: Failed to boot MT5 terminal.")
             sys.exit(1)
-            
+
         account = self.mt5.get_account_info()
         self.data_fetcher = DataFetcher(self.mt5)
         self.risk_manager = RiskManager(account['balance'] if account else 1000)
         self.executor = OrderExecutor()
         self.multi_strategy = MultiPairStrategy(settings.TRADING_PAIRS, self.risk_manager)
-        
+
         # Initialize specialized agents
         self.oracle = DataOracleAgent(self.data_fetcher)
         self.brain = VertexStrategyAgent(self.multi_strategy)
@@ -622,7 +622,7 @@ class MasterCoordinatorAgent:
             f"Geopolitical {'✓' if self.geopolitical_enabled else '✗'} | "
             f"Training {'✓' if self.training_enabled else '✗'}"
         )
-        
+
     def run_swarm(self):
         self.running = True
         signal.signal(signal.SIGINT, self.stop)

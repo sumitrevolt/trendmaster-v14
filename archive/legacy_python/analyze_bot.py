@@ -52,7 +52,7 @@ print("-" * 70)
 try:
     with open('prediction_memory.json', 'r') as f:
         pred_mem = json.load(f)
-    
+
     if isinstance(pred_mem, dict):
         print(f"Format: Dictionary with {len(pred_mem)} entries")
         # Try to understand structure
@@ -83,7 +83,7 @@ print("-" * 70)
 try:
     with open('agent_learnings.json', 'r') as f:
         learnings = json.load(f)
-    
+
     print(f"Type: {type(learnings)}")
     if isinstance(learnings, dict):
         print(f"Keys: {list(learnings.keys())[:10]}")
@@ -101,7 +101,7 @@ print("-" * 70)
 try:
     with open('agent_training_data.json', 'r') as f:
         train_data = json.load(f)
-    
+
     print(f"Type: {type(train_data)}")
     if isinstance(train_data, (dict, list)):
         if isinstance(train_data, dict):
@@ -119,7 +119,7 @@ print("-" * 70)
 try:
     with open('institutional_positions.json', 'r') as f:
         positions = json.load(f)
-    
+
     print(f"Type: {type(positions)}")
     if isinstance(positions, dict):
         print(f"Keys: {list(positions.keys())[:10]}")

@@ -1,0 +1,23 @@
+{
+  "symbol": "ETHUSD",
+  "team": "CRYPTO",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4129,
+  "n_trades": 1497,
+  "win_rate": 0.27054108216432865,
+  "expectancy_R": 0.24716098864395458,
+  "max_dd": 36.0,
+  "oos_acc": 0.3855377906976744,
+  "oos_acc_per_fold": [
+    0.3939,
+    0.2892,
+    0.4549,
+    0.4041
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

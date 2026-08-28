@@ -28,12 +28,15 @@ from __future__ import annotations
 import json
 import statistics
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 STATE_PATH = REPO_ROOT / "logs" / "brain_state.json"
 BRAIN_LOG = REPO_ROOT / "logs" / "trend_master_brain.out"
 BRAIN_ERR = REPO_ROOT / "logs" / "trend_master_brain.err"
@@ -63,7 +66,12 @@ def load_min_conf_from_config() -> float:
     try:
         from config import settings  # type: ignore
 
-        cfg = getattr(settings, "CONFIG", None) or getattr(settings, "TRADING_CONFIG", None) or {}
+        cfg = (
+            getattr(settings, "TRENDMASTER_V14", None)
+            or getattr(settings, "CONFIG", None)
+            or getattr(settings, "TRADING_CONFIG", None)
+            or {}
+        )
         if isinstance(cfg, dict) and "min_ml_confidence" in cfg:
             return float(cfg["min_ml_confidence"])
     except Exception:

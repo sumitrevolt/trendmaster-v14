@@ -1,0 +1,23 @@
+{
+  "symbol": "EURUSD",
+  "team": "FOREX",
+  "feature_set": "v1",
+  "rows": 50000,
+  "n_features": 25,
+  "n_samples": 4119,
+  "n_trades": 909,
+  "win_rate": 0.2794279427942794,
+  "expectancy_R": 0.28492849284928495,
+  "max_dd": 16.0,
+  "oos_acc": 0.44569970845481055,
+  "oos_acc_per_fold": [
+    0.4227,
+    0.449,
+    0.4475,
+    0.4636
+  ],
+  "nan_drop_rows": 50,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": []
+}

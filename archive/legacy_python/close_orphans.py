@@ -18,7 +18,7 @@ closed_count = 0
 for pos in positions:
     open_time = datetime.fromtimestamp(pos.time)
     days_open = (now - open_time).days
-    
+
     if days_open >= 14 and pos.symbol == 'XAUUSD':
         print(f'Closing aged position {pos.ticket} ({days_open} days old)...')
         close_type = mt5.ORDER_TYPE_SELL if pos.type == mt5.ORDER_TYPE_BUY else mt5.ORDER_TYPE_BUY

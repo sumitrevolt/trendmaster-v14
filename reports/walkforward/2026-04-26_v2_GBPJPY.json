@@ -1,0 +1,25 @@
+{
+  "symbol": "GBPJPY",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3889,
+  "n_trades": 1073,
+  "win_rate": 0.2767940354147251,
+  "expectancy_R": 0.27958993476234856,
+  "max_dd": 29.0,
+  "oos_acc": 0.3935185185185185,
+  "oos_acc_per_fold": [
+    0.3688,
+    0.3719,
+    0.412,
+    0.4213
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

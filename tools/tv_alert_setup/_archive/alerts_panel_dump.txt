@@ -1,0 +1,137 @@
+=== Alerts panel header buttons (right sidebar, top) — 4 ===
+  [1556,90 44x44] aria='Alerts' data-name='alerts' text='6'
+  [1556,136 44x44] aria='Object tree and data window' data-name='object_tree' text=''
+  [1556,182 44x44] aria='Chats' data-name='union_chats' text=''
+  [1526,175 22x22] aria='' data-name='event-delete-button' text=''
+
+=== Alert rows — 26 ===
+
+ROW [0] @ (1145,169) 409x78  cls='itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAGUSD Crossing 74.43250 XAGUSD 20:06:48 Webhook successfully delivered'
+  1 buttons:
+    [1526,175 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [1] @ (1145,247) 409x78  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAUUSD Crossing 4,577.840 XAUUSD 20:05:42 Webhook successfully delivered'
+  1 buttons:
+    [1526,253 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [2] @ (1145,325) 409x78  cls='itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAUUSD Crossing 4,576.560 XAUUSD 20:04:26 Webhook successfully delivered'
+  1 buttons:
+    [1526,331 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [3] @ (1145,402) 409x78  cls='itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'EURUSD Crossing 1.17156 EURUSD 20:02:35 Webhook successfully delivered'
+  1 buttons:
+    [1526,408 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [4] @ (1145,480) 409x78  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'EURUSD Crossing 1.17149 EURUSD 20:01:40 Webhook delivery failed — 404 Not Found. Learn more'
+  1 buttons:
+    [1526,486 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [5] @ (1145,558) 409x78  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAGUSD Crossing 74.39950 XAGUSD 20:01:23 Webhook delivery failed — 404 Not Found. Learn more'
+  1 buttons:
+    [1526,564 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [6] @ (1145,636) 409x78  cls='itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAGUSD Crossing 74.40000 XAGUSD 20:01:06 Webhook delivery failed — 404 Not Found. Learn more'
+  1 buttons:
+    [1526,642 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [7] @ (1145,714) 409x78  cls='itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAGUSD Crossing 74.33350 XAGUSD 20:00:31 Webhook delivery failed — 404 Not Found. Learn more'
+  1 buttons:
+    [1526,720 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [8] @ (1145,791) 409x78  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAUUSD Crossing 4,570.545 XAUUSD 20:00:14 Webhook delivery failed — 404 Not Found. Learn more'
+  1 buttons:
+    [1526,797 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [9] @ (1145,869) 409x78  cls='itemBody-bswc3EEA highlighted-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAUUSD Crossing 4,570.805 XAUUSD 19:59:56 Webhook delivery failed — 404 Not Found. Learn more'
+  1 buttons:
+    [1526,875 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [10] @ (1145,947) 409x78  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAUUSD Crossing 4,576.510 XAUUSD 19:55:50 Webhook delivery failed — 401 Unauthorized. Learn more'
+  1 buttons:
+    [1526,953 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [11] @ (1145,1025) 409x78  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAGUSD Crossing 74.59826 XAGUSD 19:52:56 Webhook delivery failed — 401 Unauthorized. Learn more'
+  1 buttons:
+    [1526,1031 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [12] @ (1145,1103) 409x78  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'XAUUSD Crossing 4,556.300 XAUUSD 19:41:30 Webhook delivery failed — 401 Unauthorized. Learn more'
+  1 buttons:
+    [1526,1109 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [13] @ (1145,1180) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 18:30:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1186 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [14] @ (1145,1279) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 18:30:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1285 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [15] @ (1145,1378) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 18:30:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1384 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [16] @ (1145,1477) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 17:00:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1483 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [17] @ (1145,1576) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 17:00:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1582 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [18] @ (1145,1674) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 17:00:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1680 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [19] @ (1145,1773) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 15:15:01 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1779 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [20] @ (1145,1872) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 15:15:01 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1878 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [21] @ (1145,1971) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 15:15:01 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,1977 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [22] @ (1145,2070) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 06:35:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,2076 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [23] @ (1145,2168) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 06:35:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,2174 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [24] @ (1145,2267) 409x99  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: "Rocket Prime Engine (Normal): Any alert() function call #### XAUUSD #### XAUUSD, 5m 06:35:00 Webhook delivery failed — couldn't find this domain. Learn more"
+  1 buttons:
+    [1526,2273 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'
+
+ROW [25] @ (1145,2406) 409x56  cls='itemBody-bswc3EEA blackBorder-bswc3EEA item-p0fg4BfJ'
+  text: 'CHFJPY Crossing 200.466 CHFJPY 19:21:51'
+  1 buttons:
+    [1526,2412 22x22] aria='' data-name='event-delete-button' text='' cls='button-IdZQNS1U apply-common-tooltip overlayButton'

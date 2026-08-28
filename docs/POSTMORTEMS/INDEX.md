@@ -6,6 +6,7 @@ incident.
 
 ## 2026
 
+- [2026-04-30 - MIN_CONF 0.70 → 0.58 (R12 — godmode session); diagnose tool path bug fixed; brain restart deferred to operator](2026-04-30_min_conf_lowering_R12.md)
 - [2026-04-30 - Junction trap silent state drift to C:\logs\ (RESOLVED via `_ROOT` validation fallback in state_store/event_log/process_lock)](2026-04-30_junction_trap_silent_state_drift.md)
 - [2026-04-29 - Recurring 109 KB uniform-output model overwriting live (RESOLVED via candidate-path hardening of `train_v14_better.py`)](2026-04-29_uniform_model_recurrence.md)
 - [2026-04-29 - 16-hour brain silent termination (RESOLVED; first incident detected end-to-end by watch_pets.py)](2026-04-29_brain_silent_termination.md)

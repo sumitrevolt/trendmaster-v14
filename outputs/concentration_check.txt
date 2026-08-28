@@ -1,0 +1,17 @@
+=== Concentration check — 2026-05-13 21:54:27.309515 ===
+Account 213796448 balance=$1086.61 equity=$1094.55
+Open positions: 4
+
+LONG-USD positions (2/3):
+  GBPUSD   SELL 0.01 @ 1.35034  opened 19:05:11  PnL $-2.36  [LONG-USD]
+  XTIUSD   SELL 0.01 @ 98.57000  opened 19:55:17  PnL $+13.50  [LONG-USD]
+
+SHORT-USD positions (2/3):
+  USDJPY   SELL 0.01 @ 157.55600  opened 20:00:03  PnL $-1.58  [SHORT-USD]
+  USDJPY   SELL 0.01 @ 157.55100  opened 20:00:05  PnL $-1.62  [SHORT-USD]
+
+Neutral cross-pairs (0):
+  (none)
+
+Safeguard cap: 3 long-USD AND 3 short-USD
+→ ETHUSD SELL would have capacity to fire if it came now.

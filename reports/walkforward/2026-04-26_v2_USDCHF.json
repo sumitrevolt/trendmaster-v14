@@ -1,0 +1,25 @@
+{
+  "symbol": "USDCHF",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3888,
+  "n_trades": 933,
+  "win_rate": 0.29260450160771706,
+  "expectancy_R": 0.3172561629153269,
+  "max_dd": 26.0,
+  "oos_acc": 0.4633487654320988,
+  "oos_acc_per_fold": [
+    0.4151,
+    0.4336,
+    0.5093,
+    0.4954
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

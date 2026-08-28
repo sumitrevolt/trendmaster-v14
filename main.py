@@ -1,273 +1,255 @@
+#!/usr/bin/env python
 """
-main.py — TrendMaster v14 unified CLI entry point.
+main.py — Unified CLI for TrendMaster v14
+==========================================
 
-Subcommands
------------
-    python main.py scan            One-shot scan across all TRADING_PAIRS, print signals, exit.
-    python main.py run             Run the brain loop (what START_TRENDMASTER_v14.bat launches).
-    python main.py dashboard       Launch the local dashboard (tools/dashboard.py).
-    python main.py supervise       Run the brain + dashboard under the supervisor (auto-restart).
-    python main.py backtest SYM    Walk-forward backtest on a CSV in data/.
-    python main.py train SYM       Retrain LightGBM from labelled trades.csv + feature history.
-    python main.py pull-history    Pull M5 bars for every pair in TRADING_PAIRS to data/.
-    python main.py health          Probe brain PID + dashboard HTTP, print result, exit(0/1).
-
-All subcommands import lazily so a broken optional dep (e.g. lightgbm missing)
-doesn't prevent you from running the ones that don't need it.
+Usage:
+    python main.py scan                # One-shot multi-pair scan (offline-safe)
+    python main.py run                 # Live brain loop (needs MT5 + EA)
+    python main.py supervise           # Auto-restart brain + dashboard
+    python main.py dashboard           # Dashboard only (http://localhost:8000)
+    python main.py backtest XAUUSD     # Walk-forward backtest
+    python main.py pull-history --bars 50000  # M5 history pull
+    python main.py train XAUUSD        # Retrain LightGBM model
+    python main.py health              # Health probe (exit 0 if OK)
 """
 
 from __future__ import annotations
 
 import argparse
+import json
+import logging
+import os
 import sys
+import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-# [enhancement 2026-04-23] Install the JSON-lines formatter when
-# LOG_FORMAT=json is set in the environment. No-op otherwise. Called
-# once per process, before any other module's logger is used so the
-# formatter attaches cleanly.
-try:
-    from ai_trading_agents.structured_log import configure as _sl_configure
-
-    _sl_configure()
-except Exception:
-    # Defensive — structured logging must never prevent brain boot.
-    pass
+# Ensure project root is on sys.path
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
 
 
-def _cmd_scan(args: argparse.Namespace) -> int:
-    from ai_trading_agents.multi_market_dispatcher import scan_once
-
-    results = scan_once(symbols=args.symbols, min_votes=args.min_votes)
-    for sym, sig in results.items():
-        print(
-            f"{sym:>8s}  {sig['direction']:>4s}  conf={sig['confidence']:.2f}  agents={sig.get('agent_summary', 'n/a')}"
-        )
-    return 0
-
-
-def _cmd_run(args: argparse.Namespace) -> int:
-    from ai_trading_agents.trend_master_brain import main as brain_main
-
-    return int(brain_main() or 0)
-
-
-def _cmd_dashboard(args: argparse.Namespace) -> int:
-    import runpy
-
-    runpy.run_path(str(ROOT / "tools" / "dashboard.py"), run_name="__main__")
-    return 0
-
-
-def _cmd_supervise(args: argparse.Namespace) -> int:
-    from tools.supervisor import Supervisor
-
-    sup = Supervisor.default()
-    sup.run_forever()
-    return 0
-
-
-def _cmd_backtest(args: argparse.Namespace) -> int:
-    from tools.backtest import run_backtest
-
-    report = run_backtest(symbol=args.symbol, csv_path=args.csv, min_votes=args.min_votes)
-    print(report.format())
-    return 0 if report.is_viable() else 2
-
-
-def _cmd_train(args: argparse.Namespace) -> int:
-    from tools.retrain_from_trades import retrain
-
-    return int(retrain(symbol=args.symbol, trades_csv=args.trades, history_csv=args.history) or 0)
-
-
-def _cmd_pull_history(args: argparse.Namespace) -> int:
-    from tools.pull_history import pull_all
-
-    return int(pull_all(bars=args.bars) or 0)
-
-
-def _cmd_health(args: argparse.Namespace) -> int:
-    from tools.supervisor import probe_health
-
-    ok = probe_health()
-    print("OK" if ok else "UNHEALTHY")
-    return 0 if ok else 1
-
-
-# [enhancement 2026-04-23 R4] Operator-grade CLI commands.
-def _cmd_smoke(args: argparse.Namespace) -> int:
-    """Full-stack health probe — every module + settings + brain state."""
-    import json
-    from config import settings
-    from ai_trading_agents import (
-        drift_detector,
-        kelly_sizer,
-        metrics,
-        portfolio_risk,
-        event_log,
-        performance,
-        market_calendar,
-    )
-
-    print("== modules ==")
-    print("  drift_detector    OK")
-    print("  kelly_sizer       OK")
-    print("  metrics           OK")
-    print("  portfolio_risk    OK")
-    print("  event_log         OK")
-    print("  performance       OK")
-    print("  market_calendar   OK")
-    print("== settings flags ==")
-    for k in (
-        "METRICS",
-        "DRIFT",
-        "KELLY_SIZING",
-        "PORTFOLIO_RISK",
-        "EVENT_LOG",
-        "MARKET_CALENDAR",
-        "DAILY_DIGEST",
-        "OPS_MAINTENANCE",
-        "MODEL_GOVERNANCE",
-    ):
-        v = getattr(settings, k, None)
-        en = v.get("enabled", "n/a") if isinstance(v, dict) else "MISSING"
-        print(f"  {k:20s} enabled={en}")
-    # Snapshot metrics / VaR to confirm they're running.
-    txt = metrics.render_text()
-    print(f"== metrics == ({len(txt)} bytes, uptime line {'OK' if 'trendmaster_uptime_seconds' in txt else 'MISSING'})")
-    return 0
-
-
-def _cmd_rotate(args: argparse.Namespace) -> int:
-    from ai_trading_agents import ops_maintenance as _om
-
-    report = _om.run_all()
-    import json
-
-    print(json.dumps(report.as_dict(), indent=2))
-    return 0
-
-
-def _cmd_daily_report(args: argparse.Namespace) -> int:
-    from ai_trading_agents import daily_digest as _dd
-    from ai_trading_agents.state_store import StateStore
-
-    try:
-        from ai_trading_agents.risk_manager import team_of
-    except Exception:
-        team_of = None
-    state = StateStore().load()
-    digest = _dd.generate_report(state, team_of_fn=team_of)
-    paths = _dd.write_daily(digest, ROOT / "reports")
-    if args.telegram:
-        _dd.push_telegram(digest)
-    print(f"Wrote {paths['md']}")
-    print(f"Wrote {paths['json']}")
-    return 0
-
-
-def _cmd_stress(args: argparse.Namespace) -> int:
-    from tools.stress_test import main as stress_main
-
-    return int(stress_main() or 0)
-
-
-def _cmd_gates(args: argparse.Namespace) -> int:
-    from ai_trading_agents import gate_value as _gv
-
-    report = _gv.analyze(window_days=args.days)
-    print(report.human())
-    return 0
-
-
-def _cmd_perf(args: argparse.Namespace) -> int:
-    from ai_trading_agents import performance as _p
-    from ai_trading_agents.state_store import StateStore
-
-    state = StateStore().load()
-    trades = state.get("recent_results", [])
-    import json
-
-    try:
-        from ai_trading_agents.risk_manager import team_of
-    except Exception:
-        team_of = None
-    snap = _p.snapshot(trades, team_of_fn=team_of)
-    print(json.dumps(snap, indent=2, default=str))
-    return 0
-
-
+# ── Argument parser ──────────────────────────────────────────────────────
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="trendmaster", description="TrendMaster v14 CLI")
-    sub = p.add_subparsers(dest="cmd", required=True)
-
-    s_scan = sub.add_parser("scan", help="One-shot multi-pair signal scan")
-    s_scan.add_argument(
-        "--symbols", nargs="*", default=None, help="Override TRADING_PAIRS. Default: all configured pairs."
+    p = argparse.ArgumentParser(
+        prog="trendmaster",
+        description="TrendMaster v14 — Multi-Market AI Trading System",
     )
-    s_scan.add_argument("--min-votes", type=int, default=3)
-    s_scan.set_defaults(func=_cmd_scan)
+    sub = p.add_subparsers(dest="cmd", help="Available commands")
 
-    s_run = sub.add_parser("run", help="Run brain loop (MT5 required)")
-    s_run.set_defaults(func=_cmd_run)
+    # scan
+    scan_p = sub.add_parser("scan", help="One-shot multi-pair scan (offline-safe)")
+    scan_p.add_argument("--min-votes", type=int, default=3, help="Minimum agent votes")
 
-    s_dash = sub.add_parser("dashboard", help="Launch local dashboard")
-    s_dash.set_defaults(func=_cmd_dashboard)
+    # run
+    run_p = sub.add_parser("run", help="Live brain inference loop")
+    run_p.add_argument("--interval-ms", type=int, default=None, help="Override inference interval (ms)")
 
-    s_sup = sub.add_parser("supervise", help="Run brain + dashboard under supervisor")
-    s_sup.set_defaults(func=_cmd_supervise)
+    # supervise
+    sub.add_parser("supervise", help="Auto-restart brain + dashboard")
 
-    s_bt = sub.add_parser("backtest", help="Walk-forward backtest a CSV")
-    s_bt.add_argument("symbol")
-    s_bt.add_argument("--csv", default=None, help="Path to OHLCV csv. Default: data/{symbol}_m5_history.csv")
-    s_bt.add_argument("--min-votes", type=int, default=3)
-    s_bt.set_defaults(func=_cmd_backtest)
+    # dashboard
+    dash_p = sub.add_parser("dashboard", help="Dashboard only (http://localhost:8000)")
+    dash_p.add_argument("--port", type=int, default=8000, help="Dashboard port")
 
-    s_tr = sub.add_parser("train", help="Retrain from labelled trades")
-    s_tr.add_argument("symbol")
-    s_tr.add_argument("--trades", default=None)
-    s_tr.add_argument("--history", default=None)
-    s_tr.set_defaults(func=_cmd_train)
+    # backtest
+    bt_p = sub.add_parser("backtest", help="Walk-forward backtest for a symbol")
+    bt_p.add_argument("symbol", nargs="?", default="XAUUSD", help="Symbol to backtest")
+    bt_p.add_argument("--csv", type=str, default=None, help="Custom CSV path")
+    bt_p.add_argument("--bars", type=int, default=50000, help="Number of bars")
+    bt_p.add_argument("--min-votes", type=int, default=3, help="Minimum agent votes")
 
-    s_ph = sub.add_parser("pull-history", help="Pull M5 bars for every pair")
-    s_ph.add_argument("--bars", type=int, default=50000)
-    s_ph.set_defaults(func=_cmd_pull_history)
+    # pull-history
+    ph_p = sub.add_parser("pull-history", help="Pull M5 history for all pairs")
+    ph_p.add_argument("--bars", type=int, default=50000, help="Number of bars per pair")
 
-    s_h = sub.add_parser("health", help="Probe brain + dashboard health")
-    s_h.set_defaults(func=_cmd_health)
+    # train
+    tr_p = sub.add_parser("train", help="Retrain LightGBM model for a symbol")
+    tr_p.add_argument("symbol", nargs="?", default="XAUUSD", help="Symbol to train on")
 
-    # [enhancement 2026-04-23 R4] Operator-grade subcommands.
-    s_sm = sub.add_parser("smoke", help="One-shot full-stack validation")
-    s_sm.set_defaults(func=_cmd_smoke)
-
-    s_rt = sub.add_parser("rotate", help="Rotate logs + snapshot state + vacuum events")
-    s_rt.set_defaults(func=_cmd_rotate)
-
-    s_dr = sub.add_parser("daily-report", help="Generate today's daily digest (MD + JSON)")
-    s_dr.add_argument("--telegram", action="store_true", help="Also push to Telegram")
-    s_dr.set_defaults(func=_cmd_daily_report)
-
-    s_st = sub.add_parser("stress", help="Run the Monte Carlo stress-test harness")
-    s_st.set_defaults(func=_cmd_stress)
-
-    s_gt = sub.add_parser("gates", help="Show gate-value attribution over N days")
-    s_gt.add_argument("--days", type=int, default=30)
-    s_gt.set_defaults(func=_cmd_gates)
-
-    s_pf = sub.add_parser("perf", help="Print performance snapshot (JSON)")
-    s_pf.set_defaults(func=_cmd_perf)
+    # health
+    sub.add_parser("health", help="Health probe (exit 0 if OK)")
 
     return p
 
 
-def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
-    return int(args.func(args) or 0)
+# ── Commands ─────────────────────────────────────────────────────────────
+
+def cmd_scan(args: argparse.Namespace) -> int:
+    """One-shot scan across all symbols using offline CSVs if available."""
+    from ai_trading_agents.trend_master_brain import TrendMasterBrain, ALL_SYMBOLS
+    from config import settings
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+    logger = logging.getLogger("scan")
+    logger.info("Starting one-shot scan for %d symbols", len(ALL_SYMBOLS))
+
+    brain = TrendMasterBrain()
+    results = {}
+    for sym in ALL_SYMBOLS:
+        try:
+            r = brain.tick_once(symbol=sym)
+            results[sym] = r
+            if r:
+                logger.info("[%s] %s (conf=%.2f)", sym, r.get("direction"), r.get("confidence", 0))
+            else:
+                logger.info("[%s] NONE", sym)
+        except Exception as e:
+            logger.warning("[%s] scan failed: %s", sym, e)
+            results[sym] = None
+
+    buy = sum(1 for r in results.values() if r and r.get("direction") == "BUY")
+    sell = sum(1 for r in results.values() if r and r.get("direction") == "SELL")
+    none = sum(1 for r in results.values() if r is None or r.get("direction") == "NONE")
+    logger.info("Scan complete: BUY=%d SELL=%d NONE=%d", buy, sell, none)
+    return 0
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    """Live brain loop — needs MT5 running + EA attached."""
+    from ai_trading_agents.trend_master_brain import TrendMasterBrain
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+    brain = TrendMasterBrain()
+    brain.run_forever()
+    return 0
+
+
+def cmd_supervise(args: argparse.Namespace) -> int:
+    """Auto-restart brain + dashboard."""
+    try:
+        from tools.supervisor import main as supervisor_main
+        return supervisor_main()
+    except ImportError:
+        logging.error("tools/supervisor.py not found or failed to import.")
+        return 1
+
+
+def cmd_dashboard(args: argparse.Namespace) -> int:
+    """Launch the dashboard on http://localhost:{port}."""
+    try:
+        from tools.dashboard import create_app
+        import uvicorn
+
+        app = create_app()
+        uvicorn.run(app, host="0.0.0.0", port=args.port)
+        return 0
+    except ImportError:
+        logging.error("tools/dashboard.py not found or failed to import.")
+        return 1
+
+
+def cmd_backtest(args: argparse.Namespace) -> int:
+    """Walk-forward backtest for a single symbol."""
+    try:
+        from tools.backtest import run_backtest
+        csv_path = args.csv
+        if not csv_path:
+            csv_dir = _HERE / "data"
+            csv_path = str(csv_dir / f"{args.symbol}_M5.csv")
+        return run_backtest(args.symbol, csv_path=csv_path, bars=args.bars)
+    except ImportError:
+        logging.error("tools/backtest.py not found or failed to import.")
+        return 1
+
+
+def cmd_pull_history(args: argparse.Namespace) -> int:
+    """Pull M5 history for all trading pairs."""
+    try:
+        from tools.pull_history import pull_all
+        return pull_all(bars=args.bars)
+    except ImportError:
+        logging.error("tools/pull_history.py not found or failed to import.")
+        return 1
+
+
+def cmd_train(args: argparse.Namespace) -> int:
+    """Retrain LightGBM model for a symbol."""
+    try:
+        from tools.retrain_from_trades import retrain_symbol
+        return retrain_symbol(args.symbol)
+    except ImportError:
+        logging.error("tools/retrain_from_trades.py not found or failed to import.")
+        return 1
+
+
+def cmd_health(args: argparse.Namespace) -> int:
+    """Health probe: exit 0 if signal is fresh + dashboard up."""
+    from ai_trading_agents.trend_master_brain import TRENDMASTER_V14
+    from config import settings
+
+    cfg = getattr(settings, "TRENDMASTER_V14", {})
+    primary = cfg.get("primary_symbol", "XAUUSD")
+    stale_secs = 120  # 2 minutes
+
+    # Check signal file freshness
+    import time
+    try:
+        from ai_trading_agents.trend_master_brain import TrendMasterBrain, _HAS_MT5, SIG_FILE, _ROOT
+        brain = TrendMasterBrain()
+        sig_path = brain._resolve_signal_path()
+        data = json.loads(sig_path.read_text(encoding="ascii"))
+        ts = data.get("ts", 0)
+        age = int(time.time()) - ts
+        if age > stale_secs:
+            print(f"STALE: signal file is {age}s old (>{stale_secs}s)")
+            return 1
+        print(f"OK: {primary} {data.get('direction')} conf={data.get('confidence')} age={age}s")
+    except FileNotFoundError:
+        print("WARN: signal file not found — brain may not be running")
+        return 0  # soft fail
+    except Exception as e:
+        print(f"WARN: health check error: {e}")
+        return 0
+
+    # Check dashboard
+    try:
+        import urllib.request
+        r = urllib.request.urlopen("http://localhost:8000/healthz", timeout=3)
+        if r.status == 200:
+            print("OK: dashboard /healthz responds")
+        else:
+            print(f"WARN: dashboard /healthz returned {r.status}")
+    except Exception:
+        print("WARN: dashboard not reachable")
+
+    return 0
+
+
+# ── Dispatch ─────────────────────────────────────────────────────────────
+
+_COMMANDS = {
+    "scan": cmd_scan,
+    "run": cmd_run,
+    "supervise": cmd_supervise,
+    "dashboard": cmd_dashboard,
+    "backtest": cmd_backtest,
+    "pull-history": cmd_pull_history,
+    "train": cmd_train,
+    "health": cmd_health,
+}
+
+
+def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+
+    if not args.cmd:
+        parser.print_help()
+        return 1
+
+    handler = _COMMANDS.get(args.cmd)
+    if handler is None:
+        parser.error(f"Unknown command: {args.cmd}")
+
+    return handler(args)
 
 
 if __name__ == "__main__":

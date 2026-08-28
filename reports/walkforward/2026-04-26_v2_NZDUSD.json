@@ -1,0 +1,25 @@
+{
+  "symbol": "NZDUSD",
+  "team": "FOREX",
+  "feature_set": "v2",
+  "rows": 50000,
+  "n_features": 34,
+  "n_samples": 3888,
+  "n_trades": 1074,
+  "win_rate": 0.2746741154562384,
+  "expectancy_R": 0.2737430167597765,
+  "max_dd": 44.0,
+  "oos_acc": 0.38040123456790126,
+  "oos_acc_per_fold": [
+    0.3843,
+    0.3812,
+    0.3488,
+    0.4074
+  ],
+  "nan_drop_rows": 281,
+  "smartmoney_all_nan": false,
+  "error": null,
+  "notes": [
+    "dropped all-NaN columns: ['ng_storage_delta_z']"
+  ]
+}

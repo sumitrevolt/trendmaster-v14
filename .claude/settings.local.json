@@ -69,7 +69,14 @@
       "PowerShell(& cmd.exe /c \"cd /d `\"C:\\\\Users\\\\Ratanshila\\\\Documents\\\\autmated trading`\" && start_brain_clean.cmd\" 2>&1 | Select-Object -Last 40)",
       "PowerShell(& cmd.exe /c $cmd 2>&1)",
       "PowerShell($cmd = 'cd /d \"C:\\\\Users\\\\Ratanshila\\\\Documents\\\\autmated trading\" && start_brain_clean.cmd')",
-      "Bash(cmd //c \"dir ai_trading_agents | findstr /C:\\\\\"Junction\\\\\" /C:\\\\\"Directory\\\\\"\")"
+      "Bash(cmd //c \"dir ai_trading_agents | findstr /C:\\\\\"Junction\\\\\" /C:\\\\\"Directory\\\\\"\")",
+      "Bash(tee logs/train_v14_d2.out)",
+      "Bash(grep -v \"^\\\\\\\\[LightGBM\\\\\\\\]\")",
+      "mcp__code-review-graph__get_architecture_overview_tool",
+      "mcp__code-review-graph__list_communities_tool",
+      "mcp__code-review-graph__get_hub_nodes_tool",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); s=d.get\\('last_signal_per_symbol',{}\\); rows=[\\(k,v.get\\('direction'\\),round\\(v.get\\('confidence',0\\),3\\),v.get\\('ts',''\\)[-8:]\\) for k,v in s.items\\(\\)]; rows.sort\\(key=lambda x:-x[2]\\); [print\\(f'{k:8s} {dirn:5s} conf={c} ts={t}'\\) for k,dirn,c,t in rows[:18]]\")",
+      "Bash(schtasks /query /fo CSV /nh)"
     ]
   },
   "enableAllProjectMcpServers": true,

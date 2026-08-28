@@ -1,0 +1,1201 @@
+TaskName:                             \NVIDIA App SelfUpdate_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}
+Status:                               Ready
+Task To Run:                          "C:\Program Files\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA App.exe" 
+Schedule Type:                        When an event occurs
+TaskName:                             \OneDrive Reporting Task-S-1-5-21-3711234934-358111113-487211522-1001
+Status:                               Ready
+Task To Run:                          %localappdata%\Microsoft\OneDrive\OneDriveStandaloneUpdater.exe /reporting
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \OneDrive Standalone Update Task-S-1-5-21-3711234934-358111113-487211522-1001
+Status:                               Ready
+Task To Run:                          %localappdata%\Microsoft\OneDrive\OneDriveStandaloneUpdater.exe 
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \OneDrive Startup Task-S-1-5-21-3711234934-358111113-487211522-1001
+Status:                               Ready
+Task To Run:                          C:\Users\Ratanshila\AppData\Local\Microsoft\OneDrive\26.074.0420.0001\OneDriveLauncher.exe /startInstances
+Schedule Type:                        At logon time
+TaskName:                             \OpenClaw Gateway
+Status:                               Ready
+Task To Run:                          C:\Users\Ratanshila\.openclaw\gateway.cmd 
+Schedule Type:                        At logon time
+TaskName:                             \Opera scheduled assistant Autoupdate 1760408764
+Status:                               Ready
+Task To Run:                          C:\Users\Ratanshila\AppData\Local\Programs\Opera\autoupdate\opera_autoupdate.exe --scheduledtask --productiscomponent --installdir="C:\Users\Ratanshila\AppData\Local\Programs\Opera\assistant" --producttype=assistant $(Arg0)
+Schedule Type:                        Daily 
+TaskName:                             \Opera scheduled assistant Autoupdate 1760408764
+Status:                               Ready
+Task To Run:                          C:\Users\Ratanshila\AppData\Local\Programs\Opera\autoupdate\opera_autoupdate.exe --scheduledtask --productiscomponent --installdir="C:\Users\Ratanshila\AppData\Local\Programs\Opera\assistant" --producttype=assistant $(Arg0)
+Schedule Type:                        At logon time
+TaskName:                             \Opera scheduled Autoupdate 1760408763
+Status:                               Ready
+Task To Run:                          C:\Users\Ratanshila\AppData\Local\Programs\Opera\autoupdate\opera_autoupdate.exe --scheduledtask $(Arg0)
+Schedule Type:                        Daily 
+TaskName:                             \Opera scheduled Autoupdate 1760408763
+Status:                               Ready
+Task To Run:                          C:\Users\Ratanshila\AppData\Local\Programs\Opera\autoupdate\opera_autoupdate.exe --scheduledtask $(Arg0)
+Schedule Type:                        At logon time
+TaskName:                             \TrendMaster Alert Bridge
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_alert_bridge.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Auto Research
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_auto_research.vbs"
+Schedule Type:                        Daily 
+TaskName:                             \TrendMaster Brain Forensics
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_brain_forensics.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Brain Liveness
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_brain_liveness.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Brain Watchpet
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\watchpet_brain_alive.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Code Graph Rebuild
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_code_graph_rebuild.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Daily Maintenance
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\daily_maintenance.vbs"
+Schedule Type:                        Daily 
+TaskName:                             \TrendMaster Daily Summary
+Status:                               Ready
+Task To Run:                          "C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe" "C:\Users\Ratanshila\Documents\autmated trading\tools\daily_telegram_summary.py"
+Schedule Type:                        Daily 
+TaskName:                             \TrendMaster EA Parity Nightly
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_ea_parity_nightly.vbs"
+Schedule Type:                        Weekly
+TaskName:                             \TrendMaster Events Rotator
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_events_rotator.vbs"
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \TrendMaster Health Watchdog
+Status:                               Ready
+Task To Run:                          "C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe" "C:\Users\Ratanshila\Documents\autmated trading\tools\health_watchdog.py" --once
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Hourly Snapshot
+Status:                               Ready
+Task To Run:                          "C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe" "C:\Users\Ratanshila\Documents\autmated trading\tools\hourly_telegram_snapshot.py"
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \TrendMaster Junction Guard
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_junction_guard.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Live Dashboard
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_dashboard.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Local Signal Generator
+Status:                               Disabled
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_local_signal_generator.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Morning Routine
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_morning_routine.vbs"
+Schedule Type:                        Daily 
+TaskName:                             \TrendMaster News Calendar Refresh
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\refresh_news_calendar.vbs"
+Schedule Type:                        Weekly
+TaskName:                             \TrendMaster Process Watchdog
+Status:                               Disabled
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_process_watchdog.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Pytest Health Check
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_pytest_health_check.vbs"
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \TrendMaster Reactivate Alerts
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\reactivate_alerts_hourly.vbs"
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \TrendMaster Schtasks Audit
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_schtasks_audit.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Signal Outcome Collector
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_signal_outcome_collector.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Signal Pipeline Monitor
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_signal_pipeline_monitor.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Signal-to-Trade SLA
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_signal_to_trade_sla.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster TV Alert Renewer
+Status:                               Ready
+Task To Run:                          "C:\Users\Ratanshila\Documents\autmated trading\.venv\Scripts\pythonw.exe" -u "C:\Users\Ratanshila\Documents\autmated trading\tools\tv_alert_setup\renew_expiring_alerts.py"
+Schedule Type:                        Weekly
+TaskName:                             \TrendMaster TV Webhook Watchdog
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_tv_webhook_watchdog.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Walkforward Lab
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_walkforward_lab.vbs"
+Schedule Type:                        Weekly
+TaskName:                             \TrendMaster Watch-Pets
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_watch_pets.vbs"
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \TrendMaster Zero Trades Watchdog
+Status:                               Ready
+Task To Run:                          wscript.exe "C:\Users\Ratanshila\Documents\autmated trading\tools\hidden_zero_trades_watchdog.vbs"
+Schedule Type:                        Daily 
+TaskName:                             \ASUS\AcPowerNotification
+Status:                               Running
+Task To Run:                          C:\Program Files (x86)\ASUS\ArmouryDevice\dll\AcPowerNotification\AcPowerNotification.exe 
+Schedule Type:                        At logon time
+TaskName:                             \ASUS\ArmourySocketServer
+Status:                               Ready
+Task To Run:                          C:\Program Files (x86)\ASUS\ArmouryDevice\dll\ArmourySocketServer\TaskSchedulerTool_ArmourySocketServer.exe 
+Schedule Type:                        At logon time
+TaskName:                             \ASUS\P508PowerAgent_sdk
+Status:                               Ready
+Task To Run:                          C:\Program Files (x86)\ASUS\ArmouryDevice\dll\ShareFromArmouryIII\Mouse\ROG STRIX CARRY\P508PowerAgent.exe 
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Office\Office Automatic Updates 2.0
+Status:                               Ready
+Task To Run:                          C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeC2RClient.exe /frequentupdate SCHEDULEDTASK displaylevel=False
+Schedule Type:                        Weekly
+TaskName:                             \Microsoft\Office\Office Automatic Updates 2.0
+Status:                               Ready
+Task To Run:                          C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeC2RClient.exe /frequentupdate SCHEDULEDTASK displaylevel=False
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Office\Office Automatic Updates 2.0
+Status:                               Ready
+Task To Run:                          C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeC2RClient.exe /frequentupdate SCHEDULEDTASK displaylevel=False
+Schedule Type:                        At idle time
+TaskName:                             \Microsoft\Office\Office ClickToRun Service Monitor
+Status:                               Ready
+Task To Run:                          C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeC2RClient.exe /WatchService
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Office\OfficeBackgroundTaskHandlerLogon
+Status:                               Ready
+Task To Run:                          C:\Program Files (x86)\Microsoft Office\root\Office16\officebackgroundtaskhandler.exe 
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Office\OfficeBackgroundTaskHandlerRegistration
+Status:                               Ready
+Task To Run:                          C:\Program Files (x86)\Microsoft Office\root\Office16\officebackgroundtaskhandler.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Office\OfficeTelemetryAgentFallBack2016
+Status:                               Ready
+Task To Run:                          C:\Program Files (x86)\Microsoft Office\root\Office16\msoia.exe scan upload mininterval:2880
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Office\OfficeTelemetryAgentLogOn2016
+Status:                               Ready
+Task To Run:                          C:\Program Files (x86)\Microsoft Office\root\Office16\msoia.exe scan upload
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\.NET Framework\.NET Framework NGEN v4.0.30319
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\.NET Framework\.NET Framework NGEN v4.0.30319 64
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\.NET Framework\.NET Framework NGEN v4.0.30319 64 Critical
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        At idle time
+TaskName:                             \Microsoft\Windows\.NET Framework\.NET Framework NGEN v4.0.30319 Critical
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        At idle time
+TaskName:                             \Microsoft\Windows\AccountHealth\RecoverabilityToastTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\Active Directory Rights Management Services Client\AD RMS Rights Policy Template Management (Automated)
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\Active Directory Rights Management Services Client\AD RMS Rights Policy Template Management (Automated)
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Active Directory Rights Management Services Client\AD RMS Rights Policy Template Management (Manual)
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\AppID\PolicyConverter
+Status:                               Ready
+Task To Run:                          %windir%\system32\appidpolicyconverter.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck
+Status:                               Ready
+Task To Run:                          %windir%\system32\appidcertstorecheck.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Application Experience\MareBackup
+Status:                               Ready
+Task To Run:                          Multiple actions
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser Exp
+Status:                               Ready
+Task To Run:                          %windir%\system32\compattelrunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun express
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Application Experience\PcaPatchDbTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe %windir%\system32\PcaSvc.dll,PcaPatchSdbTask
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\Application Experience\SdbinstMergeDbTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\sdbinst.exe -mm
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Application Experience\SdbinstMergeDbTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\sdbinst.exe -mm
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Application Experience\StartupAppTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe Startupscan.dll,SusRunTask
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\ApplicationData\appuriverifierdaily
+Status:                               Ready
+Task To Run:                          %windir%\system32\AppHostRegistrationVerifier.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\ApplicationData\appuriverifierinstall
+Status:                               Ready
+Task To Run:                          %windir%\system32\AppHostRegistrationVerifier.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\ApplicationData\CleanupTemporaryState
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe Windows.Storage.ApplicationData.dll,CleanupTemporaryState
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\ApplicationData\DsSvcCleanup
+Status:                               Ready
+Task To Run:                          %windir%\system32\dstokenclean.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\AppListBackup\Backup
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\AppListBackup\BackupNonMaintenance
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\AppxDeploymentClient\Pre-staged app cleanup
+Status:                               Disabled
+Task To Run:                          %windir%\system32\rundll32.exe %windir%\system32\AppxDeploymentClient.dll,AppxPreStageCleanupRunTask
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Autochk\Proxy
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe /d acproxy.dll,PerformAutochkOperations
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\BitLocker\BitLocker Encrypt All Drives
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\BitLocker\BitLocker MDM policy Refresh
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Bluetooth\UninstallDeviceTask
+Status:                               Ready
+Task To Run:                          BthUdTask.exe $(Arg0)
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\BrokerInfrastructure\BgTaskRegistrationMaintenanceTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\capabilityaccessmanager\maintenancetasks
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe %windir%\system32\CapabilityAccessManager.dll,CapabilityAccessManagerDoStoreMaintenance
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\CertificateServicesClient\UserTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\CertificateServicesClient\UserTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\CertificateServicesClient\UserTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\CertificateServicesClient\UserTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\CertificateServicesClient\UserTask-Roam
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\CertificateServicesClient\UserTask-Roam
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\Chkdsk\ProactiveScan
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Chkdsk\SyspartRepair
+Status:                               Ready
+Task To Run:                          %windir%\system32\bcdboot.exe %windir% /sysrepair
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\CloudExperienceHost\CreateObjectTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\CloudRestore\Backup
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\CloudRestore\Backup
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\CloudRestore\Restore
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\ConsentUX\UnifiedConsent\UnifiedConsentSyncTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\ConsentUX\UnifiedConsent\UnifiedConsentSyncTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\Customer Experience Improvement Program\Consolidator
+Status:                               Ready
+Task To Run:                          %SystemRoot%\System32\wsqmcons.exe 
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\Customer Experience Improvement Program\UsbCeip
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Data Integrity Scan\Data Integrity Check And Scan
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\Data Integrity Scan\Data Integrity Check And Scan
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Data Integrity Scan\Data Integrity Scan
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Data Integrity Scan\Data Integrity Scan for Crash Recovery
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Defrag\ScheduledDefrag
+Status:                               Ready
+Task To Run:                          %windir%\system32\defrag.exe -c -h -o -$
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Device Information\Device
+Status:                               Ready
+Task To Run:                          %windir%\system32\devicecensus.exe SystemCxt
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\Device Information\Device
+Status:                               Ready
+Task To Run:                          %windir%\system32\devicecensus.exe SystemCxt
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Device Information\Device User
+Status:                               Ready
+Task To Run:                          %windir%\system32\devicecensus.exe UserCxt
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Device Setup\Driver Recovery on Reboot
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Diagnosis\Scheduled
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Diagnosis\UnexpectedCodepath
+Status:                               Ready
+Task To Run:                          %windir%\system32\UCConfigTask.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\DirectX\DirectXDatabaseUpdater
+Status:                               Ready
+Task To Run:                          %windir%\system32\directxdatabaseupdater.exe 
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\DirectX\DirectXDatabaseUpdater
+Status:                               Ready
+Task To Run:                          %windir%\system32\directxdatabaseupdater.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\DirectX\DXGIAdapterCache
+Status:                               Ready
+Task To Run:                          %windir%\system32\dxgiadaptercache.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\DirectX\DXGIAdapterCache
+Status:                               Ready
+Task To Run:                          %windir%\system32\dxgiadaptercache.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\DirectX\DXGIAdapterCache
+Status:                               Ready
+Task To Run:                          %windir%\system32\dxgiadaptercache.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\DiskCleanup\SilentCleanup
+Status:                               Ready
+Task To Run:                          %windir%\system32\cleanmgr.exe /autocleanstoragesense /d %systemdrive%
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector
+Status:                               Disabled
+Task To Run:                          %windir%\system32\rundll32.exe dfdts.dll,DfdGetDefaultPolicyAndSMART
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver
+Status:                               Disabled
+Task To Run:                          %windir%\system32\DFDWiz.exe 
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\DiskFootprint\Diagnostics
+Status:                               Ready
+Task To Run:                          %windir%\system32\disksnapshot.exe -z
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\DiskFootprint\StorageSense
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\DUSM\dusmtask
+Status:                               Ready
+Task To Run:                          %SystemRoot%\System32\dusmtask.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\EDP\EDP App Launch Task
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\EDP\EDP Auth Task
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\EDP\EDP Inaccessible Credentials Task
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\EDP\StorageCardEncryption Task
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\ExploitGuard\ExploitGuard MDM policy Refresh
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Feedback\Siuf\DmClient
+Status:                               Ready
+Task To Run:                          %windir%\system32\dmclient.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload
+Status:                               Ready
+Task To Run:                          %windir%\system32\dmclient.exe utcwnf
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\FileHistory\File History (maintenance mode)
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\GovernedFeatureUsageProcessing
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\ReconcileConfigs
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\ReconcileFeatures
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\ReconcileFeatures
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\ReconcileFeatures
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\ReconcileFeatures
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\ReconcileFeatures
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\ReconcileFeatures
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\UsageDataReceiver
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\OneSettings\RefreshCache
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \Microsoft\Windows\Flighting\OneSettings\RefreshCache
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Flighting\OneSettings\RefreshCache
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Hotpatch\Monitoring
+Status:                               Ready
+Task To Run:                          %systemroot%\system32\cmd.exe /d /c %systemroot%\system32\hpatchmonTask.cmd
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Hotpatch\Monitoring
+Status:                               Ready
+Task To Run:                          %systemroot%\system32\cmd.exe /d /c %systemroot%\system32\hpatchmonTask.cmd
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Hotpatch\Monitoring
+Status:                               Ready
+Task To Run:                          %systemroot%\system32\cmd.exe /d /c %systemroot%\system32\hpatchmonTask.cmd
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\input\InputSettingsRestoreDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\LocalUserSyncDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\MouseSyncDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\PenSyncDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\RemoteMouseSyncDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\RemotePenSyncDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\RemoteTouchpadSyncDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\syncpensettings
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\input\TouchpadSyncDataAvailable
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\InstallService\RestoreDevice
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\InstallService\ScanForUpdates
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\InstallService\ScanForUpdates
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\InstallService\ScanForUpdates
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only
+TaskName:                             \Microsoft\Windows\InstallService\ScanForUpdatesAsUser
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\InstallService\WakeUpAndContinueUpdates
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\InstallService\WakeUpAndScanForUpdates
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\International\Synchronize Language Settings
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\International\Synchronize Language Settings
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Kernel\La57Cleanup
+Status:                               Ready
+Task To Run:                          %windir%\system32\la57setup.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\LanguageComponentsInstaller\Installation
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\LanguageComponentsInstaller\ReconcileLanguageResources
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Location\WindowsActionDialog
+Status:                               Ready
+Task To Run:                          %windir%\System32\WindowsActionDialog.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Maintenance\WinSAT
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Management\Autopilot\DetectHardwareChange
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Management\Autopilot\DetectHardwareChange
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Management\Autopilot\RemediateHardwareChange
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Management\Provisioning\Cellular
+Status:                               Ready
+Task To Run:                          %windir%\system32\ProvTool.exe /turn 7 /source CellStateChangeTask
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Management\Provisioning\Logon
+Status:                               Ready
+Task To Run:                          %windir%\system32\ProvTool.exe /turn 5 /source LogonIdleTask
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Management\Provisioning\MdmDiagnosticsCleanup
+Status:                               Disabled
+Task To Run:                          %windir%\system32\MdmDiagnosticsTool.exe /clean
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Management\Provisioning\Retry
+Status:                               Disabled
+Task To Run:                          %windir%\system32\ProvTool.exe /turn 5 /source ProvRetryTask
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Management\Provisioning\RunOnReboot
+Status:                               Disabled
+Task To Run:                          %windir%\system32\ProvTool.exe /turn 5 /source ContinueSessionTask
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Maps\MapsToastTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Maps\MapsUpdateTask
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\MemoryDiagnostic\AutomaticOfflineMemoryDiagnostic
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\MemoryDiagnostic\ProcessMemoryDiagnosticEvents
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\MemoryDiagnostic\ProcessMemoryDiagnosticEvents
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\MemoryDiagnostic\ProcessMemoryDiagnosticEvents
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\MemoryDiagnostic\ProcessMemoryDiagnosticEvents
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\MemoryDiagnostic\RunFullMemoryDiagnostic
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\MUI\LPRemove
+Status:                               Ready
+Task To Run:                          %windir%\system32\lpremove.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Multimedia\SystemSoundsService
+Status:                               Running
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+Folder: \Microsoft\Windows\Network Connectivity Status Indicator
+TaskName:                             \Microsoft\Windows\Network Connectivity Status Indicator\NcsiIdentifyUserProxies
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Network Connectivity Status Indicator\NcsiIdentifyUserProxies
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\Network Connectivity Status Indicator\NcsiIdentifyUserProxies
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\NlaSvc\WiFiTask
+Status:                               Ready
+Task To Run:                          %SystemRoot%\System32\WiFiTask.exe nla
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\PCRPF\PCR Prediction Framework Firmware Update Task
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe %windir%\system32\pcrpf.dll,NotifyFirmwareUpdateStaged
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\PerformanceTrace\RequestTrace
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\PerformanceTrace\WhesvcToast
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\PI\SecureBootEncodeUEFI
+Status:                               Ready
+Task To Run:                          %WINDIR%\system32\SecureBootEncodeUEFI.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\PI\SecureBootEncodeUEFI
+Status:                               Ready
+Task To Run:                          %WINDIR%\system32\SecureBootEncodeUEFI.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\PI\SecureBootEncodeUEFI
+Status:                               Ready
+Task To Run:                          %WINDIR%\system32\SecureBootEncodeUEFI.exe 
+Schedule Type:                        Monthly
+TaskName:                             \Microsoft\Windows\Plug and Play\Device Install Group Policy
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Plug and Play\Device Install Reboot Required
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Plug and Play\Device Install Reboot Required
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Plug and Play\Sysprep Generalize Drivers
+Status:                               Ready
+Task To Run:                          %SystemRoot%\System32\drvinst.exe 6
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Printing\EduPrintProv
+Status:                               Ready
+Task To Run:                          %windir%\system32\eduprintprov.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Printing\PrinterCleanupTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\Printing\PrintJobCleanupTask
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\RecoveryEnvironment\VerifyWinRE
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\ReFsDedupSvc\Initialization
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Registry\RegIdleBackup
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Security\Pwdless\IntelligentPwdlessTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\Servicing\OOBEFodSetup
+Status:                               Disabled
+Task To Run:                          %windir%\system32\OOBEFodSetup.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Servicing\StartComponentCleanup
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Setup\PITRTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Setup\SetupRecoveryDataTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\SharedPC\Account Cleanup
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Shell\CreateObjectTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Shell\FamilySafetyMonitor
+Status:                               Ready
+Task To Run:                          %windir%\System32\wpcmon.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Shell\FamilySafetyRefreshTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Shell\IndexerAutomaticMaintenance
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Shell\ThemesSyncedImageDownload
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Shell\UpdateUserPictureTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Shell\UpdateUserPictureTaskContained
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\SoftwareProtectionPlatform\SvcRestartTaskLogon
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\SpacePort\SpaceAgentTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\SpaceAgent.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\SpacePort\SpaceAgentTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\SpaceAgent.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\SpacePort\SpaceManagerTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\spaceman.exe /Work
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\SpacePort\SpaceManagerTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\spaceman.exe /Work
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\StateRepository\MaintenanceTasks
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe %windir%\system32\Windows.StateRepositoryClient.dll,StateRepositoryDoMaintenanceTasks
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Storage Tiers Management\Storage Tiers Management Initialization
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Storage Tiers Management\Storage Tiers Optimization
+Status:                               Disabled
+Task To Run:                          %windir%\system32\defrag.exe -c -h -g -# -m 8 -i 13500
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\Subscription\EnableLicenseAcquisition
+Status:                               Ready
+Task To Run:                          %SystemRoot%\system32\ClipRenew.exe -e
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\Subscription\EnableLicenseAcquisition
+Status:                               Ready
+Task To Run:                          %SystemRoot%\system32\ClipRenew.exe -e
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\Subscription\EnableLicenseAcquisition
+Status:                               Ready
+Task To Run:                          %SystemRoot%\system32\ClipRenew.exe -e
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Subscription\LicenseAcquisition
+Status:                               Disabled
+Task To Run:                          %SystemRoot%\system32\ClipRenew.exe 
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\Subscription\LicenseAcquisition
+Status:                               Disabled
+Task To Run:                          %SystemRoot%\system32\ClipRenew.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Subscription\LicenseAcquisition
+Status:                               Disabled
+Task To Run:                          %SystemRoot%\system32\ClipRenew.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Sustainability\PowerGridForecastTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Sustainability\PowerGridForecastTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\Sustainability\SustainabilityTelemetry
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Sysmain\HybridDriveCachePrepopulate
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Sysmain\HybridDriveCacheRebalance
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Sysmain\ResPriStaticDbSync
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Sysmain\WsSwapAssessmentTask
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe sysmain.dll,PfSvWsSwapAssessmentTask
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\SystemRestore\SR
+Status:                               Ready
+Task To Run:                          %windir%\system32\srtasks.exe ExecuteScheduledSPPCreation
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Task Manager\Interactive
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\TextServicesFramework\MsCtfMonitor
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Time Synchronization\ForceSynchronizeTime
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Time Synchronization\ForceSynchronizeTime
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Time Synchronization\SynchronizeTime
+Status:                               Ready
+Task To Run:                          %windir%\system32\sc.exe start w32time task_started
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Time Zone\SynchronizeTimeZone
+Status:                               Ready
+Task To Run:                          %windir%\system32\tzsync.exe 
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\UNP\RunUpdateNotificationMgr
+Status:                               Disabled
+Task To Run:                          %windir%\System32\UNP\UpdateNotificationMgr.exe 
+Schedule Type:                        Daily 
+TaskName:                             \Microsoft\Windows\UNP\RunUpdateNotificationMgr
+Status:                               Disabled
+Task To Run:                          %windir%\System32\UNP\UpdateNotificationMgr.exe 
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\UPnP\UPnPHostConfig
+Status:                               Ready
+Task To Run:                          sc.exe config upnphost start= auto
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\USB\Usb-Notifications
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\USB\Usb-Notifications
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\USB\Usb-Notifications
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\USB\Usb-Notifications
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\WCM\WiFiTask
+Status:                               Ready
+Task To Run:                          %SystemRoot%\System32\WiFiTask.exe 
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\WDI\ResolutionHost
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance
+Status:                               Ready
+Task To Run:                          C:\ProgramData\Microsoft\Windows Defender\Platform\4.18.26030.3011-0\MpCmdRun.exe -IdleTask -TaskName WdCacheMaintenance
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Windows Defender\Windows Defender Cleanup
+Status:                               Ready
+Task To Run:                          C:\ProgramData\Microsoft\Windows Defender\Platform\4.18.26030.3011-0\MpCmdRun.exe -IdleTask -TaskName WdCleanup
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan
+Status:                               Ready
+Task To Run:                          C:\ProgramData\Microsoft\Windows Defender\Platform\4.18.26030.3011-0\MpCmdRun.exe Scan -ScheduleJob -ScanTrigger 55 -IdleScheduledJob
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Windows Defender\Windows Defender Verification
+Status:                               Ready
+Task To Run:                          C:\ProgramData\Microsoft\Windows Defender\Platform\4.18.26030.3011-0\MpCmdRun.exe -IdleTask -TaskName WdVerification
+Schedule Type:                        On demand only
+TaskName:                             \Microsoft\Windows\Windows Error Reporting\QueueReporting
+Status:                               Ready
+Task To Run:                          %windir%\system32\wermgr.exe -upload
+Schedule Type:                        At system start up
+TaskName:                             \Microsoft\Windows\Windows Error Reporting\QueueReporting
+Status:                               Ready
+Task To Run:                          %windir%\system32\wermgr.exe -upload
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Windows Error Reporting\QueueReporting
+Status:                               Ready
+Task To Run:                          %windir%\system32\wermgr.exe -upload
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Windows Error Reporting\QueueReporting
+Status:                               Ready
+Task To Run:                          %windir%\system32\wermgr.exe -upload
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Windows Error Reporting\QueueReporting
+Status:                               Ready
+Task To Run:                          %windir%\system32\wermgr.exe -upload
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \Microsoft\Windows\Windows Filtering Platform\BfeOnServiceStartTypeChange
+Status:                               Ready
+Task To Run:                          %windir%\system32\rundll32.exe bfe.dll,BfeOnServiceStartTypeChange
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\Windows Media Sharing\UpdateLibrary
+Status:                               Ready
+Task To Run:                          "%ProgramFiles%\Windows Media Player\wmpnscfg.exe" 
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\WindowsColorSystem\Calibration Loader
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\WindowsColorSystem\Calibration Loader
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\WindowsUpdate\Scheduled Start
+Status:                               Ready
+Task To Run:                          %systemroot%\System32\sc.exe start wuauserv
+Schedule Type:                        One Time Only
+TaskName:                             \Microsoft\Windows\WindowsUpdate\Scheduled Start
+Status:                               Ready
+Task To Run:                          %systemroot%\System32\sc.exe start wuauserv
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\WindowsUpdate\Scheduled Start
+Status:                               Ready
+Task To Run:                          %systemroot%\System32\sc.exe start wuauserv
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\WindowsUpdate\Scheduled Start
+Status:                               Ready
+Task To Run:                          %systemroot%\System32\sc.exe start wuauserv
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Wininet\CacheTask
+Status:                               Running
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\WlanSvc\CDSSync
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\WlanSvc\MoProfileManagement
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\WlanSvc\MoProfileManagement
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Work Folders\Work Folders Logon Synchronization
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Work Folders\Work Folders Maintenance Work
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Workplace Join\Automatic-Device-Join
+Status:                               Disabled
+Task To Run:                          %SystemRoot%\System32\dsregcmd.exe $(Arg0) $(Arg1) $(Arg2)
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Workplace Join\Automatic-Device-Join
+Status:                               Disabled
+Task To Run:                          %SystemRoot%\System32\dsregcmd.exe $(Arg0) $(Arg1) $(Arg2)
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\Workplace Join\Device-Sync
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\Workplace Join\Recovery-Check
+Status:                               Disabled
+Task To Run:                          %SystemRoot%\System32\dsregcmd.exe /checkrecovery
+Schedule Type:                        At logon time
+TaskName:                             \Microsoft\Windows\Workplace Join\Recovery-Check
+Status:                               Disabled
+Task To Run:                          %SystemRoot%\System32\dsregcmd.exe /checkrecovery
+Schedule Type:                        When an event occurs
+TaskName:                             \Microsoft\Windows\WwanSvc\NotificationTask
+Status:                               Ready
+Task To Run:                          %SystemRoot%\System32\WiFiTask.exe wwan
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\WwanSvc\OobeDiscovery
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\WwanSvc\OobeDiscovery
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\Windows\WwanSvc\OobeDiscovery
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \Microsoft\XblGameSave\XblGameSaveTask
+Status:                               Ready
+Task To Run:                          %windir%\System32\XblGameSaveTask.exe standby
+Schedule Type:                        At idle time
+TaskName:                             \SoftLanding\S-1-5-21-3711234934-358111113-487211522-1001\SoftLandingCreativeManagementTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        Undefined
+TaskName:                             \SoftLanding\S-1-5-21-3711234934-358111113-487211522-1001\SoftLandingCreativeManagementTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only
+TaskName:                             \SoftLanding\S-1-5-21-3711234934-358111113-487211522-1001\SoftLandingCreativeManagementTask
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Hourly 
+TaskName:                             \SoftLanding\S-1-5-21-3711234934-358111113-487211522-1001\SoftLandingDeferralTask-{593a7d56-81bb-45d6-9688-da0e9dab1e3a}
+Status:                               Ready
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Minute 
+TaskName:                             \SoftLanding\S-1-5-21-3711234934-358111113-487211522-1001\SoftLandingTriggerTask-128000000001615609-render-{d077ad3f-1117-4fc9-812c-b8d00b8838cb}
+Status:                               Disabled
+Task To Run:                          COM handler
+Schedule Type:                        One Time Only, Minute 

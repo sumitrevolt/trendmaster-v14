@@ -1,0 +1,1 @@
+{"direction":"BUY","confidence":0.55,"ts":1778268843,"symbol":"XAGUSD","brain":"TrendMaster_v14","model":"tradingview","agents":{"dir":"BUY","votes":[]},"sl_atr_mult":1.0,"tp_atr_mult":5.0,"adx_min":35.0,"source":"tradingview_webhook","require_all_3":false,"max_spread_atr_pct":5.0,"tv_strategy":"local_generator","tv_timeframe":"M15"}

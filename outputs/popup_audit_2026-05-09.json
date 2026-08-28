@@ -1,0 +1,353 @@
+{
+  "ts": "2026-05-09T15:39:58",
+  "schtasks_count": 30,
+  "schtasks_by_kind": {
+    "POPUP_CMD": 1,
+    "SILENT_PS": 1,
+    "SILENT_VBS": 24,
+    "SILENT_PYW": 4
+  },
+  "schtasks": [
+    {
+      "name": "\\OpenClaw Gateway",
+      "status": "Ready",
+      "next_run": "N/A",
+      "last_run": "09-05-2026 15:37:23",
+      "action": "C:\\Users\\Ratanshila\\.openclaw\\gateway.cmd ",
+      "start_in": "N/A",
+      "kind": "POPUP_CMD",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\OpenClaw Watchdog",
+      "status": "Running",
+      "next_run": "N/A",
+      "last_run": "08-05-2026 10:31:42",
+      "action": "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\\Users\\Ratanshila\\.openclaw\\watchdog.ps1\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_PS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Disabled"
+    },
+    {
+      "name": "\\TrendMaster Alert Bridge",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_alert_bridge.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Auto Research",
+      "status": "Ready",
+      "next_run": "10-05-2026 04:00:00",
+      "last_run": "09-05-2026 04:00:00",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_auto_research.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Brain Liveness",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_brain_liveness.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Brain Watchpet",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\watchpet_brain_alive.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Code Graph Rebuild",
+      "status": "Ready",
+      "next_run": "09-05-2026 16:09:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_code_graph_rebuild.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Daily Maintenance",
+      "status": "Ready",
+      "next_run": "09-05-2026 23:50:00",
+      "last_run": "30-11-1999 00:00:00",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\daily_maintenance.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Daily Summary",
+      "status": "Ready",
+      "next_run": "09-05-2026 23:00:00",
+      "last_run": "30-11-1999 00:00:00",
+      "action": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\.venv\\Scripts\\pythonw.exe\" \"C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\daily_telegram_summary.py\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_PYW",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster EA Parity Nightly",
+      "status": "Ready",
+      "next_run": "11-05-2026 02:30:00",
+      "last_run": "30-11-1999 00:00:00",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_ea_parity_nightly.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Events Rotator",
+      "status": "Ready",
+      "next_run": "09-05-2026 16:09:00",
+      "last_run": "09-05-2026 15:09:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_events_rotator.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Health Watchdog",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:40:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\.venv\\Scripts\\pythonw.exe\" \"C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\health_watchdog.py\" --once\"",
+      "start_in": "N/A",
+      "kind": "SILENT_PYW",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Hourly Snapshot",
+      "status": "Ready",
+      "next_run": "09-05-2026 16:09:00",
+      "last_run": "09-05-2026 15:09:01",
+      "action": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\.venv\\Scripts\\pythonw.exe\" \"C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hourly_telegram_snapshot.py\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_PYW",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Junction Guard",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:54:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_junction_guard.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Live Dashboard",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_dashboard.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Local Signal Generator",
+      "status": "Disabled",
+      "next_run": "N/A",
+      "last_run": "09-05-2026 01:04:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_local_signal_generator.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Disabled"
+    },
+    {
+      "name": "\\TrendMaster Morning Routine",
+      "status": "Ready",
+      "next_run": "10-05-2026 08:30:00",
+      "last_run": "09-05-2026 08:30:00",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_morning_routine.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster News Calendar Refresh",
+      "status": "Ready",
+      "next_run": "10-05-2026 06:00:00",
+      "last_run": "30-11-1999 00:00:00",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\refresh_news_calendar.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Process Watchdog",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:41:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_process_watchdog.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Pytest Health Check",
+      "status": "Ready",
+      "next_run": "09-05-2026 16:09:00",
+      "last_run": "09-05-2026 12:09:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_pytest_health_check.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Reactivate Alerts",
+      "status": "Ready",
+      "next_run": "09-05-2026 16:00:00",
+      "last_run": "09-05-2026 15:00:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\reactivate_alerts_hourly.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Schtasks Audit",
+      "status": "Ready",
+      "next_run": "09-05-2026 16:09:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_schtasks_audit.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Signal Outcome Collector",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_signal_outcome_collector.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Signal Pipeline Monitor",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_signal_pipeline_monitor.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Signal-to-Trade SLA",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:40:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_signal_to_trade_sla.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster TV Alert Renewer",
+      "status": "Ready",
+      "next_run": "10-05-2026 02:00:00",
+      "last_run": "30-11-1999 00:00:00",
+      "action": "C:\\Users\\Ratanshila\\Documents\\autmated trading\\.venv\\Scripts\\pythonw.exe\" -u \"C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\tv_alert_setup\\renew_expiring_alerts.py\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_PYW",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster TV Webhook Watchdog",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_tv_webhook_watchdog.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Walkforward Lab",
+      "status": "Ready",
+      "next_run": "16-05-2026 02:00:00",
+      "last_run": "09-05-2026 02:00:00",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_walkforward_lab.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Watch-Pets",
+      "status": "Ready",
+      "next_run": "09-05-2026 15:44:00",
+      "last_run": "09-05-2026 15:39:01",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_watch_pets.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    },
+    {
+      "name": "\\TrendMaster Zero Trades Watchdog",
+      "status": "Ready",
+      "next_run": "10-05-2026 09:00:00",
+      "last_run": "09-05-2026 09:00:00",
+      "action": "wscript.exe C:\\Users\\Ratanshila\\Documents\\autmated trading\\tools\\hidden_zero_trades_watchdog.vbs\"\"",
+      "start_in": "N/A",
+      "kind": "SILENT_VBS",
+      "logon_mode": "Interactive only",
+      "scheduled_state": "Enabled"
+    }
+  ],
+  "run_keys": [],
+  "startup_files": [
+    {
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Boot_OpenClaw_Trading.lnk",
+      "kind": "OTHER"
+    },
+    {
+      "path": "C:\\Users\\Ratanshila\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\OpenClaw Gateway.vbs",
+      "kind": "SILENT_VBS"
+    }
+  ]
+}

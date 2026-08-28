@@ -453,7 +453,7 @@ class GoldScalpingBot:
                     self.logger.error(f"Error scanning {symbol} {entry_tf}: {e}")
 
         return signals
-    
+
     def _extract_features(self, signal: Dict, m5_last: pd.Series = None, m5_df: pd.DataFrame = None) -> Dict:
         """
         Extract REAL features from signal and M5 analyzed data for brain learning.
@@ -480,15 +480,15 @@ class GoldScalpingBot:
 
         if m5_last is not None:
             direction = signal.get('direction', '')
-            
+
             # Rolling lookback: check last 5 M5 candles for event features (25 min window)
             lookback = 5
             recent = m5_df.iloc[-lookback:] if m5_df is not None and len(m5_df) >= lookback else None
-            
+
             if direction == 'BUY':
                 features['trend_aligned'] = bool(signal.get('h1_trend_bull', False))
                 features['ema_aligned'] = bool(m5_last.get('scalp_trend_bull', False))
-                
+
                 # Event features: check rolling window (last 10 candles)
                 if recent is not None:
                     features['liquidity_sweep'] = bool(recent['bullish_manipulation'].any()) if 'bullish_manipulation' in recent.columns else False
@@ -525,7 +525,7 @@ class GoldScalpingBot:
             else:
                 features['trend_aligned'] = bool(signal.get('h1_trend_bear', False))
                 features['ema_aligned'] = bool(m5_last.get('scalp_trend_bear', False))
-                
+
                 if recent is not None:
                     features['liquidity_sweep'] = bool(recent['bearish_manipulation'].any()) if 'bearish_manipulation' in recent.columns else False
                     features['structure_shift'] = bool(
@@ -566,7 +566,7 @@ class GoldScalpingBot:
                 rsi_val = 50
             features['rsi_optimal'] = bool(25 < rsi_val < 75)
             features['good_volatility'] = bool(m5_last.get('good_volatility', False))
-            
+
             # Session detection for brain learning
             try:
                 hour_utc = signal.get('timestamp', datetime.utcnow()).hour if hasattr(signal.get('timestamp', datetime.utcnow()), 'hour') else datetime.utcnow().hour
